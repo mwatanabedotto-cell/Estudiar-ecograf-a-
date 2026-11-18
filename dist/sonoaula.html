@@ -1,0 +1,2018 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sonoaula de Ecografía</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: consola de ecógrafo — fondo de sala oscura, texto de calibrador ámbar, Doppler rojo/azul solo para estado. Columna única de lectura, rejillas que se apilan en móvil. */
+:root {
+  --bg: #0c1114;
+  --panel: #131a1f;
+  --panel-2: #1a2329;
+  --line: #27333b;
+  --fg: #e4eaed;
+  --muted: #8d9ea8;
+  --accent: #f0b84a;
+  --accent-ink: #1b1305;
+  --accent-soft: rgba(240, 184, 74, 0.14);
+  --ok: #4cc38a;
+  --ok-soft: rgba(76, 195, 138, 0.14);
+  --bad: #ef6a5f;
+  --bad-soft: rgba(239, 106, 95, 0.14);
+  --dop-r: #e5484d;
+  --dop-b: #3e8ef7;
+  --scan-bg: #05080a;
+  --f-disp: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --f-text: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r: 10px;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #eef2f4; --panel: #ffffff; --panel-2: #e5ebee; --line: #cfd8de;
+    --fg: #13212a; --muted: #566873; --accent: #a8700c; --accent-ink: #ffffff;
+    --accent-soft: rgba(168, 112, 12, 0.12); --ok: #1c8a55; --ok-soft: rgba(28, 138, 85, 0.12);
+    --bad: #c23b33; --bad-soft: rgba(194, 59, 51, 0.10); --dop-r: #c8303a; --dop-b: #2a6fd6;
+    --scan-bg: #0b1013; color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #eef2f4; --panel: #ffffff; --panel-2: #e5ebee; --line: #cfd8de;
+  --fg: #13212a; --muted: #566873; --accent: #a8700c; --accent-ink: #ffffff;
+  --accent-soft: rgba(168, 112, 12, 0.12); --ok: #1c8a55; --ok-soft: rgba(28, 138, 85, 0.12);
+  --bad: #c23b33; --bad-soft: rgba(194, 59, 51, 0.10); --dop-r: #c8303a; --dop-b: #2a6fd6;
+  --scan-bg: #0b1013; color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font: 400 1.0625rem/1.55 var(--f-text);
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--panel); }
+a { color: var(--accent); }
+h1, h2, h3, h4 { font-family: var(--f-disp); font-weight: 700; line-height: 1.1; text-wrap: balance; margin: 0; letter-spacing: 0.005em; }
+h1 { font-size: clamp(2rem, 6vw, 2.9rem); }
+h2 { font-size: clamp(1.5rem, 4vw, 1.9rem); }
+h3 { font-size: 1.3rem; }
+p { margin: 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.wrap {
+  max-width: 980px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* Barra superior */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line); }
+.top-in { max-width: 980px; margin: 0 auto; display: flex; align-items: center; gap: 12px 20px; flex-wrap: wrap;
+  padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.marca { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); text-decoration: none; font: 700 1.5rem/1 var(--f-disp); letter-spacing: 0.02em; }
+.nav { display: flex; gap: 4px; overflow-x: auto; margin-left: auto; scrollbar-width: none; }
+.nav a { color: var(--muted); text-decoration: none; padding: 6px 10px; border-radius: 6px; white-space: nowrap; font-weight: 600; font-size: 0.98rem; display: inline-flex; gap: 6px; align-items: center; }
+.nav a:hover { color: var(--fg); background: var(--panel-2); }
+.nav a.on { color: var(--fg); background: var(--panel-2); box-shadow: inset 0 -2px 0 var(--accent); }
+.badge { font: 600 0.72rem/1 var(--f-mono); background: var(--accent); color: var(--accent-ink); padding: 3px 6px; border-radius: 99px; }
+
+main.wrap { padding-block: 22px 40px; display: grid; gap: 28px; }
+.pie { color: var(--muted); font-size: 0.85rem; padding-block: 0 32px; }
+
+/* Utilidades */
+.eyebrow { font: 600 0.75rem/1.2 var(--f-mono); text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); }
+.muted { color: var(--muted); }
+.mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.stack { display: grid; gap: 14px; min-width: 0; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.sep { border: 0; border-top: 1px solid var(--line); margin: 0; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--line); background: var(--panel-2); color: var(--fg);
+  padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; text-decoration: none; min-height: 44px; }
+.btn:hover { border-color: var(--muted); }
+.btn.pri { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.pri:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; }
+.btn.sm { padding: 6px 12px; min-height: 36px; font-size: 0.95rem; }
+.btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+
+select, input[type="search"], input[type="text"], textarea {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px; min-height: 44px; max-width: 100%;
+}
+textarea { width: 100%; min-height: 90px; resize: vertical; line-height: 1.45; }
+
+/* Portada */
+.hero { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 24px; align-items: center; }
+.hero .stack { gap: 12px; }
+.hero p.lead { color: var(--muted); max-width: 60ch; }
+.scan { position: relative; background: var(--scan-bg); border-radius: var(--r); border: 1px solid var(--line); aspect-ratio: 4 / 3; max-width: 100%; overflow: hidden; }
+.scan canvas { width: 100%; height: 100%; display: block; }
+.scan .hud { position: absolute; font: 400 0.7rem/1.3 var(--f-mono); color: #c9d3d8; opacity: 0.85; pointer-events: none; }
+.scan .hud.tl { top: 8px; left: 10px; }
+.scan .hud.tr { top: 8px; right: 10px; text-align: right; }
+.scan .hud.bl { bottom: 8px; left: 10px; color: #f0b84a; }
+
+.kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.kpi { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; display: grid; gap: 2px; }
+.kpi b { font: 700 1.9rem/1 var(--f-disp); font-variant-numeric: tabular-nums; }
+.kpi span { color: var(--muted); font-size: 0.88rem; }
+
+/* Cursos */
+.cursos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.curso { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 12px; text-decoration: none; color: inherit; align-content: start; }
+.curso:hover { border-color: var(--muted); }
+.curso .head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.curso h3 { font-size: 1.45rem; }
+.pct { font: 700 1.6rem/1 var(--f-disp); color: var(--accent); font-variant-numeric: tabular-nums; }
+.curso .sub { color: var(--muted); font-size: 0.92rem; }
+
+/* Barras de criterios (estilo TGC) */
+.tgc { display: grid; gap: 7px; }
+.tgc .l { display: grid; grid-template-columns: 2.6rem minmax(0, 1fr) 2.6rem; gap: 8px; align-items: center; font-size: 0.85rem; }
+.tgc .w { font: 600 0.78rem/1 var(--f-mono); color: var(--muted); }
+.tgc .v { font: 600 0.78rem/1 var(--f-mono); text-align: right; }
+.bar { height: 8px; background: var(--panel-2); border-radius: 99px; overflow: hidden; position: relative; }
+.bar i { position: absolute; inset: 0 auto 0 0; background: var(--accent); border-radius: 99px; }
+.bar.ok i { background: var(--ok); }
+
+/* Vista curso */
+.chead { display: grid; gap: 8px; }
+.tabs { display: flex; gap: 4px; overflow-x: auto; border-bottom: 1px solid var(--line); scrollbar-width: none; }
+.tabs a { padding: 10px 12px; color: var(--muted); text-decoration: none; font-weight: 600; white-space: nowrap; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs a.on { color: var(--fg); border-color: var(--accent); }
+.tabs a:hover { color: var(--fg); }
+
+.crit { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.crit > header { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.peso { font: 700 1.5rem/1 var(--f-disp); color: var(--accent); font-variant-numeric: tabular-nums; min-width: 3.2rem; }
+.peso small { display: block; font: 600 0.62rem/1.2 var(--f-mono); color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.crit header p { font-size: 0.95rem; color: var(--muted); }
+.crit header h3 { font-size: 1.2rem; }
+.dom { font: 600 0.8rem/1 var(--f-mono); color: var(--muted); text-align: right; white-space: nowrap; }
+
+details.tema { border-top: 1px solid var(--line); }
+details.tema:first-of-type { border-top: 0; }
+details.tema > summary { cursor: pointer; padding: 13px 16px; list-style: none; display: flex; gap: 10px; align-items: center; font-weight: 600; }
+details.tema > summary::-webkit-details-marker { display: none; }
+details.tema > summary::before { content: "+"; font: 600 1rem/1 var(--f-mono); color: var(--accent); width: 1rem; flex: none; }
+details.tema[open] > summary::before { content: "−"; }
+details.tema > summary .chk { margin-left: auto; font: 600 0.72rem/1 var(--f-mono); color: var(--ok); white-space: nowrap; }
+.tema-body { padding: 0 16px 18px; display: grid; gap: 12px; max-width: 72ch; min-width: 0; }
+.tema-body ul, .tema-body ol { margin: 0; padding-left: 1.2rem; display: grid; gap: 5px; }
+.tema-body h4 { font-size: 1.12rem; color: var(--accent); margin-top: 4px; }
+.tema-body table { border-collapse: collapse; font-size: 0.93rem; min-width: 420px; }
+.tema-body th, .tema-body td { border-bottom: 1px solid var(--line); padding: 6px 10px 6px 0; text-align: left; vertical-align: top; }
+.tema-body th { font: 600 0.75rem/1.2 var(--f-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.tabla { overflow-x: auto; max-width: 100%; }
+.perla { background: var(--accent-soft); border-left: 3px solid var(--accent); padding: 10px 12px; border-radius: 0 8px 8px 0; font-size: 0.97rem; }
+.perla b:first-child { font: 600 0.72rem/1 var(--f-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 4px; }
+.fuente { font-size: 0.82rem; color: var(--muted); font-style: italic; }
+.fig { background: var(--panel-2); border-radius: 8px; padding: 12px; overflow-x: auto; }
+.fig svg { display: block; max-width: 100%; height: auto; }
+.fig figcaption { font-size: 0.82rem; color: var(--muted); margin-top: 6px; }
+figure { margin: 0; }
+.notas label { font-size: 0.85rem; color: var(--muted); display: block; margin-bottom: 4px; }
+
+/* Tarjetas */
+.fc { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px 20px; min-height: 260px; display: grid; gap: 16px; align-content: start; }
+.fc .q { font-size: 1.22rem; font-weight: 600; line-height: 1.4; }
+.fc .a { font-size: 1.08rem; border-top: 1px dashed var(--line); padding-top: 14px; }
+.fc .meta { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.grades { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.grades .btn { flex-direction: column; gap: 2px; padding: 8px 6px; }
+.grades .btn small { font: 400 0.72rem/1 var(--f-mono); color: var(--muted); }
+.grades .g0 { border-color: var(--bad); }
+.grades .g3 { border-color: var(--ok); }
+.progreso { font: 600 0.8rem/1 var(--f-mono); color: var(--muted); }
+
+/* Preguntas */
+.qbox { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: grid; gap: 14px; }
+.qbox .enun { font-size: 1.12rem; font-weight: 600; line-height: 1.45; }
+.caso-tag { display: inline-block; font: 600 0.7rem/1 var(--f-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--dop-b); border: 1px solid currentColor; padding: 4px 7px; border-radius: 5px; }
+.opts { display: grid; gap: 8px; }
+.opt { text-align: left; border: 1px solid var(--line); background: var(--panel-2); border-radius: 9px; padding: 11px 14px; cursor: pointer; display: grid; grid-template-columns: 1.6rem minmax(0, 1fr); gap: 8px; line-height: 1.4; min-height: 44px; }
+.opt .k { font: 600 0.85rem/1.5 var(--f-mono); color: var(--muted); }
+.opt:hover:not([disabled]) { border-color: var(--muted); }
+.opt[disabled] { cursor: default; }
+.opt.ok { border-color: var(--ok); background: var(--ok-soft); }
+.opt.bad { border-color: var(--bad); background: var(--bad-soft); }
+.opt.sel { border-color: var(--accent); background: var(--accent-soft); }
+.expl { border-left: 3px solid var(--ok); padding: 8px 12px; background: var(--panel-2); border-radius: 0 8px 8px 0; font-size: 0.98rem; }
+.expl.mal { border-left-color: var(--bad); }
+.res { display: grid; gap: 10px; }
+.nota { font: 700 3.4rem/1 var(--f-disp); font-variant-numeric: tabular-nums; }
+.nota small { font-size: 1.3rem; color: var(--muted); }
+.revision { display: grid; gap: 10px; }
+.revision .it { border: 1px solid var(--line); border-radius: 9px; padding: 12px; display: grid; gap: 6px; background: var(--panel); font-size: 0.97rem; }
+.revision .it.mal { border-left: 3px solid var(--bad); }
+.revision .it.bien { border-left: 3px solid var(--ok); }
+
+/* Filtros */
+.filtros { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.filtros label { font-size: 0.9rem; color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 12px; }
+
+/* Glosario */
+.glos { display: grid; gap: 0; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); }
+.glos .g { display: grid; grid-template-columns: minmax(0, 13rem) minmax(0, 1fr); gap: 4px 16px; padding: 11px 16px; border-top: 1px solid var(--line); }
+.glos .g:first-child { border-top: 0; }
+.glos dt { font-weight: 700; }
+.glos dt small { display: block; font: 400 0.7rem/1.4 var(--f-mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.glos dd { margin: 0; color: var(--fg); }
+
+/* Biblioteca */
+.libros { display: grid; gap: 10px; }
+.libro { display: grid; grid-template-columns: 2.4rem minmax(0, 1fr); gap: 12px; align-items: start; padding: 12px 0; border-top: 1px solid var(--line); }
+.libro:first-child { border-top: 0; }
+.libro .lomo { width: 2.4rem; height: 3.2rem; border-radius: 3px; background: var(--panel-2); border: 1px solid var(--line); border-left: 5px solid var(--accent); }
+.vacio { border: 1px dashed var(--line); border-radius: var(--r); padding: 18px; color: var(--muted); display: grid; gap: 8px; }
+
+@media (max-width: 720px) {
+  .hero { grid-template-columns: minmax(0, 1fr); }
+  .hero .scan { order: -1; aspect-ratio: 16 / 9; }
+  .cursos { grid-template-columns: minmax(0, 1fr); }
+  .glos .g { grid-template-columns: minmax(0, 1fr); }
+  .crit > header { grid-template-columns: auto minmax(0, 1fr); }
+  .crit > header .dom { grid-column: 2; text-align: left; }
+  .nav { margin-left: 0; width: 100%; }
+}
+@media (max-width: 420px) {
+  .kpis { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .kpis .kpi:last-child { grid-column: span 2; }
+  .grades { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bar i { transition: width 0.5s ease; }
+  .fc, .qbox { animation: entra 0.18s ease-out; }
+  @keyframes entra { from { transform: translateY(4px); opacity: 0.6; } to { transform: none; opacity: 1; } }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <a class="marca" href="#inicio" aria-label="Sonoaula, inicio">
+      <svg viewBox="0 0 40 28" width="34" height="24" aria-hidden="true"><path d="M20 26 L4 6 A20 20 0 0 1 36 6 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><circle cx="21" cy="13" r="3.2" fill="currentColor"/></svg>
+      <span>Sonoaula</span>
+    </a>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#inicio" data-nav="inicio">Inicio</a>
+      <a href="#repaso" data-nav="repaso">Repaso <b id="badge-repaso" class="badge" hidden>0</b></a>
+      <a href="#glosario" data-nav="glosario">Glosario</a>
+      <a href="#biblioteca" data-nav="biblioteca">Biblioteca</a>
+    </nav>
+  </div>
+</header>
+<main id="app" class="wrap"></main>
+<footer class="pie wrap">Material de estudio personal. Contenido de referencia general; se ampliará con los libros del curso.</footer>
+<script>
+/* Registro de contenido de Sonoaula.
+   Cada archivo de curso llama a ECO.curso({...}). Formato:
+   {
+     id: 'bases',                 // identificador corto, sin guiones
+     codigo, titulo, corto, resumen,
+     criterios: [{ id, peso, pesoEstimado?, titulo, descripcion, temas: [{ titulo, html, fuente? }] }],
+     tarjetas:  [[criterioId, 'pregunta (frente)', 'respuesta (reverso)'], ...],
+     preguntas: [{ c: criterioId, q: 'enunciado', o: ['A','B','C','D'], a: índiceCorrecto, e: 'explicación', caso?: true }],
+     glosario:  [['Término', 'definición'], ...],
+     fuentes:   [{ titulo, autor }]   // libros del curso ya integrados
+   }
+   El progreso de cada tarjeta/pregunta se asocia al texto del frente/enunciado:
+   si se corrige una errata, esa tarjeta reinicia su progreso. */
+window.ECO = window.ECO || { cursos: [] };
+window.ECO.curso = function (c) { window.ECO.cursos.push(c); };
+window.ECO.referencias = [
+  { titulo: 'Diagnóstico por ecografía', autor: 'Rumack, Wilson, Charboneau, Levine', uso: 'Tratado de referencia: abdomen, retroperitoneo, vasos, pediatría.' },
+  { titulo: 'Sonography Principles and Instruments', autor: 'Frederick W. Kremkau', uso: 'Física del ultrasonido, transductores, Doppler, artefactos y bioefectos.' },
+  { titulo: 'Textbook of Diagnostic Sonography', autor: 'Sandra L. Hagen-Ansert', uso: 'Técnica de exploración por órgano, anatomía y patrones ecográficos.' },
+  { titulo: 'Ecografía (serie Radiología Clínica: los requisitos)', autor: 'Middleton, Kurtz, Hertzberg', uso: 'Síntesis práctica de patología abdominal para repaso.' },
+  { titulo: 'Ecografía abdominal', autor: 'Matthias Hofer', uso: 'Manual de técnica paso a paso, planos estándar y medidas normales.' }
+];
+</script>
+<script>
+ECO.curso({
+  id: 'bases',
+  codigo: '520092C',
+  titulo: 'Bases Generales en Ecografía',
+  corto: 'Bases',
+  resumen: 'Terminología, física del ultrasonido, manejo del equipo, transductores y aplicaciones clínicas.',
+  criterios: [
+    {
+      id: 'b1', peso: 25, titulo: 'Términos y conceptos básicos',
+      descripcion: 'Describe los términos y conceptos básicos relacionados con la ecografía.',
+      temas: [
+        {
+          titulo: 'Ecogenicidad y descripción de lesiones',
+          html: `
+<p>La <b>ecogenicidad</b> es la capacidad de un tejido de reflejar el ultrasonido. Se describe siempre <b>comparando</b> con un tejido de referencia (habitualmente el parénquima vecino).</p>
+<figure class="fig"><svg viewBox="0 0 520 92" role="img" aria-label="Escala de ecogenicidad de anecoico a hiperecoico">
+<defs><linearGradient id="gEco" x1="0" x2="1"><stop offset="0" stop-color="#000"/><stop offset="1" stop-color="#fff"/></linearGradient></defs>
+<rect x="10" y="10" width="500" height="34" rx="4" fill="url(#gEco)" stroke="#888"/>
+<g font-family="JetBrains Mono, monospace" font-size="12" fill="currentColor" text-anchor="middle">
+<text x="40" y="66">Anecoico</text><text x="170" y="66">Hipoecoico</text><text x="300" y="66">Isoecoico</text><text x="440" y="66">Hiperecoico</text>
+<text x="40" y="84" fill="#8d9ea8">líquido</text><text x="170" y="84" fill="#8d9ea8">ganglio, músculo</text><text x="300" y="84" fill="#8d9ea8">= referencia</text><text x="440" y="84" fill="#8d9ea8">grasa, calcio, gas</text></g></svg>
+<figcaption>Escala de grises: negro = sin ecos; blanco = reflexión intensa.</figcaption></figure>
+<ul>
+<li><b>Anecoico</b>: sin ecos internos (negro). Típico de líquido simple: vesícula, vejiga, quiste.</li>
+<li><b>Hipoecoico</b>: menos ecos que el tejido de referencia.</li>
+<li><b>Isoecoico</b>: igual ecogenicidad que la referencia (lesiones «fantasma», difíciles de ver).</li>
+<li><b>Hiperecoico / ecogénico</b>: más ecos que la referencia. Grasa, fibrosis, calcio, gas, interfaces.</li>
+<li><b>Homogéneo / heterogéneo</b>: distribución uniforme o no de los ecos.</li>
+</ul>
+<h4>Cómo describir una lesión</h4>
+<p>Localización (órgano, segmento), tamaño en 3 ejes, forma, márgenes (bien/mal definidos), ecogenicidad, ecoestructura, efectos posteriores (sombra o refuerzo), vascularización Doppler y relación con estructuras vecinas.</p>
+<div class="perla"><b>Perla</b>«Hipoecoico» no es sinónimo de «quístico». Un linfoma puede ser casi anecoico pero sólido: busca el <b>refuerzo posterior</b> y el <b>flujo Doppler</b> antes de llamarlo quiste.</div>`
+        },
+        {
+          titulo: 'Planos, orientación y convenciones',
+          html: `
+<ul>
+<li><b>Longitudinal (sagital)</b>: marcador del transductor hacia la <b>cabeza</b> del paciente. En pantalla, craneal a la izquierda, caudal a la derecha.</li>
+<li><b>Transversal (axial)</b>: marcador hacia la <b>derecha del paciente</b>. Se ve como en una TC: la derecha del paciente queda a la izquierda de la pantalla.</li>
+<li><b>Coronal</b>: desde el flanco, útil para riñones, bazo y espacios de Morison y esplenorrenal.</li>
+<li><b>Oblicuo</b>: siguiendo el eje del órgano (p. ej. subcostal oblicuo para hígado y vía biliar).</li>
+</ul>
+<p>Parte superior de la pantalla = estructuras <b>cercanas</b> al transductor (campo cercano). Parte inferior = <b>profundas</b> (campo lejano).</p>
+<p>En ecocardiografía la convención del marcador es inversa (marcador a la derecha de la pantalla); en abdomen y POCUS general se usa la convención radiológica.</p>`
+        },
+        {
+          titulo: 'Artefactos: los que ayudan y los que engañan',
+          html: `
+<div class="tabla"><table><thead><tr><th>Artefacto</th><th>Mecanismo</th><th>Ejemplo clínico</th></tr></thead><tbody>
+<tr><td>Sombra acústica posterior</td><td>Atenuación/reflexión casi total del haz</td><td>Cálculos, calcificaciones, hueso, gas («sombra sucia»)</td></tr>
+<tr><td>Refuerzo acústico posterior</td><td>Estructura que atenúa menos que su entorno</td><td>Quistes, vesícula, vejiga</td></tr>
+<tr><td>Reverberación</td><td>Rebotes múltiples entre dos interfaces paralelas muy reflectantes</td><td>Líneas A del pulmón, aire bajo la pared</td></tr>
+<tr><td>Cola de cometa</td><td>Reverberación de alta frecuencia en un reflector pequeño</td><td>Adenomiomatosis vesicular (senos de Rokitansky-Aschoff), cuerpos extraños metálicos</td></tr>
+<tr><td>Ring-down</td><td>Resonancia de burbujas de gas</td><td>Gas intestinal, neumobilia, líneas B pulmonares</td></tr>
+<tr><td>Imagen en espejo</td><td>Reflexión en interfaz muy especular (diafragma)</td><td>Hígado «duplicado» por encima del diafragma</td></tr>
+<tr><td>Sombra de borde (refracción)</td><td>Refracción en bordes curvos</td><td>Bordes de vesícula o quistes; no confundir con cálculo</td></tr>
+<tr><td>Lóbulo lateral / grosor de corte</td><td>Ecos de haces fuera del eje principal</td><td>Falso «barro» en vesícula o vejiga</td></tr>
+<tr><td>Aliasing</td><td>Frecuencia Doppler mayor que la mitad de la PRF</td><td>Mosaico de colores en estenosis</td></tr>
+<tr><td>Centelleo (twinkling)</td><td>Señal Doppler color tras superficie rugosa</td><td>Litiasis renal pequeña</td></tr>
+</tbody></table></div>
+<div class="perla"><b>Perla</b>Sombra <b>limpia</b> (anecoica, nítida) = cálculo/calcio. Sombra <b>sucia</b> (con ecos de reverberación) = gas.</div>`
+        }
+      ]
+    },
+    {
+      id: 'b2', peso: 25, titulo: 'Principios físicos y modos de imagen',
+      descripcion: 'Conoce los principios físicos subyacentes a la ecografía, la generación y propagación de ondas sonoras, la interacción de las ondas sonoras con los tejidos biológicos y los diferentes modos de imagen.',
+      temas: [
+        {
+          titulo: 'Generación y propagación del ultrasonido',
+          html: `
+<ul>
+<li>El sonido es una <b>onda mecánica longitudinal</b>: necesita un medio; no viaja en el vacío.</li>
+<li><b>Ultrasonido</b>: frecuencia &gt; 20 kHz. Diagnóstico: aproximadamente <b>2–18 MHz</b>.</li>
+<li><b>Efecto piezoeléctrico</b> (Curie, 1880): los cristales (cerámica PZT, titanato-zirconato de plomo) se deforman con un voltaje y <b>emiten</b> ultrasonido (efecto inverso); al recibir el eco generan voltaje (efecto directo). El mismo cristal emite y recibe.</li>
+<li>El transductor emite pulsos durante ~1 % del tiempo y escucha el ~99 % restante (<b>factor de trabajo</b> bajo).</li>
+</ul>
+<h4>Ecuaciones esenciales</h4>
+<ul>
+<li><b>c = f × λ</b>. En tejido blando, c ≈ <b>1540 m/s</b>. A 5 MHz, λ ≈ 0,31 mm.</li>
+<li><b>Ecuación de distancia</b>: profundidad = (c × t) / 2. Regla práctica: <b>13 µs por cada cm</b> de profundidad (ida y vuelta).</li>
+<li>La velocidad depende del medio (rigidez y densidad), <b>no</b> de la frecuencia.</li>
+</ul>
+<div class="tabla"><table><thead><tr><th>Medio</th><th>Velocidad (m/s)</th></tr></thead><tbody>
+<tr><td>Aire</td><td class="mono">≈ 330</td></tr><tr><td>Grasa</td><td class="mono">≈ 1450</td></tr><tr><td>Tejido blando (promedio)</td><td class="mono">1540</td></tr><tr><td>Hígado</td><td class="mono">≈ 1550</td></tr><tr><td>Músculo</td><td class="mono">≈ 1580</td></tr><tr><td>Hueso</td><td class="mono">≈ 4080</td></tr>
+</tbody></table></div>`
+        },
+        {
+          titulo: 'Interacción con los tejidos: impedancia, reflexión, atenuación',
+          html: `
+<ul>
+<li><b>Impedancia acústica</b>: Z = densidad × velocidad (rayls). Los ecos se producen en las <b>interfaces</b> entre tejidos de impedancia distinta; cuanto mayor la diferencia, más reflexión.</li>
+<li>Interfaz tejido–aire: refleja ≈ 99,9 % → por eso se usa <b>gel</b>, y el gas intestinal impide ver detrás.</li>
+<li><b>Reflexión especular</b>: interfaces grandes y lisas (diafragma, pared vesical); depende del ángulo, máxima a 90°.</li>
+<li><b>Dispersión (scattering)</b>: reflectores menores que λ; da la textura («speckle») del parénquima. La dispersión de Rayleigh (eritrocitos) es la base del Doppler.</li>
+<li><b>Refracción</b>: cambio de dirección al pasar entre medios de distinta velocidad con incidencia oblicua (ley de Snell). Produce errores de posición y sombras de borde.</li>
+<li><b>Absorción</b>: conversión de energía en calor; principal componente de la atenuación.</li>
+</ul>
+<h4>Atenuación</h4>
+<p>En tejido blando ≈ <b>0,5 dB/cm/MHz</b>. Aumenta con la <b>frecuencia</b> y la <b>profundidad</b>. Por eso:</p>
+<ul><li>Alta frecuencia → mejor resolución, <b>menor penetración</b> (estructuras superficiales).</li><li>Baja frecuencia → más penetración, menor resolución (abdomen profundo, obesos).</li></ul>
+<h4>Resolución</h4>
+<ul>
+<li><b>Axial</b> (a lo largo del haz) = longitud espacial del pulso / 2. Mejora con mayor frecuencia y pulsos cortos (material de amortiguación).</li>
+<li><b>Lateral</b> (perpendicular al haz) = ancho del haz; es mejor en la <b>zona focal</b>. Siempre peor que la axial.</li>
+<li><b>Temporal</b> = frecuencia de cuadros (frame rate). Disminuye con mayor profundidad, más zonas focales y sectores anchos.</li>
+<li>Campo cercano = zona de Fresnel; campo lejano = zona de Fraunhofer (el haz diverge).</li>
+</ul>`
+        },
+        {
+          titulo: 'Modos de imagen y Doppler',
+          html: `
+<div class="tabla"><table><thead><tr><th>Modo</th><th>Qué muestra</th><th>Uso</th></tr></thead><tbody>
+<tr><td>A (amplitud)</td><td>Picos de amplitud vs profundidad</td><td>Histórico; oftalmología (biometría)</td></tr>
+<tr><td>B (brillo)</td><td>Imagen 2D en escala de grises</td><td>Base de toda la ecografía</td></tr>
+<tr><td>M (movimiento)</td><td>Movimiento de una línea en el tiempo</td><td>Válvulas, FC fetal, deslizamiento pleural</td></tr>
+<tr><td>Doppler color</td><td>Dirección y velocidad media del flujo sobre el modo B</td><td>Presencia y dirección de flujo</td></tr>
+<tr><td>Doppler pulsado (PW)</td><td>Espectro de velocidades en un punto (volumen de muestra)</td><td>Velocidades, índices; sufre aliasing</td></tr>
+<tr><td>Doppler continuo (CW)</td><td>Todas las velocidades a lo largo del haz</td><td>Altas velocidades (estenosis valvular); sin resolución de profundidad</td></tr>
+<tr><td>Power Doppler</td><td>Amplitud (energía) de la señal</td><td>Flujo lento; muy sensible, casi independiente del ángulo, sin dirección</td></tr>
+<tr><td>Armónicos tisulares</td><td>Recibe al doble de la frecuencia emitida</td><td>Menos artefactos, mejor contraste en obesos</td></tr>
+<tr><td>Elastografía</td><td>Rigidez tisular</td><td>Fibrosis hepática, nódulos tiroideos y mamarios</td></tr>
+<tr><td>Ecografía con contraste (CEUS)</td><td>Microburbujas intravasculares</td><td>Caracterización de lesiones focales hepáticas</td></tr>
+</tbody></table></div>
+<h4>Ecuación Doppler</h4>
+<p><b>Δf = 2 · f₀ · v · cos θ / c</b>. El desplazamiento de frecuencia es proporcional a la velocidad y al coseno del ángulo de insonación. A 90°, cos θ = 0: <b>no hay señal</b>. Para medir velocidades, mantener el ángulo <b>≤ 60°</b>.</p>
+<p>Convención color: <b>rojo</b> = hacia el transductor; <b>azul</b> = alejándose («BART»: <i>Blue Away, Red Toward</i>). El color indica dirección respecto al transductor, no arteria o vena.</p>
+<h4>Aliasing</h4>
+<p>Aparece cuando el desplazamiento Doppler supera el <b>límite de Nyquist</b> (PRF/2). Para corregirlo: aumentar la escala/PRF, bajar la línea de base, usar menor frecuencia, reducir la profundidad o usar Doppler continuo.</p>
+<h4>Bioefectos y seguridad</h4>
+<ul><li><b>Índice térmico (TI)</b>: calentamiento tisular (TIS tejido blando, TIB hueso, TIC craneal).</li><li><b>Índice mecánico (MI)</b>: riesgo de cavitación.</li><li>Principio <b>ALARA</b>: tan bajo como sea razonablemente posible. Precaución especial con Doppler en el primer trimestre del embarazo.</li></ul>`
+        }
+      ]
+    },
+    {
+      id: 'b3', peso: 10, titulo: 'Técnica de exploración y manejo del ecógrafo',
+      descripcion: 'Identifica las diferentes técnicas de exploración ecográfica, ajustes y manejo del ecógrafo, de acuerdo con la situación clínica del paciente.',
+      temas: [
+        {
+          titulo: 'Perillas que hay que dominar',
+          html: `
+<div class="tabla"><table><thead><tr><th>Control</th><th>Qué hace</th><th>Error típico</th></tr></thead><tbody>
+<tr><td>Preset</td><td>Carga parámetros por órgano (abdomen, vascular, tiroides…)</td><td>Explorar todo con el preset de otro órgano</td></tr>
+<tr><td>Profundidad</td><td>Campo de visión en cm</td><td>Demasiada: la estructura queda pequeña y baja el frame rate</td></tr>
+<tr><td>Ganancia global</td><td>Amplifica todos los ecos <b>recibidos</b> (no aumenta la potencia emitida)</td><td>Exceso: líquidos con falsos ecos; defecto: se pierden lesiones</td></tr>
+<tr><td>TGC (compensación ganancia–tiempo)</td><td>Ajusta la ganancia por profundidad para compensar la atenuación</td><td>Bandas horizontales claras/oscuras</td></tr>
+<tr><td>Foco</td><td>Estrecha el haz en una profundidad: mejor resolución lateral</td><td>Foco lejos de la zona de interés</td></tr>
+<tr><td>Frecuencia</td><td>Resolución vs penetración</td><td>Alta frecuencia en paciente obeso</td></tr>
+<tr><td>Rango dinámico</td><td>Número de grises (contraste)</td><td>Muy bajo: imagen «dura», en blanco y negro</td></tr>
+<tr><td>Potencia acústica (output)</td><td>Energía emitida; afecta MI/TI</td><td>Subir potencia en lugar de ganancia (ALARA)</td></tr>
+<tr><td>Escala/PRF, filtro de pared, ángulo</td><td>Ajustes Doppler</td><td>Escala alta para flujo lento: «no hay flujo»</td></tr>
+</tbody></table></div>
+<div class="perla"><b>Secuencia práctica</b>Preset → profundidad (que la estructura ocupe ⅔ de la pantalla) → foco a nivel o justo por debajo de la estructura → ganancia y TGC (líquido negro, parénquima homogéneo) → zoom si hace falta → congelar y medir.</div>`
+        },
+        {
+          titulo: 'Movimientos del transductor, ventanas y preparación',
+          html: `
+<ul>
+<li><b>Deslizar</b> (sliding): desplazar el transductor sobre la piel para recorrer el órgano.</li>
+<li><b>Rotar</b>: girar sobre su eje (de longitudinal a transversal).</li>
+<li><b>Angular / abanicar</b> (fanning, tilting): inclinar sin mover el punto de contacto para barrer el órgano.</li>
+<li><b>Balancear</b> (rocking): inclinar en el plano de la imagen para centrar una estructura.</li>
+<li><b>Comprimir</b>: desplaza gas intestinal, valora compresibilidad (venas en TVP, apéndice).</li>
+</ul>
+<h4>Preparación y posición</h4>
+<ul>
+<li>Abdomen superior: <b>ayuno de 6–8 h</b> (vesícula distendida, menos gas).</li>
+<li>Pelvis transabdominal: <b>vejiga llena</b> (ventana acústica).</li>
+<li>Decúbito supino, decúbitos laterales, inspiración profunda sostenida (baja hígado y bazo), ventanas subcostal e intercostal.</li>
+<li>Ergonomía: altura de la camilla, brazo apoyado, evitar abducción del hombro &gt; 30°.</li>
+</ul>
+<p>En urgencias (POCUS) la técnica se adapta: protocolos cortos, enfocados en una pregunta binaria (¿hay líquido libre? ¿hay derrame pericárdico?).</p>`
+        }
+      ]
+    },
+    {
+      id: 'b4', peso: 20, titulo: 'Transductores',
+      descripcion: 'Distingue los diferentes tipos de transductores utilizados en ecografía, para obtener mejores imágenes y optimizarlas.',
+      temas: [
+        {
+          titulo: 'Tipos de transductor y su uso',
+          html: `
+<figure class="fig"><svg viewBox="0 0 540 170" role="img" aria-label="Formas de imagen de los transductores lineal, convexo y sectorial">
+<g fill="none" stroke="currentColor" stroke-width="2">
+<rect x="30" y="20" width="120" height="110" fill="#8d9ea8" fill-opacity="0.18"/>
+<path d="M210 40 A90 90 0 0 1 330 40 L360 130 L180 130 Z" fill="#8d9ea8" fill-opacity="0.18"/>
+<path d="M455 20 L395 130 L515 130 Z" fill="#8d9ea8" fill-opacity="0.18"/></g>
+<g fill="#f0b84a"><rect x="30" y="14" width="120" height="6"/><path d="M210 40 A90 90 0 0 1 330 40 L326 34 A84 84 0 0 0 214 34 Z"/><rect x="445" y="14" width="20" height="6"/></g>
+<g font-family="JetBrains Mono, monospace" font-size="12" fill="currentColor" text-anchor="middle">
+<text x="90" y="152">Lineal 5–15 MHz</text><text x="270" y="152">Convexo 2–5 MHz</text><text x="455" y="152">Sectorial 1–5 MHz</text></g></svg>
+<figcaption>Huella (ámbar) y forma del campo de visión de cada transductor.</figcaption></figure>
+<div class="tabla"><table><thead><tr><th>Transductor</th><th>Frecuencia</th><th>Imagen</th><th>Usos</th></tr></thead><tbody>
+<tr><td><b>Lineal</b></td><td class="mono">5–15 MHz</td><td>Rectangular, campo cercano ancho</td><td>Tiroides, mama, partes blandas, músculo-esquelético, vascular periférico, accesos vasculares, pleura, apéndice, pared abdominal</td></tr>
+<tr><td><b>Convexo (curvo)</b></td><td class="mono">2–5 MHz</td><td>Abanico ancho en profundidad</td><td>Abdomen, obstetricia, pelvis transabdominal, FAST</td></tr>
+<tr><td><b>Sectorial (phased array)</b></td><td class="mono">1–5 MHz</td><td>Abanico desde un punto, huella pequeña</td><td>Ecocardiografía, ventanas intercostales, FAST cardíaco</td></tr>
+<tr><td><b>Endocavitario (microconvexo)</b></td><td class="mono">5–9 MHz</td><td>Abanico amplio, alta resolución cercana</td><td>Transvaginal, transrectal (próstata)</td></tr>
+<tr><td>Microconvexo</td><td class="mono">4–10 MHz</td><td>Abanico con huella pequeña</td><td>Pediatría, neonatos, espacios reducidos</td></tr>
+<tr><td>Otros</td><td>—</td><td>—</td><td>Transesofágico, intraoperatorio, «palo de hockey», volumétrico 3D/4D</td></tr>
+</tbody></table></div>`
+        },
+        {
+          titulo: 'Anatomía del transductor y optimización',
+          html: `
+<ul>
+<li><b>Elementos piezoeléctricos</b> (PZT o compuestos): generan y reciben el ultrasonido. En arreglos, cientos de elementos disparados en secuencia.</li>
+<li><b>Capa de acoplamiento (matching layer)</b>: impedancia intermedia entre cristal y piel; mejora la transmisión. Su grosor ideal es ¼ de λ.</li>
+<li><b>Material de respaldo (backing / amortiguación)</b>: acorta el pulso → mejora la <b>resolución axial</b> (a costa de sensibilidad).</li>
+<li><b>Lente acústica</b>: enfoca en el plano de elevación (grosor de corte).</li>
+<li>La frecuencia del transductor depende del <b>grosor del cristal</b>: más delgado = mayor frecuencia.</li>
+<li>Arreglo <b>lineal secuencial</b>: dispara grupos de elementos en línea. Arreglo <b>fásico (phased)</b>: dispara todos con retrasos electrónicos para dirigir y enfocar el haz.</li>
+</ul>
+<div class="perla"><b>Regla de elección</b>Usa la <b>mayor frecuencia que alcance la profundidad</b> de interés. Superficial (&lt; 4–5 cm) → lineal. Profundo → convexo. Ventana pequeña entre costillas → sectorial.</div>
+<p>Cuidado: no golpear el transductor (se dañan los cristales), desinfección según el nivel de riesgo (alto nivel para endocavitarios, con funda), revisar el cable.</p>`
+        }
+      ]
+    },
+    {
+      id: 'b5', peso: 20, titulo: 'Aplicaciones clínicas, alcances y limitaciones',
+      descripcion: 'Comprende las aplicaciones clínicas de la ecografía, sus indicaciones, alcances y limitaciones.',
+      temas: [
+        {
+          titulo: 'Ventajas, limitaciones e indicaciones',
+          html: `
+<div class="tabla"><table><thead><tr><th>Ventajas</th><th>Limitaciones</th></tr></thead><tbody>
+<tr><td>Sin radiación ionizante (embarazo, niños, controles seriados)</td><td>Operador-dependiente</td></tr>
+<tr><td>Tiempo real, dinámica (peristalsis, compresión, Valsalva)</td><td>El gas y el hueso bloquean el haz</td></tr>
+<tr><td>Portátil, a pie de cama, bajo costo</td><td>Obesidad: atenuación, menor calidad</td></tr>
+<tr><td>Doppler: flujo sin contraste</td><td>Campo de visión limitado; difícil estadificar</td></tr>
+<tr><td>Guía de procedimientos (punciones, accesos, drenajes)</td><td>Artefactos que simulan o esconden lesiones</td></tr>
+<tr><td>Repetible, interacción con el paciente (Murphy ecográfico)</td><td>Retroperitoneo y páncreas a menudo parcialmente visibles</td></tr>
+</tbody></table></div>
+<h4>Indicaciones frecuentes</h4>
+<ul>
+<li>Abdomen: dolor en hipocondrio derecho, ictericia (¿obstructiva o no?), masa palpable, elevación de enzimas hepáticas, insuficiencia renal (tamaño, hidronefrosis), cólico renal.</li>
+<li>Pelvis y obstetricia; tiroides; mama; partes blandas; escroto.</li>
+<li>Vascular: TVP, carótidas, aneurisma de aorta.</li>
+<li>Procedimientos guiados: paracentesis, toracocentesis, biopsias, catéteres venosos centrales.</li>
+</ul>
+<p>Cuándo pasar a otro estudio: estadificación oncológica, trauma grave estable (TC), litiasis ureteral distal no visible (TC sin contraste), vía biliar distal (colangio-RM, ecoendoscopia).</p>`
+        },
+        {
+          titulo: 'Ecografía en el punto de atención (POCUS): FAST y eFAST',
+          html: `
+<p><b>FAST</b> (<i>Focused Assessment with Sonography for Trauma</i>) busca líquido libre (sangre) y derrame pericárdico en el trauma.</p>
+<ol>
+<li><b>Hepatorrenal (Morison)</b>: el espacio supramesocólico más declive en decúbito supino; incluir el polo inferior del riñón y la gotera parietocólica derecha.</li>
+<li><b>Esplenorrenal / perisplénico</b>: el líquido suele acumularse primero <b>entre diafragma y bazo</b>.</li>
+<li><b>Pélvica</b>: rectovesical (hombre) o fondo de saco de Douglas (mujer); vejiga llena ayuda.</li>
+<li><b>Subxifoidea</b>: derrame pericárdico / taponamiento.</li>
+</ol>
+<p><b>eFAST</b> agrega ambos hemitórax: <b>neumotórax</b> (ausencia de deslizamiento pleural, ausencia de líneas B, signo del «código de barras» en modo M, <b>punto pulmón</b> = diagnóstico) y hemotórax.</p>
+<div class="perla"><b>Alcance</b>FAST positivo en paciente <b>inestable</b> → quirófano. FAST negativo <b>no descarta</b> lesión de víscera sólida, retroperitoneal ni de víscera hueca; repetir y/o TC si el paciente lo permite. Se necesitan unos 200 ml de líquido para que la ventana de Morison sea positiva con fiabilidad.</div>`
+        }
+      ]
+    }
+  ],
+
+  tarjetas: [
+    ['b1', '¿Qué significa «anecoico»? Da 3 ejemplos.', 'Ausencia de ecos internos (negro). Líquido simple: vesícula, vejiga, quiste simple.'],
+    ['b1', '¿Con respecto a qué se describe la ecogenicidad?', 'Siempre de forma relativa, comparando con un tejido de referencia (habitualmente el parénquima vecino).'],
+    ['b1', 'Sombra acústica «limpia» vs «sucia»', 'Limpia (anecoica, nítida): cálculo o calcio. Sucia (con reverberaciones): gas.'],
+    ['b1', '¿Qué produce el refuerzo acústico posterior?', 'Una estructura que atenúa menos que el tejido vecino (líquido): los ecos detrás de ella se ven más brillantes. Típico de quistes.'],
+    ['b1', 'Artefacto en cola de cometa en la pared vesicular: ¿qué sugiere?', 'Adenomiomatosis (cristales de colesterol en los senos de Rokitansky-Aschoff).'],
+    ['b1', 'Orientación del marcador en un corte transversal abdominal', 'Hacia la derecha del paciente; la derecha del paciente aparece a la izquierda de la pantalla (como en TC).'],
+    ['b1', '¿Qué es la imagen en espejo?', 'Duplicación de una estructura al otro lado de un reflector muy especular (p. ej. hígado sobre el diafragma).'],
+    ['b2', 'Velocidad media del sonido en tejido blando', '1540 m/s.'],
+    ['b2', 'Ecuación de la onda', 'c = f × λ (velocidad = frecuencia × longitud de onda).'],
+    ['b2', 'Regla de los 13 µs', 'Cada cm de profundidad equivale a 13 µs de tiempo de ida y vuelta del pulso en tejido blando.'],
+    ['b2', 'Fórmula de la impedancia acústica', 'Z = densidad × velocidad de propagación (rayls). Los ecos nacen en interfaces con diferente impedancia.'],
+    ['b2', 'Atenuación en tejido blando', '≈ 0,5 dB/cm/MHz. Aumenta con la frecuencia y la profundidad.'],
+    ['b2', '¿De qué depende la resolución axial?', 'De la longitud espacial del pulso (resolución = SPL/2). Mejora con mayor frecuencia y pulsos cortos.'],
+    ['b2', '¿De qué depende la resolución lateral?', 'Del ancho del haz; es óptima en la zona focal.'],
+    ['b2', 'Efecto piezoeléctrico directo vs inverso', 'Inverso: electricidad → vibración (emisión). Directo: presión del eco → voltaje (recepción).'],
+    ['b2', 'Ecuación Doppler', 'Δf = 2·f₀·v·cos θ / c. A 90° no hay señal; medir con ángulo ≤ 60°.'],
+    ['b2', 'Límite de Nyquist', 'PRF/2. Si el desplazamiento Doppler lo supera → aliasing.'],
+    ['b2', '5 maneras de corregir el aliasing', 'Subir escala/PRF, bajar línea de base, bajar frecuencia, reducir profundidad, usar Doppler continuo.'],
+    ['b2', 'Ventajas del Power Doppler', 'Más sensible para flujo lento, casi independiente del ángulo, sin aliasing. No da dirección ni velocidad.'],
+    ['b2', 'Qué miden MI y TI', 'MI: riesgo de efectos mecánicos (cavitación). TI: riesgo de calentamiento tisular. Principio ALARA.'],
+    ['b3', '¿La ganancia aumenta la energía emitida?', 'No. Amplifica los ecos recibidos. La energía emitida es la potencia acústica (output).'],
+    ['b3', '¿Para qué sirve el TGC?', 'Compensa la atenuación con la profundidad, ajustando la ganancia por niveles para lograr una imagen uniforme.'],
+    ['b3', '¿Dónde colocar el foco?', 'A nivel o ligeramente por debajo de la estructura de interés.'],
+    ['b3', 'Preparación para ecografía de abdomen superior', 'Ayuno de 6–8 h: vesícula distendida y menos gas intestinal.'],
+    ['b3', 'Movimiento del transductor para barrer un órgano sin mover el punto de contacto', 'Angular / abanicar (fanning, tilting).'],
+    ['b4', 'Transductor de elección para tiroides o accesos vasculares', 'Lineal de alta frecuencia (5–15 MHz).'],
+    ['b4', 'Transductor de elección para abdomen', 'Convexo de 2–5 MHz.'],
+    ['b4', 'Transductor para ventanas intercostales y corazón', 'Sectorial (phased array) 1–5 MHz: huella pequeña.'],
+    ['b4', 'Función del material de respaldo (backing)', 'Amortigua la vibración y acorta el pulso → mejora la resolución axial.'],
+    ['b4', 'Función de la capa de acoplamiento', 'Impedancia intermedia entre cristal y piel que mejora la transmisión del sonido (grosor ¼ λ).'],
+    ['b4', 'Grosor del cristal y frecuencia', 'Cristal más delgado → mayor frecuencia.'],
+    ['b5', 'Ventanas del FAST', 'Hepatorrenal (Morison), perisplénica/esplenorrenal, pélvica y subxifoidea pericárdica. eFAST agrega ambos tórax.'],
+    ['b5', 'Signo diagnóstico de neumotórax en ecografía', 'El punto pulmón (lung point). Además: ausencia de deslizamiento y «código de barras» en modo M.'],
+    ['b5', 'FAST negativo en trauma estable: ¿qué significa?', 'No descarta lesión de víscera sólida, retroperitoneo o víscera hueca. Repetir y/o TC.'],
+    ['b5', '3 limitaciones físicas de la ecografía', 'Gas, hueso y obesidad (atenuación). Además es operador-dependiente.']
+  ],
+
+  preguntas: [
+    { c: 'b1', q: 'Una lesión hepática presenta menos ecos que el parénquima hepático circundante. ¿Cómo se describe?', o: ['Anecoica', 'Hipoecoica', 'Isoecoica', 'Hiperecoica'], a: 1, e: 'La ecogenicidad es relativa: menos ecos que la referencia es hipoecoica. Anecoica significa ausencia total de ecos.' },
+    { c: 'b1', q: '¿Qué artefacto se observa típicamente detrás de un quiste simple?', o: ['Sombra acústica', 'Refuerzo acústico posterior', 'Imagen en espejo', 'Aliasing'], a: 1, e: 'El líquido atenúa menos que el tejido vecino, por lo que los ecos posteriores se ven más brillantes.' },
+    { c: 'b1', q: 'Un foco hiperecoico intestinal produce una sombra posterior con ecos de reverberación. Lo más probable es:', o: ['Cálculo', 'Calcificación', 'Gas', 'Hueso'], a: 2, e: 'El gas produce una sombra «sucia» con reverberaciones; los cálculos y el calcio producen sombra «limpia».' },
+    { c: 'b1', q: 'En un corte transversal con convención radiológica, la derecha del paciente aparece:', o: ['A la derecha de la pantalla', 'A la izquierda de la pantalla', 'Arriba', 'Depende del transductor'], a: 1, e: 'Igual que en la TC: el marcador apunta a la derecha del paciente, que se muestra a la izquierda de la pantalla.' },
+    { c: 'b1', q: 'El artefacto en cola de cometa en la pared de la vesícula biliar sugiere:', o: ['Colecistitis enfisematosa', 'Adenomiomatosis', 'Pólipo adenomatoso', 'Barro biliar'], a: 1, e: 'Los cristales de colesterol en los senos de Rokitansky-Aschoff generan reverberación en cola de cometa.' },
+    { c: 'b2', q: 'La velocidad de propagación del ultrasonido en un medio depende de:', o: ['La frecuencia del transductor', 'La potencia emitida', 'La rigidez y la densidad del medio', 'La ganancia'], a: 2, e: 'La velocidad es una propiedad del medio. El equipo asume 1540 m/s para tejido blando.' },
+    { c: 'b2', q: 'Si se aumenta la frecuencia del transductor, ¿qué ocurre?', o: ['Mejor resolución y mayor penetración', 'Mejor resolución y menor penetración', 'Peor resolución y mayor penetración', 'No cambia la atenuación'], a: 1, e: 'La atenuación aumenta con la frecuencia: más resolución a costa de penetración.' },
+    { c: 'b2', q: 'Un eco regresa al transductor 65 µs después de emitido el pulso. ¿A qué profundidad está el reflector?', o: ['2,5 cm', '5 cm', '10 cm', '6,5 cm'], a: 1, e: 'Regla de 13 µs por cm: 65 / 13 = 5 cm.' },
+    { c: 'b2', q: 'La razón principal para usar gel acústico es:', o: ['Lubricar la piel', 'Eliminar la interfaz aire-piel, de muy alta diferencia de impedancia', 'Enfriar el transductor', 'Aumentar la frecuencia'], a: 1, e: 'El aire refleja casi el 100 % del haz; el gel elimina el aire entre transductor y piel.' },
+    { c: 'b2', q: 'Al medir velocidad con Doppler pulsado, el ángulo de insonación debe ser:', o: ['90°', '≤ 60°', 'Exactamente 0°', 'Indiferente'], a: 1, e: 'Por el coseno: a 90° no hay desplazamiento Doppler y por encima de 60° el error de cálculo aumenta mucho.' },
+    { c: 'b2', q: 'En una estenosis arterial aparece un mosaico de colores con inversión aparente del flujo. ¿Cuál es la primera medida?', o: ['Bajar la escala (PRF)', 'Subir la escala (PRF) o bajar la línea de base', 'Aumentar la frecuencia', 'Aumentar la profundidad'], a: 1, e: 'Es aliasing: el desplazamiento supera PRF/2. Subir la escala, bajar la línea de base, bajar la frecuencia o reducir profundidad.' },
+    { c: 'b2', q: '¿Qué modo es más sensible para flujo lento, aunque no indica dirección?', o: ['Doppler color', 'Power Doppler', 'Doppler continuo', 'Modo M'], a: 1, e: 'El Power Doppler codifica la amplitud de la señal: sensible, casi independiente del ángulo, sin dirección.' },
+    { c: 'b2', q: 'La resolución lateral es mejor:', o: ['En el campo lejano', 'En la zona focal', 'Con mayor profundidad', 'Con pulsos largos'], a: 1, e: 'Depende del ancho del haz, que es mínimo en la zona focal.' },
+    { c: 'b3', q: 'El parénquima profundo se ve oscuro y el superficial bien. ¿Qué ajuste corrige mejor esto?', o: ['Disminuir la ganancia global', 'Aumentar el TGC de los niveles profundos', 'Bajar la frecuencia a 1 MHz siempre', 'Activar Doppler color'], a: 1, e: 'El TGC compensa la atenuación con la profundidad ajustando la ganancia por niveles.' },
+    { c: 'b3', q: 'Según el principio ALARA, para ver mejor una imagen débil conviene primero:', o: ['Aumentar la potencia acústica', 'Aumentar la ganancia', 'Aumentar el tiempo de examen', 'Usar Doppler pulsado'], a: 1, e: 'La ganancia amplifica la señal recibida sin aumentar la exposición del paciente.' },
+    { c: 'b3', q: 'Paciente para ecografía de vesícula biliar. Indicación de preparación:', o: ['Vejiga llena', 'Ayuno de 6–8 horas', 'Comida grasa 1 h antes', 'Enema evacuante'], a: 1, e: 'El ayuno mantiene la vesícula distendida y reduce el gas.' },
+    { c: 'b4', q: 'Para canalizar una vena yugular interna bajo guía ecográfica, el transductor ideal es:', o: ['Convexo 3,5 MHz', 'Lineal 7–12 MHz', 'Sectorial 2 MHz', 'Endocavitario'], a: 1, e: 'Estructura superficial: se necesita alta frecuencia y campo cercano amplio.' },
+    { c: 'b4', q: 'El componente del transductor que acorta el pulso y mejora la resolución axial es:', o: ['La lente acústica', 'La capa de acoplamiento', 'El material de respaldo (backing)', 'El cable coaxial'], a: 2, e: 'El backing amortigua la vibración del cristal y acorta la longitud del pulso.' },
+    { c: 'b4', q: 'Para evaluar el corazón a través de los espacios intercostales se prefiere:', o: ['Lineal', 'Convexo', 'Sectorial (phased array)', 'Microconvexo endocavitario'], a: 2, e: 'Su huella pequeña cabe entre las costillas y el haz se abre en profundidad.' },
+    { c: 'b4', q: 'Paciente obeso, se busca evaluar el hígado. ¿Qué cambio mejora la penetración?', o: ['Transductor lineal de 12 MHz', 'Transductor convexo de menor frecuencia y armónicos', 'Aumentar la frecuencia', 'Disminuir la profundidad'], a: 1, e: 'Menor frecuencia penetra más; los armónicos reducen artefactos en pacientes difíciles.' },
+    { c: 'b5', q: 'Paciente politraumatizado, hipotenso, con FAST positivo en la ventana de Morison. Conducta:', o: ['TC de abdomen urgente', 'Repetir FAST en 6 horas', 'Laparotomía exploradora', 'Observación'], a: 2, caso: true, e: 'Trauma inestable con FAST positivo indica hemoperitoneo: quirófano. La TC se reserva para pacientes estables.' },
+    { c: 'b5', q: '¿En qué ventana del FAST se acumula líquido con más frecuencia en decúbito supino (abdomen superior)?', o: ['Perisplénica', 'Hepatorrenal (Morison)', 'Subxifoidea', 'Paracólica izquierda'], a: 1, e: 'El espacio de Morison es el más declive del compartimento supramesocólico.' },
+    { c: 'b5', q: 'Un hallazgo ecográfico que confirma neumotórax es:', o: ['Líneas B', 'Signo de la orilla del mar en modo M', 'Punto pulmón', 'Deslizamiento pleural presente'], a: 2, e: 'El punto pulmón marca la transición entre pulmón que se desliza y aire: 100 % específico.' },
+    { c: 'b5', q: '¿Cuál NO es una limitación de la ecografía?', o: ['Gas intestinal', 'Dependencia del operador', 'Radiación ionizante', 'Obesidad'], a: 2, e: 'La ecografía no usa radiación ionizante; es una de sus principales ventajas.' }
+  ],
+
+  glosario: [
+    ['ALARA', 'As Low As Reasonably Achievable: usar la menor exposición acústica que permita el diagnóstico.'],
+    ['Aliasing', 'Artefacto Doppler cuando el desplazamiento de frecuencia supera el límite de Nyquist (PRF/2).'],
+    ['Anecoico', 'Sin ecos internos (negro). Típico del líquido simple.'],
+    ['Atenuación', 'Pérdida de energía del haz al atravesar tejidos (absorción, reflexión, dispersión). ≈ 0,5 dB/cm/MHz.'],
+    ['Impedancia acústica', 'Densidad × velocidad. Las diferencias de impedancia entre tejidos generan los ecos.'],
+    ['Piezoeléctrico', 'Material que convierte energía eléctrica en mecánica y viceversa (cristales PZT).'],
+    ['PRF', 'Frecuencia de repetición de pulsos. Determina la escala Doppler y el límite de Nyquist.'],
+    ['Refuerzo acústico', 'Aumento de brillo detrás de una estructura de baja atenuación (líquido).'],
+    ['Reverberación', 'Ecos repetidos y equidistantes entre dos interfaces muy reflectantes.'],
+    ['Sombra acústica', 'Zona sin ecos detrás de una estructura que refleja o absorbe casi todo el haz.'],
+    ['TGC', 'Compensación ganancia–tiempo: ajuste de ganancia por profundidad.'],
+    ['Zona focal', 'Región donde el haz es más estrecho y la resolución lateral es óptima.'],
+    ['Índice mecánico (MI)', 'Estimación del riesgo de cavitación por el ultrasonido.'],
+    ['Índice térmico (TI)', 'Estimación del aumento de temperatura tisular.'],
+    ['Armónicos tisulares', 'Imagen formada con el doble de la frecuencia emitida; reduce artefactos.'],
+    ['FAST', 'Ecografía focalizada en trauma para detectar líquido libre y derrame pericárdico.']
+  ]
+});
+</script>
+<script>
+ECO.curso({
+  id: 'abd1',
+  codigo: '749948A',
+  titulo: 'Ecografía Abdominal I',
+  corto: 'Abdominal I',
+  resumen: 'Hígado, vesícula, vías biliares y páncreas: técnica, anatomía normal, patrones patológicos y correlación clínica.',
+  criterios: [
+    {
+      id: 'a1', peso: 10, pesoEstimado: true, titulo: 'Técnica y programación del equipo',
+      descripcion: 'Aplica la técnica, programación y manejo correcto del equipo de acuerdo con el órgano evaluado y sus características propias.',
+      temas: [
+        {
+          titulo: 'Protocolo de exploración hepatobiliar y pancreática',
+          html: `
+<ul>
+<li><b>Preparación</b>: ayuno de 6–8 h. Transductor <b>convexo 2–5 MHz</b>, preset abdomen; armónicos en pacientes difíciles.</li>
+<li><b>Hígado</b>: subcostal oblicuo con inspiración profunda (barrido «en abanico» de cúpula a borde inferior), longitudinal en línea medioclavicular (medida del lóbulo derecho) e intercostal para segmentos posteriores. Incluir el diafragma para comparar con riñón derecho.</li>
+<li><b>Vesícula</b>: longitudinal y transversal completos, en <b>supino y decúbito lateral izquierdo</b> (movilidad de cálculos, descubre el cuello y la bolsa de Hartmann). Buscar Murphy ecográfico presionando con el transductor sobre la vesícula.</li>
+<li><b>Vía biliar</b>: colédoco en oblicuo subcostal derecho, anterior a la vena porta; medir de pared interna a pared interna. Decúbito lateral izquierdo o semisentado para ver la porción distal.</li>
+<li><b>Páncreas</b>: transversal epigástrico siguiendo la <b>vena esplénica</b>; compresión suave para desplazar gas. Si el estómago molesta: dar 300–500 ml de agua y explorar sentado o en decúbito lateral.</li>
+<li><b>Doppler</b>: porta (dirección hepatópeta, velocidad), venas hepáticas (trifásicas), arteria hepática.</li>
+</ul>
+<div class="perla"><b>Perla</b>Si el cuello vesicular no se ve bien, gira al paciente a decúbito lateral izquierdo: es donde se esconden los cálculos impactados.</div>`
+        }
+      ]
+    },
+    {
+      id: 'a2', peso: 20, pesoEstimado: true, titulo: 'Anatomía ecográfica normal',
+      descripcion: 'Evalúa la anatomía normal del hígado, vías biliares y del páncreas, de acuerdo con patrones ecográficos estándares.',
+      temas: [
+        {
+          titulo: 'Hígado: segmentación, vasos y medidas',
+          html: `
+<ul>
+<li><b>Ecogenicidad normal</b>: homogénea; <b>igual o ligeramente mayor</b> que la corteza renal derecha y <b>igual o menor</b> que el bazo.</li>
+<li><b>Tamaño</b>: lóbulo derecho en línea medioclavicular longitudinal &lt; 15–16 cm. El borde inferior es agudo; redondeado en hepatomegalia o esteatosis. Variante: <b>lóbulo de Riedel</b> (prolongación inferior del lóbulo derecho, más frecuente en mujeres).</li>
+<li><b>Segmentación de Couinaud</b> (8 segmentos): las <b>venas hepáticas</b> dividen el hígado en sentido vertical (sectores); la <b>vena porta</b> lo divide en superior e inferior. El segmento I (caudado) drena directamente a la VCI.</li>
+<li>Referencias: ligamento redondo y fisura del ligamento venoso (separa el caudado del lóbulo izquierdo), vesícula y VCI (línea de Cantlie: lóbulo derecho vs izquierdo).</li>
+</ul>
+<div class="tabla"><table><thead><tr><th>Vaso</th><th>Aspecto en modo B</th><th>Doppler normal</th></tr></thead><tbody>
+<tr><td>Vena porta</td><td>Paredes <b>hiperecoicas</b> (tejido fibroso de la tríada portal); calibre &lt; 13 mm</td><td>Hepatópeto, continuo, ondulado; 15–40 cm/s</td></tr>
+<tr><td>Venas hepáticas</td><td>Paredes finas, casi imperceptibles; convergen a la VCI</td><td><b>Trifásico</b> (refleja el ciclo cardíaco)</td></tr>
+<tr><td>Arteria hepática</td><td>Pequeña, junto a la porta</td><td>Baja resistencia; IR 0,55–0,7</td></tr>
+</tbody></table></div>`
+        },
+        {
+          titulo: 'Vesícula y vía biliar',
+          html: `
+<ul>
+<li><b>Vesícula</b>: piriforme, anecoica; longitud 7–10 cm, transversal &lt; 4 cm; <b>pared ≤ 3 mm</b> en ayunas. Partes: fondo, cuerpo, cuello y bolsa de Hartmann. Variantes: <b>gorro frigio</b> (pliegue del fondo), pliegues de unión, vesícula doble (rara).</li>
+<li>Posprandial: vesícula contraída con pared aparentemente gruesa → <b>no valorable</b>, no es patológico.</li>
+<li><b>Colédoco</b>: ≤ 6 mm en adultos. Con la edad se acepta ~1 mm adicional por década por encima de los 60. Poscolecistectomía, hasta 8–10 mm sin significado patológico si no hay clínica.</li>
+<li><b>Vías intrahepáticas</b>: ≤ 2 mm o &lt; 40 % del diámetro de la rama portal acompañante.</li>
+<li>En el hilio, corte transversal: signo de «<b>Mickey Mouse</b>»: la porta es la cabeza, el colédoco (anterolateral) y la arteria hepática (anteromedial) son las orejas.</li>
+</ul>
+<div class="perla"><b>Perla</b>Para distinguir vía biliar de vaso: activa Doppler color. Los conductos biliares no tienen flujo.</div>`
+        },
+        {
+          titulo: 'Páncreas: referencias vasculares',
+          html: `
+<ul>
+<li>Partes: <b>cabeza</b> (con el proceso uncinado), cuello, cuerpo y cola.</li>
+<li><b>Vena esplénica</b>: corre por detrás del cuerpo y la cola; es la principal referencia para encontrar el páncreas.</li>
+<li><b>Confluente esplenoportal</b>: detrás del cuello.</li>
+<li>Cabeza: a la derecha de la vena mesentérica superior; el proceso uncinado pasa por detrás de la VMS. El <b>colédoco</b> distal está en la cara posterolateral de la cabeza y la <b>arteria gastroduodenal</b> en la anterolateral.</li>
+<li>La AMS sale de la aorta, rodeada de grasa ecogénica, por detrás de la vena esplénica.</li>
+<li><b>Ecogenicidad</b>: igual o mayor que el hígado; aumenta con la edad (infiltración grasa).</li>
+<li><b>Medidas</b> aproximadas (AP): cabeza ≤ 3 cm, cuerpo ≤ 2,5 cm, cola ≤ 2–2,5 cm. <b>Wirsung ≤ 3 mm</b> (≤ 2 mm en el cuerpo).</li>
+</ul>`
+        }
+      ]
+    },
+    {
+      id: 'a3', peso: 40, pesoEstimado: true, titulo: 'Patrones ecográficos de enfermedad',
+      descripcion: 'Identifica patrones ecográficos que se presentan en enfermedades de hígado, vesícula biliar y páncreas.',
+      temas: [
+        {
+          titulo: 'Hígado difuso: esteatosis, hepatitis, cirrosis, congestión',
+          html: `
+<h4>Esteatosis hepática</h4>
+<ul>
+<li>Hígado <b>hiperecoico</b> («brillante») respecto al riñón derecho, con <b>atenuación posterior</b>.</li>
+<li>Grado I: aumento leve de ecogenicidad, diafragma y paredes portales visibles. Grado II: paredes portales borrosas. Grado III: no se ve el diafragma ni la porción posterior del hígado.</li>
+<li><b>Preservación focal</b> (área hipoecoica junto a la vesícula o en el segmento IV) e <b>infiltración focal</b>: geográficas, sin efecto de masa, los vasos las atraviesan sin desplazarse.</li>
+</ul>
+<h4>Hepatitis aguda</h4>
+<p>A menudo normal. Puede haber hígado hipoecoico con paredes portales resaltadas («<b>cielo estrellado</b>»), hepatomegalia y engrosamiento de la pared vesicular. Hallazgos inespecíficos: el diagnóstico es clínico y de laboratorio.</p>
+<h4>Cirrosis</h4>
+<ul>
+<li><b>Superficie nodular</b> (mejor vista con transductor lineal en la cara anterior), ecotextura gruesa y heterogénea.</li>
+<li>Atrofia del lóbulo derecho y del segmento IV, <b>hipertrofia del caudado</b> y del lateral izquierdo (relación caudado / lóbulo derecho &gt; 0,65).</li>
+<li><b>Hipertensión portal</b>: porta &gt; 13 mm, velocidad portal baja (&lt; 15–16 cm/s), pérdida de la variación respiratoria, <b>flujo hepatófugo</b>, esplenomegalia, ascitis y colaterales (vena paraumbilical recanalizada, gástrica izquierda, esplenorrenal).</li>
+<li>Todo nódulo nuevo en un cirrótico es un <b>carcinoma hepatocelular</b> hasta demostrar lo contrario.</li>
+</ul>
+<h4>Congestión y Budd-Chiari</h4>
+<p>Insuficiencia cardíaca derecha: VCI y venas hepáticas <b>dilatadas</b>, pérdida de colapso respiratorio, flujo portal pulsátil. Budd-Chiari: venas hepáticas trombosadas o no visibles, colaterales intrahepáticas, <b>caudado hipertrofiado</b> (drena directamente a la VCI), ascitis.</p>`
+        },
+        {
+          titulo: 'Lesiones focales hepáticas',
+          html: `
+<div class="tabla"><table><thead><tr><th>Lesión</th><th>Patrón típico</th><th>Claves</th></tr></thead><tbody>
+<tr><td>Quiste simple</td><td>Anecoico, pared fina, refuerzo posterior</td><td>Sin flujo; no requiere seguimiento</td></tr>
+<tr><td>Hemangioma</td><td><b>Hiperecoico homogéneo</b>, bien definido, &lt; 3 cm</td><td>Tumor benigno más frecuente; sin flujo central; en CEUS realce globular periférico centrípeto</td></tr>
+<tr><td>Hiperplasia nodular focal</td><td>Iso o levemente hipoecoica («lesión fantasma»), cicatriz central</td><td>Doppler en <b>rueda de carro</b>; mujer joven</td></tr>
+<tr><td>Adenoma</td><td>Variable, puede tener hemorragia</td><td>Mujer con anticonceptivos orales; riesgo de sangrado</td></tr>
+<tr><td>Absceso piógeno</td><td>Hipoecoico/complejo, pared irregular, detritos, a veces gas</td><td>Fiebre; origen biliar frecuente; drenaje guiado</td></tr>
+<tr><td>Absceso amebiano</td><td>Redondo, hipoecoico homogéneo con ecos finos, periférico, subcapsular, lóbulo derecho</td><td>Antecedente epidemiológico; responde a metronidazol</td></tr>
+<tr><td>Quiste hidatídico</td><td>Signo del <b>nenúfar</b> (membranas desprendidas), quistes hijos en «panal», arena hidatídica, calcificación</td><td><i>Echinococcus granulosus</i>; clasificación OMS CE1–CE5; zona endémica andina</td></tr>
+<tr><td>Carcinoma hepatocelular</td><td>Pequeño: hipoecoico; grande: heterogéneo «en mosaico», halo</td><td>Cirrosis; trombosis portal tumoral (con flujo arterial dentro del trombo); AFP</td></tr>
+<tr><td>Metástasis</td><td>Múltiples; patrón en <b>diana / ojo de buey</b> (halo hipoecoico)</td><td>Hiperecoicas: colon, neuroendocrinas, renal. Hipoecoicas: mama, pulmón, linfoma. Calcificadas: colon mucinoso</td></tr>
+</tbody></table></div>
+<div class="perla"><b>Vigilancia</b>En pacientes con cirrosis se recomienda ecografía cada 6 meses (con o sin AFP) para detección precoz de carcinoma hepatocelular.</div>`
+        },
+        {
+          titulo: 'Vesícula y vías biliares',
+          html: `
+<h4>Colelitiasis</h4>
+<ul>
+<li>Foco <b>hiperecoico</b>, <b>sombra acústica posterior limpia</b> y <b>móvil</b> con el cambio de posición.</li>
+<li>Vesícula llena de cálculos y contraída: signo <b>WES</b> (<i>wall – echo – shadow</i>: pared, eco del cálculo, sombra).</li>
+<li><b>Barro biliar</b>: ecos de baja amplitud, declives, sin sombra, forman nivel; puede formar «pseudotumor» (sin flujo).</li>
+<li><b>Pólipo</b>: ecogénico, adherido a la pared, <b>no móvil, sin sombra</b>. ≥ 10 mm → colecistectomía; 6–9 mm con factores de riesgo → considerar cirugía; resto → seguimiento.</li>
+</ul>
+<h4>Colecistitis aguda litiásica</h4>
+<ul>
+<li>Cálculos (sobre todo <b>impactados en el cuello</b>) + <b>Murphy ecográfico positivo</b>: valor predictivo positivo &gt; 90 %.</li>
+<li>Pared &gt; 3 mm, edematosa (estratificada, «doble halo»), líquido pericolecístico, distensión (&gt; 4 cm transversal), hiperemia en Doppler.</li>
+<li><b>Complicaciones</b>: gangrenosa (membranas intraluminales, pared irregular, el Murphy puede desaparecer), enfisematosa (gas en la pared, diabéticos), perforación (defecto de pared, colección pericolecística).</li>
+<li><b>Alitiásica</b>: paciente crítico (UCI, quemados, nutrición parenteral).</li>
+</ul>
+<h4>Dilatación de la vía biliar</h4>
+<ul>
+<li>Intrahepática: «<b>demasiados tubos</b>» (estructuras tubulares paralelas a la porta, sin flujo Doppler).</li>
+<li>Extrahepática: signo del «<b>doble cañón de escopeta</b>»: colédoco dilatado del mismo calibre que la porta.</li>
+<li><b>Coledocolitiasis</b>: la ecografía detecta bien la dilatación pero tiene sensibilidad limitada (≈ 50–75 %) para el cálculo distal por el gas duodenal → colangio-RM o ecoendoscopia.</li>
+<li>Nivel de la obstrucción: dilatación intrahepática con colédoco normal → hiliar (Klatskin, Mirizzi). Colédoco + Wirsung dilatados → ampular o cabeza de páncreas (<b>signo del doble conducto</b>).</li>
+<li><b>Síndrome de Mirizzi</b>: cálculo en el cuello o el cístico comprime el conducto hepático común.</li>
+<li><b>Neumobilia</b>: focos lineales hiperecoicos con reverberación, en zonas no declives; tras CPRE con esfinterotomía o fístula biliodigestiva.</li>
+</ul>
+<h4>Tumores</h4>
+<p><b>Cáncer de vesícula</b>: masa que reemplaza la vesícula o engrosamiento focal irregular; factores de riesgo: litiasis grande, vesícula en porcelana. <b>Colangiocarcinoma hiliar (Klatskin)</b>: dilatación intrahepática bilateral, vesícula colapsada, colédoco normal.</p>`
+        },
+        {
+          titulo: 'Páncreas',
+          html: `
+<h4>Pancreatitis aguda</h4>
+<ul>
+<li>El diagnóstico es <b>clínico y bioquímico</b>. El papel principal de la ecografía es buscar <b>litiasis biliar</b> (causa más frecuente).</li>
+<li>Puede ser normal o mostrar páncreas aumentado, hipoecoico, de bordes borrosos, con líquido peripancreático.</li>
+<li>Complicaciones: colecciones líquidas agudas, <b>pseudoquiste</b> (&gt; 4 semanas, pared definida), necrosis encapsulada, <b>pseudoaneurisma</b> (Doppler en «yin-yang»), trombosis de la vena esplénica.</li>
+<li>TC con contraste a las 72–96 h para valorar necrosis (no al ingreso salvo duda diagnóstica).</li>
+</ul>
+<h4>Pancreatitis crónica</h4>
+<p><b>Calcificaciones</b> (focos hiperecoicos con sombra), Wirsung dilatado e irregular («arrosariado»), atrofia, pseudoquistes.</p>
+<h4>Adenocarcinoma</h4>
+<p>Masa <b>hipoecoica mal definida</b>, 60–70 % en la cabeza; <b>doble conducto</b> (colédoco y Wirsung dilatados), vesícula distendida (signo de <b>Courvoisier-Terrier</b>: vesícula palpable no dolorosa con ictericia), metástasis hepáticas, invasión de AMS, VMS o eje esplenoportal.</p>
+<h4>Neoplasias quísticas</h4>
+<ul>
+<li>Cistoadenoma seroso: microquístico «en panal», cicatriz central calcificada, mujer mayor.</li>
+<li>Mucinoso: macroquístico, cola, mujer de mediana edad, potencial maligno.</li>
+<li>NMPI (IPMN): comunica con el conducto pancreático, varón mayor.</li>
+<li>Sólido pseudopapilar: mujer joven.</li>
+</ul>`
+        }
+      ]
+    },
+    {
+      id: 'a4', peso: 30, pesoEstimado: true, titulo: 'Interpretación con correlación clínica',
+      descripcion: 'Interpreta los hallazgos ecográficos patológicos, haciendo una correlación clínica.',
+      temas: [
+        {
+          titulo: 'Razonamiento: de la clínica al hallazgo',
+          html: `
+<div class="tabla"><table><thead><tr><th>Escenario clínico</th><th>Qué buscar</th><th>Interpretación</th></tr></thead><tbody>
+<tr><td>Dolor en HCD + fiebre + leucocitosis</td><td>Cálculos, Murphy, pared, líquido</td><td>Colecistitis aguda (criterios de Tokio: clínica + laboratorio + imagen)</td></tr>
+<tr><td>Ictericia + dolor + fiebre (tríada de Charcot)</td><td>Dilatación de la vía biliar, coledocolitiasis</td><td>Colangitis: drenaje biliar urgente (CPRE)</td></tr>
+<tr><td>Ictericia indolora + pérdida de peso</td><td>Vía biliar dilatada, doble conducto, masa cefálica, vesícula distendida</td><td>Neoplasia periampular / cabeza de páncreas</td></tr>
+<tr><td>Ictericia sin dilatación de la vía biliar</td><td>Ecotextura hepática, signos de cirrosis</td><td>Causa hepatocelular o hemolítica (no obstructiva)</td></tr>
+<tr><td>Cirrótico con descompensación</td><td>Nódulo nuevo, trombosis portal, ascitis</td><td>Descartar CHC y trombosis portal</td></tr>
+<tr><td>Fiebre + lesión hepática compleja</td><td>Pared, contenido, gas, origen biliar</td><td>Absceso piógeno vs amebiano: correlación epidemiológica y serológica</td></tr>
+<tr><td>Dolor epigástrico + lipasa elevada</td><td>Litiasis biliar, colecciones</td><td>Pancreatitis aguda biliar → colecistectomía en el mismo ingreso si es leve</td></tr>
+</tbody></table></div>
+<div class="perla"><b>Informe útil</b>Responde la pregunta clínica primero («Vía biliar dilatada hasta la cabeza del páncreas, sin causa visible»), luego describe, y termina con una recomendación concreta (colangio-RM, TC, control).</div>`
+        }
+      ]
+    }
+  ],
+
+  tarjetas: [
+    ['a1', 'Posición para movilizar cálculos y ver el cuello vesicular', 'Decúbito lateral izquierdo (también semisentado).'],
+    ['a1', 'Truco para ver el páncreas cuando el estómago tiene gas', 'Dar 300–500 ml de agua y explorar sentado o en decúbito lateral; compresión suave.'],
+    ['a1', 'Cómo se mide el colédoco', 'Pared interna a pared interna, en oblicuo subcostal, anterior a la porta.'],
+    ['a2', 'Ecogenicidad normal del hígado respecto al riñón y al bazo', 'Igual o ligeramente mayor que la corteza renal derecha; igual o menor que el bazo.'],
+    ['a2', 'Tamaño normal del lóbulo hepático derecho', '< 15–16 cm en línea medioclavicular longitudinal.'],
+    ['a2', 'Porta vs venas hepáticas en modo B', 'Porta: paredes hiperecoicas. Venas hepáticas: paredes casi imperceptibles que convergen a la VCI.'],
+    ['a2', 'Doppler normal de la vena porta', 'Hepatópeto, continuo y ondulado; 15–40 cm/s; calibre < 13 mm.'],
+    ['a2', 'Patrón Doppler de las venas hepáticas', 'Trifásico.'],
+    ['a2', 'Grosor normal de la pared vesicular', '≤ 3 mm en ayunas.'],
+    ['a2', 'Calibre normal del colédoco', '≤ 6 mm (≈ +1 mm por década después de los 60; hasta 8–10 mm poscolecistectomía).'],
+    ['a2', 'Signo de Mickey Mouse', 'Corte transversal del hilio: porta (cabeza), colédoco anterolateral y arteria hepática anteromedial (orejas).'],
+    ['a2', 'Principal referencia vascular para encontrar el páncreas', 'La vena esplénica, que pasa por detrás del cuerpo y la cola.'],
+    ['a2', 'Calibre normal del Wirsung', '≤ 3 mm (≤ 2 mm en el cuerpo).'],
+    ['a2', 'Segmentación de Couinaud: ¿qué estructuras dividen los segmentos?', 'Venas hepáticas (planos verticales) y vena porta (plano horizontal). 8 segmentos; el I es el caudado.'],
+    ['a3', 'Tríada ecográfica del cálculo vesicular', 'Foco hiperecoico + sombra acústica limpia + movilidad.'],
+    ['a3', '¿Qué es el signo WES?', 'Wall–Echo–Shadow: vesícula contraída llena de cálculos (pared, eco del cálculo, sombra).'],
+    ['a3', 'Pólipo vs cálculo', 'Pólipo: fijo, sin sombra. Cálculo: móvil, con sombra.'],
+    ['a3', 'Tamaño de pólipo vesicular con indicación de colecistectomía', '≥ 10 mm (6–9 mm si hay factores de riesgo).'],
+    ['a3', 'Signos de colecistitis aguda', 'Cálculo impactado, Murphy ecográfico +, pared > 3 mm edematosa, líquido pericolecístico, distensión, hiperemia.'],
+    ['a3', 'Colecistitis gangrenosa: hallazgos', 'Membranas intraluminales, pared irregular/asimétrica; el Murphy puede ser negativo.'],
+    ['a3', 'Signo del doble cañón de escopeta', 'Colédoco dilatado paralelo a la porta, de calibre similar.'],
+    ['a3', 'Signo del doble conducto', 'Colédoco y Wirsung dilatados: obstrucción ampular o de cabeza de páncreas.'],
+    ['a3', 'Síndrome de Mirizzi', 'Cálculo en cuello vesicular/cístico que comprime el conducto hepático común.'],
+    ['a3', 'Esteatosis: 3 signos', 'Hígado hiperecoico vs riñón, atenuación posterior, borramiento de paredes portales y del diafragma.'],
+    ['a3', 'Signos ecográficos de cirrosis', 'Superficie nodular, ecotextura gruesa, hipertrofia del caudado, atrofia del lóbulo derecho, signos de hipertensión portal.'],
+    ['a3', 'Signos de hipertensión portal', 'Porta > 13 mm, velocidad baja, flujo hepatófugo, esplenomegalia, ascitis, colaterales (paraumbilical, gástrica izquierda, esplenorrenal).'],
+    ['a3', 'Hemangioma hepático típico', 'Hiperecoico homogéneo, bien definido, < 3 cm, sin flujo central.'],
+    ['a3', 'Hiperplasia nodular focal: signo Doppler', 'Flujo en rueda de carro desde una cicatriz central.'],
+    ['a3', 'Metástasis en diana u ojo de buey', 'Lesión con halo hipoecoico periférico; sugiere metástasis.'],
+    ['a3', 'Signo del nenúfar', 'Membranas desprendidas flotando en un quiste hidatídico.'],
+    ['a3', 'Absceso amebiano: localización y aspecto', 'Lóbulo derecho, periférico/subcapsular, redondo, hipoecoico con ecos finos.'],
+    ['a3', 'Trombo portal tumoral vs blando', 'El tumoral expande la vena y tiene flujo arterial dentro (CHC).'],
+    ['a3', 'Neumobilia: aspecto', 'Focos lineales hiperecoicos con reverberación en conductos, en zonas no declives.'],
+    ['a3', 'Adenocarcinoma de páncreas en ecografía', 'Masa hipoecoica mal definida (cabeza 60–70 %), doble conducto, vesícula distendida.'],
+    ['a3', 'Papel de la ecografía en pancreatitis aguda', 'Buscar etiología biliar (litiasis) y complicaciones; el páncreas puede verse normal.'],
+    ['a3', 'Pancreatitis crónica: hallazgos', 'Calcificaciones con sombra, Wirsung dilatado e irregular, atrofia, pseudoquistes.'],
+    ['a4', 'Signo de Courvoisier-Terrier', 'Vesícula palpable, distendida y no dolorosa con ictericia: obstrucción maligna distal.'],
+    ['a4', 'Tríada de Charcot', 'Fiebre, ictericia y dolor en HCD: colangitis aguda.'],
+    ['a4', 'Ictericia con vía biliar no dilatada: ¿qué sugiere?', 'Causa no obstructiva (hepatocelular, hemolítica, colestasis intrahepática).'],
+    ['a4', 'Dilatación intrahepática con colédoco normal y vesícula colapsada', 'Obstrucción hiliar: colangiocarcinoma de Klatskin (o Mirizzi).']
+  ],
+
+  preguntas: [
+    { c: 'a1', q: 'Para valorar la movilidad de un foco ecogénico en la vesícula, la maniobra más útil es:', o: ['Valsalva', 'Cambio a decúbito lateral izquierdo', 'Doppler color', 'Aumentar la frecuencia'], a: 1, e: 'El cálculo se desplaza a la zona declive con el cambio de posición; el pólipo no se mueve.' },
+    { c: 'a1', q: 'La principal referencia anatómica para localizar el cuerpo del páncreas es:', o: ['La arteria renal', 'La vena esplénica', 'La vena cava inferior', 'La vesícula biliar'], a: 1, e: 'La vena esplénica corre por detrás del cuerpo y la cola del páncreas.' },
+    { c: 'a2', q: 'En un hígado normal, la ecogenicidad del parénquima comparada con la corteza renal derecha es:', o: ['Marcadamente menor', 'Igual o ligeramente mayor', 'Marcadamente mayor con atenuación', 'Anecoica'], a: 1, e: 'Hígado igual o ligeramente más ecogénico que la corteza renal. Mucho más ecogénico con atenuación sugiere esteatosis.' },
+    { c: 'a2', q: '¿Qué vaso intrahepático tiene paredes hiperecoicas en modo B?', o: ['Venas hepáticas', 'Vena porta', 'Vena cava inferior', 'Arteria renal'], a: 1, e: 'Las ramas portales están rodeadas por el tejido fibroso de la tríada portal, que es ecogénico.' },
+    { c: 'a2', q: 'Diámetro máximo normal del colédoco en un adulto de 40 años sin colecistectomía:', o: ['3 mm', '6 mm', '10 mm', '13 mm'], a: 1, e: 'Hasta 6 mm. Se acepta algo más en ancianos y tras colecistectomía.' },
+    { c: 'a2', q: 'Patrón Doppler normal de las venas hepáticas:', o: ['Monofásico continuo', 'Trifásico', 'Ausente', 'Alta resistencia con flujo diastólico invertido'], a: 1, e: 'Las venas hepáticas reflejan el ciclo cardíaco derecho: onda trifásica.' },
+    { c: 'a2', q: 'Una vesícula examinada 30 minutos después del almuerzo muestra pared de 5 mm y luz pequeña. Interpretación:', o: ['Colecistitis aguda', 'Hallazgo no valorable por contracción posprandial', 'Adenomiomatosis', 'Cáncer de vesícula'], a: 1, e: 'La vesícula contraída simula engrosamiento: repetir en ayunas.' },
+    { c: 'a2', q: 'El segmento hepático que drena directamente a la vena cava inferior es:', o: ['Segmento IV', 'Segmento I (caudado)', 'Segmento VII', 'Segmento II'], a: 1, e: 'Por eso el caudado se hipertrofia en el Budd-Chiari: su drenaje está preservado.' },
+    { c: 'a3', q: 'Foco hiperecoico en la vesícula, de 6 mm, fijo a la pared, sin sombra acústica. Diagnóstico más probable:', o: ['Cálculo', 'Pólipo', 'Barro biliar', 'Gas'], a: 1, e: 'Fijo y sin sombra es pólipo. El cálculo es móvil y produce sombra.' },
+    { c: 'a3', q: 'El hallazgo con mayor valor predictivo positivo para colecistitis aguda es:', o: ['Pared de 4 mm aislada', 'Cálculos + Murphy ecográfico positivo', 'Barro biliar', 'Vesícula de 9 cm'], a: 1, e: 'La combinación de cálculos y Murphy ecográfico tiene VPP > 90 %. El engrosamiento aislado es inespecífico (ascitis, hepatitis, ICC, hipoalbuminemia).' },
+    { c: 'a3', q: 'Hígado brillante con atenuación del haz que impide ver el diafragma. Grado de esteatosis:', o: ['Grado I', 'Grado II', 'Grado III', 'No es esteatosis'], a: 2, e: 'Grado III: no se visualiza el diafragma ni el hígado posterior.' },
+    { c: 'a3', q: 'Lesión hepática hiperecoica, homogénea, de 2 cm, bien definida, en paciente asintomático. Lo más probable:', o: ['Metástasis', 'Hemangioma', 'Absceso', 'Carcinoma hepatocelular'], a: 1, e: 'Es el tumor benigno hepático más frecuente y su aspecto típico.' },
+    { c: 'a3', q: 'Quiste hepático con membranas onduladas flotando en su interior en un paciente de zona rural ganadera:', o: ['Quiste simple', 'Quiste hidatídico (signo del nenúfar)', 'Absceso amebiano', 'Cistoadenoma'], a: 1, e: 'Las membranas desprendidas son el signo del nenúfar de la hidatidosis (CE3a de la OMS).' },
+    { c: 'a3', q: '¿Cuál de estos hallazgos NO es un signo de hipertensión portal?', o: ['Flujo portal hepatófugo', 'Esplenomegalia', 'Vena paraumbilical recanalizada', 'Flujo trifásico en venas hepáticas'], a: 3, e: 'El flujo trifásico de las venas hepáticas es normal.' },
+    { c: 'a3', q: 'Múltiples lesiones hepáticas con halo hipoecoico periférico (en diana) sugieren:', o: ['Hemangiomas', 'Metástasis', 'Quistes simples', 'Esteatosis focal'], a: 1, e: 'El patrón en ojo de buey es característico de metástasis.' },
+    { c: 'a3', q: 'Focos ecogénicos lineales en conductos biliares, en zona no declive, con reverberación, tras una CPRE con esfinterotomía:', o: ['Coledocolitiasis', 'Neumobilia', 'Calcificaciones portales', 'Hemobilia'], a: 1, e: 'El aire en la vía biliar es esperable después de la esfinterotomía.' },
+    { c: 'a3', q: 'Signo del doble conducto en ecografía:', o: ['Dilatación de venas hepáticas y porta', 'Dilatación del colédoco y del Wirsung', 'Duplicación vesicular', 'Porta y arteria hepática paralelas'], a: 1, e: 'Indica obstrucción a nivel de la ampolla o la cabeza del páncreas.' },
+    { c: 'a3', q: 'Área hipoecoica geográfica junto a la fosa vesicular en un hígado esteatósico, sin efecto de masa y atravesada por vasos:', o: ['Metástasis', 'Preservación focal de grasa', 'Hepatocarcinoma', 'Absceso'], a: 1, e: 'Las áreas de preservación focal típicas están en el segmento IV y junto a la vesícula.' },
+    { c: 'a3', q: 'Paciente con pancreatitis aguda hace 6 semanas. Colección anecoica con pared bien definida junto al páncreas:', o: ['Colección líquida aguda', 'Pseudoquiste', 'Absceso hepático', 'Cistoadenoma seroso'], a: 1, e: 'Después de 4 semanas, una colección encapsulada sin necrosis es un pseudoquiste.' },
+    { c: 'a4', caso: true, q: 'Mujer de 45 años, dolor en HCD de 24 h, fiebre 38,5 °C, leucocitosis. Ecografía: cálculo impactado en el cuello, pared de 6 mm estratificada, líquido pericolecístico y Murphy ecográfico positivo. Diagnóstico:', o: ['Cólico biliar simple', 'Colecistitis aguda litiásica', 'Hepatitis aguda', 'Pancreatitis aguda'], a: 1, e: 'Cumple criterios clínicos, de laboratorio y de imagen (Tokio).' },
+    { c: 'a4', caso: true, q: 'Varón de 68 años con ictericia indolora, prurito y pérdida de 8 kg. Ecografía: vía biliar intra y extrahepática dilatada, Wirsung de 5 mm, vesícula distendida no dolorosa. Sospecha principal:', o: ['Coledocolitiasis', 'Neoplasia de cabeza de páncreas o periampular', 'Hepatitis viral', 'Colangiocarcinoma hiliar'], a: 1, e: 'Doble conducto + Courvoisier + ictericia indolora con pérdida de peso → neoplasia distal. Siguiente paso: TC con protocolo de páncreas.' },
+    { c: 'a4', caso: true, q: 'Paciente con fiebre, ictericia y dolor en HCD. Ecografía: colédoco de 11 mm con imagen ecogénica con sombra distal. Conducta prioritaria:', o: ['Alta con analgesia', 'Antibióticos y drenaje biliar (CPRE)', 'Colecistectomía electiva en 3 meses', 'Biopsia hepática'], a: 1, e: 'Tríada de Charcot con coledocolitiasis: colangitis aguda. Requiere antibióticos y descompresión biliar.' },
+    { c: 'a4', caso: true, q: 'Paciente con ictericia, bilirrubina indirecta elevada y anemia. Ecografía: vía biliar no dilatada, esplenomegalia leve. Interpretación:', o: ['Obstrucción biliar distal', 'Ictericia no obstructiva, probable hemólisis', 'Colangiocarcinoma', 'Síndrome de Mirizzi'], a: 1, e: 'Sin dilatación de la vía biliar y con hiperbilirrubinemia indirecta, la causa es prehepática.' },
+    { c: 'a4', caso: true, q: 'Cirrótico por VHC en seguimiento. Aparece un nódulo hipoecoico nuevo de 2,5 cm y la porta derecha tiene material ecogénico con flujo arterial en su interior. Interpretación:', o: ['Nódulo de regeneración y trombo blando', 'Carcinoma hepatocelular con trombosis tumoral portal', 'Hemangioma', 'Esteatosis focal'], a: 1, e: 'Nódulo nuevo en cirrosis + trombo con flujo arterial = CHC con invasión portal.' },
+    { c: 'a4', caso: true, q: 'Joven de zona endémica con fiebre y dolor en HCD tras diarrea. Lesión redonda, hipoecoica homogénea con ecos finos, subcapsular en el lóbulo derecho. Diagnóstico más probable:', o: ['Absceso amebiano', 'Quiste hidatídico CE1', 'Hemangioma', 'Metástasis'], a: 0, e: 'Localización y aspecto típicos del absceso amebiano; correlacionar con serología.' }
+  ],
+
+  glosario: [
+    ['Signo WES', 'Wall–Echo–Shadow: vesícula contraída llena de cálculos.'],
+    ['Murphy ecográfico', 'Dolor máximo al presionar con el transductor directamente sobre la vesícula.'],
+    ['Barro biliar', 'Ecos de baja amplitud, declives, sin sombra acústica, dentro de la vesícula.'],
+    ['Courvoisier-Terrier', 'Vesícula distendida, palpable y no dolorosa con ictericia: sugiere obstrucción maligna distal.'],
+    ['Doble conducto', 'Dilatación simultánea del colédoco y del Wirsung.'],
+    ['Flujo hepatófugo', 'Flujo portal que se aleja del hígado; signo de hipertensión portal avanzada.'],
+    ['Hepatópeto', 'Flujo portal normal, dirigido hacia el hígado.'],
+    ['Signo del nenúfar', 'Membranas desprendidas flotando dentro de un quiste hidatídico.'],
+    ['Neumobilia', 'Aire en la vía biliar.'],
+    ['Síndrome de Mirizzi', 'Compresión del conducto hepático común por un cálculo en el cuello vesicular o el cístico.'],
+    ['Couinaud', 'Clasificación del hígado en 8 segmentos según la anatomía portal y venosa hepática.'],
+    ['Gorro frigio', 'Variante normal: pliegue del fondo de la vesícula.'],
+    ['Lóbulo de Riedel', 'Prolongación inferior del lóbulo hepático derecho; variante normal.'],
+    ['Pseudoquiste pancreático', 'Colección encapsulada sin necrosis, de más de 4 semanas de evolución tras una pancreatitis.']
+  ]
+});
+</script>
+<script>
+ECO.curso({
+  id: 'abd2',
+  codigo: '9329289',
+  titulo: 'Ecografía Abdominal II',
+  corto: 'Abdominal II',
+  resumen: 'Riñón, vías urinarias, glándulas suprarrenales y bazo: técnica, anatomía normal, patrones patológicos y correlación clínica.',
+  criterios: [
+    {
+      id: 'r1', peso: 10, titulo: 'Técnica y programación del equipo',
+      descripcion: 'Aplica la técnica, programación y manejo correcto del equipo de acuerdo con el órgano evaluado y sus características propias.',
+      temas: [
+        {
+          titulo: 'Protocolo renal, suprarrenal y esplénico',
+          html: `
+<ul>
+<li>Transductor <b>convexo 2–5 MHz</b>; preset renal o abdomen. Doppler color/espectral para vasos renales e índices de resistencia.</li>
+<li><b>Riñón derecho</b>: supino o decúbito lateral izquierdo, usando el <b>hígado como ventana</b>; inspiración profunda.</li>
+<li><b>Riñón izquierdo</b>: decúbito lateral derecho, abordaje <b>posterolateral/coronal</b> e intercostal, usando el bazo como ventana (el gas del colon y el estómago molestan desde anterior).</li>
+<li>Medir la longitud en el <b>eje mayor verdadero</b> (el corte donde el riñón es más largo); un corte oblicuo lo subestima.</li>
+<li><b>Vejiga</b>: con repleción moderada; volumen = largo × ancho × AP × 0,52. Medir residuo posmiccional.</li>
+<li><b>Suprarrenales</b>: derecha entre el polo superior renal, el pilar diafragmático y por detrás de la VCI; izquierda anteromedial al polo superior renal izquierdo, lateral a la aorta. Difíciles en adultos, fáciles en neonatos.</li>
+<li><b>Bazo</b>: decúbito lateral derecho o supino, intercostal en línea axilar posterior izquierda, inspiración moderada; medir la longitud mayor (polo a polo) en coronal.</li>
+</ul>
+<div class="perla"><b>Perla</b>Si la hidronefrosis parece leve, pide que vacíe la vejiga y repite: una vejiga sobredistendida puede dilatar los sistemas colectores.</div>`
+        }
+      ]
+    },
+    {
+      id: 'r2', peso: 20, titulo: 'Anatomía ecográfica normal',
+      descripcion: 'Evalúa la anatomía normal del riñón, glándulas suprarrenales y bazo, de acuerdo con patrones ecográficos estándares.',
+      temas: [
+        {
+          titulo: 'Riñón normal y variantes',
+          html: `
+<div class="tabla"><table><thead><tr><th>Parámetro</th><th>Valor normal adulto</th></tr></thead><tbody>
+<tr><td>Longitud</td><td class="mono">10–12 cm (diferencia entre ambos &lt; 2 cm)</td></tr>
+<tr><td>Ancho / grosor</td><td class="mono">5–7 cm / 3–5 cm</td></tr>
+<tr><td>Grosor del parénquima</td><td class="mono">≥ 1,5 cm (cortical ≈ 7–10 mm)</td></tr>
+<tr><td>Índice de resistencia intrarrenal</td><td class="mono">&lt; 0,70</td></tr>
+</tbody></table></div>
+<ul>
+<li><b>Corteza</b>: hipoecoica o isoecoica respecto al hígado y al bazo.</li>
+<li><b>Pirámides medulares</b>: triangulares hipoecoicas (muy marcadas en niños; no confundir con hidronefrosis ni quistes).</li>
+<li><b>Seno renal</b>: central e hiperecoico (grasa, vasos, sistema colector).</li>
+</ul>
+<h4>Variantes que simulan patología</h4>
+<ul>
+<li><b>Columna de Bertin hipertrófica</b>: tejido cortical normal que protruye al seno; isoecoico con la corteza y con vasos normales en Doppler.</li>
+<li><b>Joroba de dromedario</b>: abultamiento del borde lateral del riñón izquierdo por impresión del bazo.</li>
+<li><b>Lobulación fetal</b>: contorno ondulado con muescas entre las pirámides (no sobre ellas, a diferencia de las cicatrices).</li>
+<li><b>Defecto de unión parenquimatosa</b>: línea ecogénica triangular en el polo superior.</li>
+<li><b>Pelvis extrarrenal</b>: pelvis fuera del seno que simula hidronefrosis, sin dilatación calicial.</li>
+<li>Duplicación del sistema colector, riñón en <b>herradura</b> (fusión de polos inferiores, istmo anterior a la aorta, por debajo de la AMI), ectopia pélvica, agenesia.</li>
+</ul>`
+        },
+        {
+          titulo: 'Vejiga, suprarrenales y bazo',
+          html: `
+<h4>Vejiga</h4>
+<ul><li>Pared ≤ 3 mm distendida (≤ 5 mm vacía). Contenido anecoico.</li><li><b>Chorros ureterales</b> (jets) en Doppler color: confirman permeabilidad ureteral.</li><li>Residuo posmiccional normal &lt; 50 ml (en ancianos se toleran hasta ~100 ml).</li><li>Próstata (transabdominal): volumen normal ≈ 20–25 ml.</li></ul>
+<h4>Suprarrenales</h4>
+<p>Forma de <b>V, Y o lambda (λ)</b>, ramas finas (≈ 2–6 mm) hipoecoicas. En el neonato son grandes, con corteza hipoecoica y médula ecogénica.</p>
+<h4>Bazo</h4>
+<ul>
+<li>Longitud <b>≤ 12–13 cm</b>. Ecotextura homogénea, <b>igual o ligeramente más ecogénico que el hígado</b>.</li>
+<li><b>Bazo accesorio</b> (esplenúnculo): 10–30 % de la población, nódulo redondo cerca del hilio, &lt; 2 cm, con la misma ecogenicidad del bazo.</li>
+<li>Variantes: lobulaciones, hendiduras (no confundir con laceraciones), bazo errante.</li>
+</ul>`
+        }
+      ]
+    },
+    {
+      id: 'r3', peso: 40, titulo: 'Patrones ecográficos de enfermedad',
+      descripcion: 'Identifica patrones ecográficos que se presentan en enfermedades del riñón, glándulas suprarrenales y bazo.',
+      temas: [
+        {
+          titulo: 'Hidronefrosis y litiasis',
+          html: `
+<h4>Hidronefrosis</h4>
+<p>Separación anecoica del seno renal con <b>estructuras que se comunican</b> (pelvis y cálices).</p>
+<div class="tabla"><table><thead><tr><th>Grado</th><th>Hallazgos</th></tr></thead><tbody>
+<tr><td>Leve (I)</td><td>Dilatación de la pelvis, cálices apenas visibles</td></tr>
+<tr><td>Moderada (II–III)</td><td>Cálices dilatados y redondeados («balonamiento»), parénquima conservado</td></tr>
+<tr><td>Severa (IV)</td><td>Dilatación marcada con <b>adelgazamiento cortical</b></td></tr>
+</tbody></table></div>
+<p><b>Falsos positivos</b>: vejiga sobredistendida, pelvis extrarrenal, quistes parapiélicos (no comunican), vasos del seno (Doppler), embarazo, diuresis forzada.</p>
+<p><b>Obstrucción aguda</b>: IR &gt; 0,70 o diferencia &gt; 0,1 con el riñón contralateral; jet ureteral ausente o disminuido del lado afectado.</p>
+<h4>Litiasis</h4>
+<ul>
+<li>Foco <b>hiperecoico con sombra acústica</b>; el <b>artefacto de centelleo</b> (twinkling) en Doppler color ayuda en cálculos pequeños.</li>
+<li>Los cálculos ureterales se impactan en los tres estrechamientos: <b>unión pieloureteral, cruce de los vasos ilíacos y unión ureterovesical</b>.</li>
+<li>La TC sin contraste es el estándar para litiasis ureteral; la ecografía es primera línea en embarazadas, niños y para seguimiento.</li>
+</ul>`
+        },
+        {
+          titulo: 'Quistes y masas renales',
+          html: `
+<h4>Quiste simple</h4>
+<p>Anecoico, redondo, pared fina y lisa, <b>refuerzo posterior</b>, sin flujo. Muy frecuente en mayores de 50 años; no requiere seguimiento.</p>
+<h4>Clasificación de Bosniak (creada para TC, aplicada también a RM y CEUS)</h4>
+<div class="tabla"><table><thead><tr><th>Categoría</th><th>Características</th><th>Conducta</th></tr></thead><tbody>
+<tr><td>I</td><td>Quiste simple</td><td>Benigno, sin seguimiento</td></tr>
+<tr><td>II</td><td>Pocos septos finos, calcificación fina, quiste hiperdenso &lt; 3 cm</td><td>Benigno</td></tr>
+<tr><td>IIF</td><td>Más septos finos, leve engrosamiento, calcificación nodular</td><td>Seguimiento</td></tr>
+<tr><td>III</td><td>Pared o septos engrosados e irregulares con realce</td><td>≈ 50 % malignos: cirugía o vigilancia activa</td></tr>
+<tr><td>IV</td><td>Componente sólido con realce</td><td>Maligno: cirugía</td></tr>
+</tbody></table></div>
+<h4>Poliquistosis renal autosómica dominante</h4>
+<p>Riñones <b>aumentados</b> con múltiples quistes bilaterales; quistes hepáticos asociados. Criterios de Pei-Ravine (con antecedente familiar): 15–39 años ≥ 3 quistes (uni o bilaterales); 40–59 años ≥ 2 en cada riñón; ≥ 60 años ≥ 4 en cada riñón. Asociación con aneurismas cerebrales.</p>
+<h4>Masas sólidas</h4>
+<ul>
+<li><b>Angiomiolipoma</b>: <b>muy hiperecoico</b> (grasa), bien definido, puede tener sombra. Asociado a esclerosis tuberosa. Riesgo de sangrado si &gt; 4 cm.</li>
+<li><b>Carcinoma de células renales</b>: masa sólida de ecogenicidad variable; los pequeños pueden ser hiperecoicos (simulan angiomiolipoma). A favor de carcinoma: <b>halo hipoecoico</b>, componentes quísticos, calcificaciones. Buscar <b>trombo tumoral en vena renal y VCI</b>.</li>
+<li>Carcinoma urotelial: masa en el seno renal o engrosamiento urotelial.</li>
+<li>Linfoma: masas hipoecoicas múltiples o infiltración difusa.</li>
+</ul>`
+        },
+        {
+          titulo: 'Enfermedad renal médica e infecciones',
+          html: `
+<h4>Enfermedad renal crónica</h4>
+<p>Riñones <b>pequeños</b> (&lt; 9 cm), corteza <b>hiperecoica</b> (más que el hígado), adelgazamiento cortical, pérdida de la diferenciación corticomedular. Si son pequeños y ecogénicos, la biopsia aporta poco.</p>
+<p><b>ERC con riñones de tamaño normal o grandes</b>: diabetes, amiloidosis, poliquistosis, nefropatía por VIH, mieloma.</p>
+<h4>Nefropatía aguda</h4>
+<p>Glomerulonefritis, necrosis tubular aguda: riñones normales o aumentados, corteza hiperecoica. Lo más importante en la insuficiencia renal aguda es <b>descartar obstrucción</b>.</p>
+<h4>Infecciones</h4>
+<ul>
+<li><b>Pielonefritis aguda</b>: con frecuencia la ecografía es normal. Puede haber aumento de tamaño, áreas focales hipo/hiperecoicas, hipoperfusión en power Doppler, engrosamiento urotelial.</li>
+<li><b>Absceso renal</b>: colección compleja con pared gruesa.</li>
+<li><b>Pionefrosis</b>: hidronefrosis con <b>ecos internos o nivel líquido-detrito</b> → urgencia urológica (nefrostomía o catéter doble J).</li>
+<li><b>Pielonefritis enfisematosa</b>: gas en el parénquima (focos ecogénicos con sombra sucia); diabéticos; alta mortalidad.</li>
+</ul>
+<h4>Vascular</h4>
+<p><b>Estenosis de la arteria renal</b>: velocidad pico sistólica &gt; 180–200 cm/s, índice renoaórtico &gt; 3,5; intrarrenal: onda <b>parvus-tardus</b> (tiempo de aceleración &gt; 70 ms).</p>`
+        },
+        {
+          titulo: 'Vejiga y suprarrenales',
+          html: `
+<h4>Vejiga</h4>
+<ul>
+<li><b>Litiasis vesical</b>: hiperecoica, con sombra, <b>móvil</b>.</li>
+<li><b>Tumor vesical</b>: masa <b>fija</b> a la pared, con <b>flujo</b> en Doppler. Hematuria indolora en fumador.</li>
+<li><b>Coágulo</b>: móvil, sin flujo, puede cambiar de forma.</li>
+<li>Vejiga de esfuerzo: pared engrosada y trabeculada, divertículos; asociada a hiperplasia prostática.</li>
+</ul>
+<h4>Suprarrenales</h4>
+<div class="tabla"><table><thead><tr><th>Lesión</th><th>Claves</th></tr></thead><tbody>
+<tr><td>Adenoma</td><td>La más frecuente; &lt; 4 cm, homogénea, bien definida. Confirmar con TC (&lt; 10 UH) o RM</td></tr>
+<tr><td>Mielolipoma</td><td>Muy hiperecoico (grasa macroscópica); benigno</td></tr>
+<tr><td>Hemorragia suprarrenal</td><td>Neonatos (parto traumático, hipoxia) y adultos anticoagulados o sépticos; evoluciona de ecogénica a anecoica y disminuye; <b>sin flujo</b></td></tr>
+<tr><td>Feocromocitoma</td><td>Masa &gt; 3 cm heterogénea, con áreas quísticas; HTA paroxística; metanefrinas</td></tr>
+<tr><td>Carcinoma</td><td>&gt; 4–6 cm, heterogéneo, necrosis, invasión de VCI</td></tr>
+<tr><td>Metástasis</td><td>Pulmón, mama, melanoma; a menudo bilaterales</td></tr>
+<tr><td>Neuroblastoma (niños)</td><td>Masa sólida heterogénea con <b>calcificaciones y flujo</b>; a diferencia de la hemorragia</td></tr>
+</tbody></table></div>
+<p>Masa suprarrenal &gt; 4 cm o con características atípicas → TC/RM y estudio hormonal.</p>`
+        },
+        {
+          titulo: 'Bazo',
+          html: `
+<h4>Esplenomegalia (&gt; 12–13 cm)</h4>
+<ul>
+<li>Causas: hipertensión portal, infecciones (mononucleosis, malaria, leishmaniasis), hematológicas (leucemias, linfomas, anemias hemolíticas), depósito.</li>
+<li><b>Masiva</b> (&gt; 20 cm): leucemia mieloide crónica, mielofibrosis, malaria, leishmaniasis visceral.</li>
+<li>Mononucleosis: riesgo de rotura; evitar deportes de contacto.</li>
+</ul>
+<h4>Lesiones focales</h4>
+<ul>
+<li><b>Infarto</b>: área hipoecoica <b>en cuña</b> con base en la cápsula, <b>sin flujo</b>. Causas: embolia (endocarditis, fibrilación auricular), anemia falciforme, esplenomegalia masiva.</li>
+<li><b>Trauma</b>: el bazo es el órgano sólido más lesionado en el trauma abdominal cerrado. Hematoma subcapsular (semiluna que comprime el parénquima), laceración, hematoma intraparenquimatoso, líquido perisplénico. Rotura diferida posible.</li>
+<li>Hematoma: ecogénico en fase aguda, luego hipoecoico/anecoico.</li>
+<li><b>Abscesos</b>: hipoecoicos; microabscesos fúngicos en inmunodeprimidos (lesiones en «rueda dentro de rueda» u ojo de buey).</li>
+<li><b>Linfoma</b>: nódulos hipoecoicos múltiples o infiltración difusa con esplenomegalia.</li>
+<li><b>Hemangioma</b>: tumor benigno más frecuente del bazo; hiperecoico.</li>
+<li>Calcificaciones puntiformes múltiples: granulomas antiguos (tuberculosis, histoplasmosis).</li>
+<li>Quistes: epidermoide (verdadero), postraumático (pseudoquiste), hidatídico.</li>
+</ul>`
+        }
+      ]
+    },
+    {
+      id: 'r4', peso: 30, titulo: 'Interpretación con correlación clínica',
+      descripcion: 'Interpreta los hallazgos ecográficos patológicos, haciendo una correlación clínica.',
+      temas: [
+        {
+          titulo: 'Escenarios clínicos frecuentes',
+          html: `
+<div class="tabla"><table><thead><tr><th>Escenario</th><th>Qué buscar</th><th>Interpretación</th></tr></thead><tbody>
+<tr><td>Cólico renal</td><td>Hidronefrosis, cálculo, jet ureteral, IR</td><td>Obstrucción litiásica; TC si duda o fiebre</td></tr>
+<tr><td>Fiebre + dolor lumbar + hidronefrosis con ecos</td><td>Detritos en el sistema colector</td><td>Pionefrosis: <b>drenaje urgente</b></td></tr>
+<tr><td>Creatinina elevada de inicio reciente</td><td>Tamaño renal, ecogenicidad, hidronefrosis, globo vesical</td><td>Descartar causa posrenal primero</td></tr>
+<tr><td>Hematuria indolora en fumador</td><td>Masa renal o vesical</td><td>Neoplasia urotelial o renal hasta demostrar lo contrario</td></tr>
+<tr><td>HTA en joven o refractaria</td><td>Asimetría renal, Doppler de arteria renal, masa suprarrenal</td><td>Estenosis de arteria renal, feocromocitoma</td></tr>
+<tr><td>Trauma en flanco izquierdo, taquicardia</td><td>Líquido perisplénico, hematoma</td><td>Lesión esplénica; inestable → cirugía</td></tr>
+<tr><td>Fiebre + soplo nuevo + dolor en HCI</td><td>Lesión en cuña sin flujo</td><td>Infarto esplénico embólico (endocarditis)</td></tr>
+</tbody></table></div>`
+        }
+      ]
+    }
+  ],
+
+  tarjetas: [
+    ['r1', 'Ventana para el riñón derecho / izquierdo', 'Derecho: hígado (supino o DLI). Izquierdo: bazo, abordaje posterolateral/coronal en decúbito lateral derecho.'],
+    ['r1', 'Fórmula del volumen vesical', 'Largo × ancho × AP × 0,52.'],
+    ['r1', 'Error al medir la longitud renal', 'Cortes oblicuos que no pasan por el eje mayor: subestiman el tamaño.'],
+    ['r2', 'Longitud renal normal en el adulto', '10–12 cm; diferencia entre ambos < 2 cm.'],
+    ['r2', 'Ecogenicidad normal de la corteza renal', 'Hipoecoica o isoecoica respecto al hígado y al bazo.'],
+    ['r2', 'Índice de resistencia renal normal', '< 0,70.'],
+    ['r2', 'Columna de Bertin hipertrófica', 'Corteza normal que protruye al seno; isoecoica con la corteza y con vasos normales: no es tumor.'],
+    ['r2', 'Joroba de dromedario', 'Abultamiento del borde lateral del riñón izquierdo por impresión esplénica. Variante normal.'],
+    ['r2', 'Riñón en herradura', 'Fusión de los polos inferiores; el istmo pasa anterior a la aorta, debajo de la AMI.'],
+    ['r2', 'Forma normal de las suprarrenales', 'V, Y o lambda (λ), con ramas finas hipoecoicas.'],
+    ['r2', 'Longitud normal del bazo', '≤ 12–13 cm.'],
+    ['r2', 'Esplenúnculo', 'Bazo accesorio: nódulo redondo cerca del hilio, < 2 cm, igual ecogenicidad que el bazo.'],
+    ['r2', 'Residuo posmiccional normal', '< 50 ml (hasta ~100 ml en ancianos).'],
+    ['r3', 'Grados de hidronefrosis', 'Leve: pelvis. Moderada: cálices redondeados. Severa: con adelgazamiento cortical.'],
+    ['r3', 'Falsos positivos de hidronefrosis', 'Vejiga llena, pelvis extrarrenal, quistes parapiélicos, vasos del seno, embarazo, diuresis.'],
+    ['r3', 'Tres sitios de impactación de cálculos ureterales', 'Unión pieloureteral, cruce de vasos ilíacos, unión ureterovesical.'],
+    ['r3', 'Artefacto de centelleo (twinkling)', 'Señal Doppler color tras superficies rugosas; ayuda a detectar cálculos.'],
+    ['r3', 'Criterios de quiste renal simple', 'Anecoico, redondo, pared fina lisa, refuerzo posterior, sin flujo.'],
+    ['r3', 'Bosniak III y IV', 'III: pared/septos gruesos con realce (≈ 50 % maligno). IV: componente sólido con realce (maligno).'],
+    ['r3', 'Angiomiolipoma', 'Masa muy hiperecoica (grasa), bien definida; esclerosis tuberosa; sangrado si > 4 cm.'],
+    ['r3', 'Signos a favor de carcinoma renal frente a angiomiolipoma', 'Halo hipoecoico, componentes quísticos, calcificaciones; buscar trombo en vena renal/VCI.'],
+    ['r3', 'ERC en ecografía', 'Riñones pequeños, hiperecoicos, corteza delgada, pérdida de diferenciación corticomedular.'],
+    ['r3', 'ERC con riñones grandes: causas', 'Diabetes, amiloidosis, poliquistosis, VIH, mieloma.'],
+    ['r3', 'Criterios de Pei-Ravine (15–39 años)', '≥ 3 quistes renales uni o bilaterales con antecedente familiar.'],
+    ['r3', 'Pionefrosis', 'Hidronefrosis con ecos internos o nivel de detritos: infección; drenaje urgente.'],
+    ['r3', 'Pielonefritis enfisematosa', 'Gas en el parénquima renal (sombra sucia) en diabéticos; grave.'],
+    ['r3', 'Onda parvus-tardus', 'Ascenso sistólico lento y de baja amplitud distal a una estenosis (tiempo de aceleración > 70 ms).'],
+    ['r3', 'Tumor vesical vs coágulo', 'Tumor: fijo y con flujo. Coágulo: móvil y sin flujo.'],
+    ['r3', 'Hemorragia suprarrenal neonatal vs neuroblastoma', 'Hemorragia: sin flujo, evoluciona a anecoica y se reduce. Neuroblastoma: flujo y calcificaciones.'],
+    ['r3', 'Mielolipoma suprarrenal', 'Masa muy hiperecoica con grasa macroscópica; benigna.'],
+    ['r3', 'Infarto esplénico', 'Área hipoecoica en cuña, base capsular, sin flujo.'],
+    ['r3', 'Causas de esplenomegalia masiva', 'LMC, mielofibrosis, malaria, leishmaniasis visceral.'],
+    ['r3', 'Órgano sólido más lesionado en trauma cerrado', 'El bazo.'],
+    ['r3', 'Tumor benigno más frecuente del bazo', 'Hemangioma.'],
+    ['r4', 'IRA: primer objetivo de la ecografía', 'Descartar causa obstructiva (hidronefrosis, globo vesical).'],
+    ['r4', 'Hematuria indolora en fumador', 'Buscar masa vesical o renal: neoplasia hasta demostrar lo contrario.']
+  ],
+
+  preguntas: [
+    { c: 'r1', q: 'La mejor ventana acústica para evaluar el riñón izquierdo es:', o: ['Anterior, a través del estómago', 'Posterolateral/coronal usando el bazo', 'Subxifoidea', 'Suprapúbica'], a: 1, e: 'Desde anterior interfieren el estómago y el colon; el bazo sirve de ventana.' },
+    { c: 'r1', q: 'Vejiga de 10 × 8 × 6 cm. Volumen aproximado:', o: ['250 ml', '480 ml', '150 ml', '700 ml'], a: 0, e: '10 × 8 × 6 × 0,52 ≈ 250 ml.' },
+    { c: 'r2', q: 'Longitud normal del riñón adulto:', o: ['6–8 cm', '10–12 cm', '14–16 cm', '4–6 cm'], a: 1, e: 'Rango habitual 10–12 cm; asimetría > 2 cm es significativa.' },
+    { c: 'r2', q: 'En un niño, estructuras triangulares hipoecoicas alrededor del seno renal corresponden a:', o: ['Hidronefrosis', 'Quistes corticales', 'Pirámides medulares normales', 'Abscesos'], a: 2, e: 'Las pirámides son prominentes en niños y no se comunican entre sí.' },
+    { c: 'r2', q: 'Una «masa» renal isoecoica con la corteza, que protruye al seno y tiene vasos normales en Doppler, es:', o: ['Carcinoma renal', 'Columna de Bertin hipertrófica', 'Angiomiolipoma', 'Linfoma'], a: 1, e: 'Seudotumor: tejido cortical normal.' },
+    { c: 'r2', q: 'Nódulo de 1,5 cm cerca del hilio esplénico, redondo, de igual ecogenicidad que el bazo:', o: ['Adenopatía', 'Bazo accesorio (esplenúnculo)', 'Metástasis', 'Quiste'], a: 1, e: 'Hallazgo frecuente y benigno.' },
+    { c: 'r2', q: 'Ecogenicidad normal del bazo comparada con el hígado:', o: ['Marcadamente hipoecoico', 'Igual o ligeramente mayor', 'Anecoico', 'Mucho menor con refuerzo'], a: 1, e: 'El bazo normal es igual o algo más ecogénico que el hígado.' },
+    { c: 'r3', q: 'Dilatación de pelvis y cálices con adelgazamiento de la cortical. Grado:', o: ['Leve', 'Moderado', 'Severo', 'No es hidronefrosis'], a: 2, e: 'El adelgazamiento cortical define la hidronefrosis severa.' },
+    { c: 'r3', q: 'Estructuras anecoicas en el seno renal que NO se comunican entre sí. Lo más probable:', o: ['Hidronefrosis', 'Quistes parapiélicos', 'Pionefrosis', 'Pelvis extrarrenal'], a: 1, e: 'En la hidronefrosis los cálices dilatados se comunican con la pelvis.' },
+    { c: 'r3', q: 'Masa renal de 2 cm muy hiperecoica, bien definida, con leve sombra, en mujer con esclerosis tuberosa:', o: ['Carcinoma de células renales', 'Angiomiolipoma', 'Quiste Bosniak II', 'Columna de Bertin'], a: 1, e: 'La grasa lo hace muy ecogénico; asociación clásica con esclerosis tuberosa.' },
+    { c: 'r3', q: 'Lesión quística renal con septos gruesos e irregulares que realzan. Bosniak:', o: ['I', 'II', 'III', 'IIF'], a: 2, e: 'Bosniak III: pared o septos engrosados con realce, ≈ 50 % malignos.' },
+    { c: 'r3', q: 'Riñones de 8 cm, corteza más ecogénica que el hígado, corteza delgada. Interpretación:', o: ['Nefropatía aguda', 'Enfermedad renal crónica', 'Normal', 'Poliquistosis'], a: 1, e: 'Riñones pequeños y ecogénicos = daño crónico.' },
+    { c: 'r3', q: '¿Cuál de estas causas de ERC cursa con riñones de tamaño normal o aumentado?', o: ['Nefroangioesclerosis', 'Nefropatía diabética', 'Glomerulonefritis crónica', 'Pielonefritis crónica'], a: 1, e: 'Diabetes, amiloidosis, poliquistosis, VIH y mieloma pueden mantener el tamaño renal.' },
+    { c: 'r3', q: 'Hidronefrosis con ecos internos y nivel líquido-detrito en paciente febril:', o: ['Hidronefrosis simple', 'Pionefrosis', 'Quiste complicado', 'Angiomiolipoma'], a: 1, e: 'Urgencia urológica: requiere drenaje.' },
+    { c: 'r3', q: 'Masa vesical fija a la pared con flujo en Doppler color:', o: ['Coágulo', 'Cálculo', 'Tumor vesical', 'Ureterocele'], a: 2, e: 'El coágulo es móvil y avascular; el cálculo es móvil con sombra.' },
+    { c: 'r3', q: 'Neonato tras parto traumático con masa suprarrenal que en controles se vuelve anecoica y disminuye de tamaño, sin flujo:', o: ['Neuroblastoma', 'Hemorragia suprarrenal', 'Feocromocitoma', 'Adenoma'], a: 1, e: 'La evolución temporal y la ausencia de flujo son típicas de la hemorragia.' },
+    { c: 'r3', q: 'Lesión esplénica hipoecoica en cuña con base capsular y sin flujo:', o: ['Linfoma', 'Infarto esplénico', 'Hemangioma', 'Absceso'], a: 1, e: 'La forma en cuña sigue el territorio vascular.' },
+    { c: 'r3', q: 'Bazo de 22 cm. Causa más probable entre estas:', o: ['Hepatitis A', 'Mielofibrosis', 'Insuficiencia cardíaca leve', 'Apendicitis'], a: 1, e: 'Esplenomegalia masiva: LMC, mielofibrosis, malaria, leishmaniasis.' },
+    { c: 'r3', q: 'Espectro intrarrenal con ascenso sistólico lento y de baja amplitud sugiere:', o: ['Rechazo agudo', 'Estenosis de arteria renal proximal', 'Trombosis de vena renal', 'Normalidad'], a: 1, e: 'Onda parvus-tardus distal a una estenosis significativa.' },
+    { c: 'r4', caso: true, q: 'Varón de 35 años con dolor lumbar derecho cólico irradiado a ingle y hematuria. Ecografía: hidronefrosis derecha moderada, sin jet ureteral derecho, foco ecogénico con sombra en la unión ureterovesical. Interpretación:', o: ['Pielonefritis', 'Litiasis ureteral distal obstructiva', 'Tumor vesical', 'Quiste parapiélico'], a: 1, e: 'Cálculo impactado en la unión ureterovesical con obstrucción.' },
+    { c: 'r4', caso: true, q: 'Diabética con fiebre de 39 °C, dolor lumbar y sepsis. Ecografía: hidronefrosis izquierda con ecos internos en declive. Conducta:', o: ['Antibiótico oral y alta', 'Descompresión urgente (nefrostomía o catéter doble J) + antibióticos', 'Control ecográfico en 3 meses', 'Litotricia extracorpórea inmediata'], a: 1, e: 'Pionefrosis: riñón obstruido e infectado requiere drenaje urgente.' },
+    { c: 'r4', caso: true, q: 'Varón de 72 años con creatinina en ascenso y dificultad miccional. Ecografía: hidronefrosis bilateral y vejiga de 900 ml. Causa más probable:', o: ['Glomerulonefritis', 'Obstrucción infravesical (hiperplasia prostática)', 'Necrosis tubular aguda', 'Estenosis de arteria renal'], a: 1, e: 'Hidronefrosis bilateral con globo vesical: causa posrenal; sondaje vesical.' },
+    { c: 'r4', caso: true, q: 'Fumador de 60 años con hematuria macroscópica indolora. Ecografía renal normal; en la vejiga, lesión polipoide fija de 2 cm con flujo. Siguiente paso:', o: ['Repetir ecografía en 1 año', 'Cistoscopia', 'Antibióticos', 'Alta'], a: 1, e: 'Sospecha de carcinoma urotelial: cistoscopia y resección transuretral.' },
+    { c: 'r4', caso: true, q: 'Motociclista con trauma en flanco izquierdo, PA 80/50, FC 130. FAST: líquido perisplénico y en Morison. Conducta:', o: ['TC con contraste', 'Laparotomía urgente', 'Observación con hemogramas seriados', 'Embolización programada'], a: 1, e: 'Hemoperitoneo en paciente inestable: cirugía.' },
+    { c: 'r4', caso: true, q: 'Joven de 28 años con HTA severa resistente. Ecografía: riñón derecho de 8,5 cm y el izquierdo de 11 cm; Doppler con velocidad de 280 cm/s en la arteria renal derecha. Sospecha:', o: ['Feocromocitoma', 'Estenosis de arteria renal derecha (displasia fibromuscular)', 'Poliquistosis', 'Hiperaldosteronismo'], a: 1, e: 'Asimetría renal + velocidad elevada: estenosis significativa; en jóvenes, displasia fibromuscular.' }
+  ],
+
+  glosario: [
+    ['Índice de resistencia (IR)', '(Velocidad sistólica − diastólica) / sistólica. Renal normal < 0,70.'],
+    ['Columna de Bertin', 'Tejido cortical que se interpone entre pirámides; si es prominente simula masa.'],
+    ['Hidronefrosis', 'Dilatación del sistema pielocalicial.'],
+    ['Pionefrosis', 'Hidronefrosis infectada con contenido purulento.'],
+    ['Bosniak', 'Clasificación de lesiones quísticas renales en categorías de riesgo de malignidad.'],
+    ['Angiomiolipoma', 'Tumor renal benigno con grasa, vasos y músculo; muy hiperecoico.'],
+    ['Parvus-tardus', 'Onda arterial de baja amplitud y ascenso lento, distal a una estenosis.'],
+    ['Jet ureteral', 'Chorro de orina que entra a la vejiga, visible en Doppler color.'],
+    ['Twinkling', 'Artefacto de centelleo en Doppler color tras superficies rugosas (cálculos).'],
+    ['Esplenúnculo', 'Bazo accesorio.'],
+    ['Joroba de dromedario', 'Abultamiento lateral del riñón izquierdo; variante normal.'],
+    ['Pei-Ravine', 'Criterios ecográficos por edad para diagnosticar poliquistosis renal autosómica dominante.'],
+    ['Mielolipoma', 'Tumor suprarrenal benigno con grasa y elementos hematopoyéticos.']
+  ]
+});
+</script>
+<script>
+ECO.curso({
+  id: 'abd3',
+  codigo: 'A518615',
+  titulo: 'Ecografía Abdominal III',
+  corto: 'Abdominal III',
+  resumen: 'Cavidad peritoneal, retroperitoneo, tubo digestivo y vasos abdominales: técnica, anatomía, patrones patológicos y correlación clínica.',
+  criterios: [
+    {
+      id: 'p1', peso: 10, titulo: 'Técnica y programación del equipo',
+      descripcion: 'Aplica la técnica, programación y manejo correcto del equipo de acuerdo con el órgano evaluado y sus características propias.',
+      temas: [
+        {
+          titulo: 'Técnica para peritoneo, intestino y vasos',
+          html: `
+<ul>
+<li><b>Peritoneo / líquido libre</b>: convexo 2–5 MHz; revisar espacios declives: Morison, perisplénico, goteras parietocólicas y pelvis. Cambiar de posición para ver si el líquido se desplaza.</li>
+<li><b>Tubo digestivo</b>: primero convexo para un panorama, luego <b>lineal 5–12 MHz</b> con <b>compresión graduada</b> (técnica de Puylaert): presión lenta y progresiva que desplaza las asas con gas; el apéndice inflamado <b>no se comprime</b>.</li>
+<li>Pedir al paciente que señale con un dedo el punto de máximo dolor y explorar ahí.</li>
+<li><b>Aorta</b>: desde el epigastrio hasta la bifurcación, en transversal y longitudinal. Medir el diámetro <b>de pared externa a pared externa</b>, perpendicular al eje del vaso.</li>
+<li><b>Doppler</b>: ángulo ≤ 60° para medir velocidades, ajustar escala/PRF y filtro de pared; volumen de muestra pequeño en el centro del vaso.</li>
+<li><b>VCI</b>: longitudinal subxifoideo, medir 1–2 cm distal a la desembocadura de las venas hepáticas, con respiración tranquila y con «sniff».</li>
+</ul>
+<div class="perla"><b>Perla</b>En un abdomen con mucho gas, la compresión sostenida durante unos segundos suele lograr más que cambiar de transductor.</div>`
+        }
+      ]
+    },
+    {
+      id: 'p2', peso: 20, titulo: 'Anatomía ecográfica normal',
+      descripcion: 'Evalúa la anatomía normal de la cavidad peritoneal, el retroperitoneo, tubo digestivo y vasos abdominales, de acuerdo con patrones ecográficos estándares.',
+      temas: [
+        {
+          titulo: 'Espacios peritoneales y retroperitoneo',
+          html: `
+<ul>
+<li><b>Bolsa hepatorrenal (Morison)</b>: punto más declive del compartimento supramesocólico en supino.</li>
+<li><b>Pelvis</b>: fondo de saco rectouterino (Douglas) en la mujer y rectovesical en el hombre: el punto más declive de toda la cavidad peritoneal.</li>
+<li><b>Goteras parietocólicas</b>: la derecha es más ancha y comunica Morison con la pelvis; la izquierda está limitada por el ligamento frenocólico.</li>
+<li>Espacios subfrénicos, espacio esplenorrenal, transcavidad de los epiplones (bolsa omental).</li>
+</ul>
+<h4>Retroperitoneo</h4>
+<div class="tabla"><table><thead><tr><th>Espacio</th><th>Contenido</th></tr></thead><tbody>
+<tr><td>Pararrenal anterior</td><td>Páncreas, duodeno (2.ª–4.ª porción), colon ascendente y descendente</td></tr>
+<tr><td>Perirrenal (fascia de Gerota)</td><td>Riñones, suprarrenales, grasa perirrenal</td></tr>
+<tr><td>Pararrenal posterior</td><td>Grasa</td></tr>
+<tr><td>Grandes vasos</td><td>Aorta, VCI, ganglios linfáticos, músculos psoas</td></tr>
+</tbody></table></div>`
+        },
+        {
+          titulo: 'Pared intestinal normal: la «firma intestinal»',
+          html: `
+<p>Con transductor de alta frecuencia la pared muestra <b>5 capas</b> alternantes:</p>
+<ol>
+<li>Interfaz luz–mucosa: <b>hiperecoica</b></li>
+<li>Mucosa profunda (muscularis mucosae): <b>hipoecoica</b></li>
+<li>Submucosa: <b>hiperecoica</b></li>
+<li>Muscular propia: <b>hipoecoica</b></li>
+<li>Serosa / grasa: <b>hiperecoica</b></li>
+</ol>
+<ul>
+<li>Grosor normal: intestino delgado y colon <b>≤ 3 mm</b> (distendidos); estómago ≤ 5 mm (antro un poco más).</li>
+<li>Yeyuno: válvulas conniventes abundantes (imagen en «teclado de piano» si está distendido). Íleon: menos pliegues. Colon: haustras y contenido gaseoso.</li>
+<li><b>Apéndice normal</b>: estructura tubular de fondo ciego que nace del ciego, <b>compresible</b>, sin peristalsis, diámetro <b>≤ 6 mm</b>.</li>
+<li>Píloro del lactante normal: grosor muscular &lt; 3 mm, longitud del canal &lt; 15 mm.</li>
+</ul>`
+        },
+        {
+          titulo: 'Vasos abdominales',
+          html: `
+<ul>
+<li><b>Aorta abdominal</b>: a la izquierda de la línea media, diámetro normal ≈ 2 cm (&lt; 3 cm). Se afina hacia distal.</li>
+<li><b>Tronco celíaco</b>: primera rama anterior; en transversal se bifurca en hepática común y esplénica: signo de la «<b>gaviota</b>».</li>
+<li><b>AMS</b>: ≈ 1 cm por debajo del celíaco, desciende paralela y anterior a la aorta rodeada de grasa ecogénica. La <b>vena renal izquierda</b> pasa entre la AMS y la aorta.</li>
+<li>Arterias renales (laterales), AMI (anterior, más distal), bifurcación ilíaca a nivel de L4 (ombligo).</li>
+<li><b>VCI</b>: a la derecha, de paredes finas, varía con la respiración (colapsa en inspiración).</li>
+</ul>
+<div class="tabla"><table><thead><tr><th>Vaso</th><th>Patrón Doppler normal</th></tr></thead><tbody>
+<tr><td>Aorta infrarrenal</td><td>Alta resistencia, trifásico</td></tr>
+<tr><td>Tronco celíaco, arterias renales, hepática, esplénica</td><td>Baja resistencia (flujo diastólico continuo)</td></tr>
+<tr><td>AMS en ayunas</td><td>Alta resistencia; tras comer pasa a baja resistencia</td></tr>
+<tr><td>Vena porta</td><td>Hepatópeto, continuo, ondulado</td></tr>
+<tr><td>VCI / venas hepáticas</td><td>Fásico / trifásico</td></tr>
+</tbody></table></div>
+<h4>VCI y estado de volumen (estimación de presión de aurícula derecha)</h4>
+<div class="tabla"><table><thead><tr><th>Diámetro VCI</th><th>Colapso con sniff</th><th>PAD estimada</th></tr></thead><tbody>
+<tr><td class="mono">≤ 2,1 cm</td><td class="mono">&gt; 50 %</td><td class="mono">≈ 3 mmHg</td></tr>
+<tr><td colspan="2">Situaciones intermedias</td><td class="mono">≈ 8 mmHg</td></tr>
+<tr><td class="mono">&gt; 2,1 cm</td><td class="mono">&lt; 50 %</td><td class="mono">≈ 15 mmHg</td></tr>
+</tbody></table></div>`
+        }
+      ]
+    },
+    {
+      id: 'p3', peso: 40, titulo: 'Patrones ecográficos de enfermedad',
+      descripcion: 'Identifica patrones ecográficos que se presentan en enfermedades de la cavidad peritoneal, el retroperitoneo, tubo digestivo y vasos abdominales.',
+      temas: [
+        {
+          titulo: 'Peritoneo: ascitis, hemoperitoneo, carcinomatosis, neumoperitoneo',
+          html: `
+<ul>
+<li><b>Ascitis simple</b> (trasudado): anecoica, asas que flotan libremente.</li>
+<li><b>Ascitis complicada</b>: ecos finos, septos, loculaciones → exudado, sangre, pus, carcinomatosis o tuberculosis.</li>
+<li><b>Hemoperitoneo</b>: líquido con ecos; el <b>signo del coágulo centinela</b> (coágulo más ecogénico) señala el sitio probable del sangrado.</li>
+<li><b>Carcinomatosis peritoneal</b>: ascitis tabicada, nódulos peritoneales, engrosamiento del omento («<b>pastel omental</b>», omental cake), asas apelmazadas.</li>
+<li><b>Tuberculosis peritoneal</b>: ascitis con septos finos, engrosamiento del mesenterio y del omento, adenopatías con centro necrótico (hipoecoico).</li>
+<li><b>Neumoperitoneo</b>: línea peritoneal anterior ecogénica y engrosada con reverberación, que no se desplaza con la respiración y desaparece al comprimir y reaparece al soltar («signo de la cortina»). Confirmar con radiografía o TC.</li>
+<li><b>Abscesos</b>: colección compleja de pared gruesa, a veces con gas; drenaje percutáneo guiado.</li>
+</ul>
+<div class="perla"><b>Perla</b>Volúmenes muy pequeños de líquido se ven primero en la pelvis (fondo de saco) y en el polo inferior del riñón derecho / gotera derecha.</div>`
+        },
+        {
+          titulo: 'Tubo digestivo: apendicitis, invaginación, píloro, obstrucción',
+          html: `
+<h4>Apendicitis aguda</h4>
+<ul>
+<li>Apéndice <b>no compresible</b>, diámetro <b>&gt; 6 mm</b>, pared &gt; 3 mm, imagen en <b>diana</b> en corte transversal.</li>
+<li><b>Apendicolito</b> (foco con sombra), hiperemia de la pared en Doppler, <b>grasa periapendicular hiperecoica</b> (inflamada), líquido.</li>
+<li>Dolor máximo al comprimir con el transductor sobre el apéndice (McBurney ecográfico).</li>
+<li><b>Perforación</b>: pérdida de la ecogenicidad de la submucosa, pared asimétrica, colección o absceso periapendicular.</li>
+<li>Un apéndice no visualizado no excluye apendicitis: correlacionar con la clínica (escala de Alvarado), repetir o TC/RM según el caso.</li>
+</ul>
+<h4>Invaginación intestinal (intususcepción)</h4>
+<ul>
+<li>Niños de 3 meses a 3 años, más frecuente <b>ileocólica</b> (hipocondrio o flanco derecho).</li>
+<li>Transversal: «<b>diana</b>» o «<b>donut</b>» (anillos concéntricos); longitudinal: «<b>pseudorriñón</b>» o «sándwich».</li>
+<li>Tratamiento en niños: reducción hidrostática o neumática guiada si no hay perforación ni peritonitis. En adultos suele haber una <b>causa orgánica</b> (tumor) → cirugía.</li>
+</ul>
+<h4>Estenosis hipertrófica del píloro</h4>
+<ul>
+<li>Lactante de 2–8 semanas con <b>vómitos en proyectil no biliosos</b>, «oliva» palpable, alcalosis metabólica hipoclorémica e hipopotasémica.</li>
+<li>Criterios: <b>grosor muscular ≥ 3 mm</b>, <b>longitud del canal ≥ 15–17 mm</b>, sin paso de contenido gástrico. Signos de la diana y del «cérvix».</li>
+</ul>
+<h4>Obstrucción intestinal</h4>
+<ul>
+<li>Asas de intestino delgado dilatadas <b>&gt; 2,5–3 cm</b> con contenido líquido; peristaltismo de vaivén (<i>to-and-fro</i>).</li>
+<li>Signos de sufrimiento: asa aperistáltica, pared engrosada, líquido libre entre asas, ausencia de flujo en Doppler → isquemia/estrangulación: cirugía.</li>
+</ul>
+<h4>Engrosamiento de la pared</h4>
+<ul>
+<li><b>Enfermedad de Crohn</b>: íleon terminal engrosado, hiperemia, <b>grasa mesentérica hiperecoica</b> («grasa reptante»), estenosis, fístulas, abscesos.</li>
+<li><b>Carcinoma</b>: engrosamiento asimétrico, hipoecoico, con pérdida de las capas: imagen en «pseudorriñón».</li>
+<li><b>Linfoma</b>: engrosamiento muy hipoecoico, a veces con dilatación aneurismática de la luz.</li>
+<li><b>Diverticulitis</b>: divertículo inflamado (protrusión con foco ecogénico/gas) con grasa pericólica hiperecoica y pared colónica engrosada; colecciones.</li>
+</ul>
+<h4>Hernias de pared</h4>
+<p>Defecto de pared con contenido (grasa, asa); maniobra de Valsalva. Encarcelación/estrangulación: asa sin peristaltismo, pared engrosada, sin flujo, líquido en el saco.</p>`
+        },
+        {
+          titulo: 'Retroperitoneo',
+          html: `
+<ul>
+<li><b>Adenopatías</b>: redondeadas, hipoecoicas, pérdida del hilio graso, aumento del eje corto. Linfoma: masas confluentes, signo del «<b>sándwich</b>» (adenopatías mesentéricas rodeando los vasos) y de la «<b>aorta flotante</b>» (aorta desplazada hacia anterior).</li>
+<li><b>Fibrosis retroperitoneal</b>: manguito hipoecoico periaórtico infrarrenal, <b>hidronefrosis bilateral</b> por atrapamiento ureteral.</li>
+<li><b>Hematoma retroperitoneal</b>: anticoagulados, trauma, rotura de aneurisma; hematoma del psoas.</li>
+<li><b>Absceso del psoas</b>: colección en el músculo; causas: espondilodiscitis tuberculosa (mal de Pott), Crohn, diseminación hematógena.</li>
+<li>Sarcomas (liposarcoma): masas grandes; requieren TC/RM.</li>
+</ul>`
+        },
+        {
+          titulo: 'Vasos: aneurisma, disección, trombosis, isquemia',
+          html: `
+<h4>Aneurisma de aorta abdominal (AAA)</h4>
+<ul>
+<li>Diámetro <b>≥ 3 cm</b> (o &gt; 1,5 veces el segmento normal). La mayoría son <b>infrarrenales</b>.</li>
+<li>Medir de <b>pared externa a pared externa</b>, perpendicular al eje; documentar trombo mural y la extensión a las ilíacas.</li>
+<li>Cribado: varones de 65–75 años que han fumado alguna vez (ecografía única).</li>
+<li>Reparación electiva: ≥ <b>5,5 cm</b> en varones (≥ 5,0 cm en mujeres), crecimiento rápido (&gt; 1 cm/año) o síntomas.</li>
+<li><b>Rotura</b>: dolor abdominal o lumbar + hipotensión + masa pulsátil. La ecografía demuestra el aneurisma pero <b>no excluye la rotura</b> (el hematoma suele ser retroperitoneal). Paciente inestable con AAA conocido o visto en POCUS → quirófano.</li>
+</ul>
+<h4>Disección aórtica</h4>
+<p>Colgajo intimal (<b>flap</b>) móvil que separa una luz verdadera y una falsa, con flujos distintos en Doppler color. Confirmar con angio-TC.</p>
+<h4>Sistema porta</h4>
+<ul>
+<li><b>Trombosis portal</b>: material ecogénico intraluminal, ausencia de flujo; crónica: <b>transformación cavernomatosa</b> (múltiples colaterales serpiginosas en el hilio).</li>
+<li>Trombo tumoral: expande la vena y tiene <b>flujo arterial</b> dentro (carcinoma hepatocelular).</li>
+<li>Hipertensión portal: porta &gt; 13 mm, flujo lento o hepatófugo, colaterales (paraumbilical recanalizada, gástrica izquierda, esplenorrenal), esplenomegalia, ascitis.</li>
+</ul>
+<h4>Isquemia mesentérica y compresiones</h4>
+<ul>
+<li>Estenosis significativa (≥ 70 %) de la <b>AMS</b>: velocidad pico sistólica &gt; 275 cm/s; del <b>tronco celíaco</b>: &gt; 200 cm/s.</li>
+<li>Síndrome del <b>ligamento arcuato medio</b>: compresión del tronco celíaco que aumenta la velocidad en espiración y mejora en inspiración.</li>
+<li>Síndrome de <b>cascanueces</b>: compresión de la vena renal izquierda entre la AMS y la aorta (hematuria, varicocele izquierdo).</li>
+</ul>
+<h4>VCI en el paciente grave</h4>
+<p>VCI pequeña y colapsable: hipovolemia. VCI <b>pletórica</b> sin colapso: taponamiento, tromboembolia pulmonar masiva, falla del ventrículo derecho, sobrecarga.</p>`
+        }
+      ]
+    },
+    {
+      id: 'p4', peso: 30, titulo: 'Interpretación con correlación clínica',
+      descripcion: 'Interpreta los hallazgos ecográficos patológicos, haciendo una correlación clínica.',
+      temas: [
+        {
+          titulo: 'Escenarios clínicos frecuentes',
+          html: `
+<div class="tabla"><table><thead><tr><th>Escenario</th><th>Qué buscar</th><th>Interpretación</th></tr></thead><tbody>
+<tr><td>Dolor en FID, fiebre, leucocitosis</td><td>Apéndice &gt; 6 mm no compresible, apendicolito, grasa inflamada</td><td>Apendicitis aguda → cirugía</td></tr>
+<tr><td>Lactante de 1 año con llanto paroxístico y heces en jalea de grosella</td><td>Diana / pseudorriñón en hemiabdomen derecho</td><td>Invaginación ileocólica → reducción</td></tr>
+<tr><td>Lactante de 4 semanas con vómitos en proyectil</td><td>Píloro ≥ 3 mm de grosor y ≥ 15 mm de longitud</td><td>Estenosis hipertrófica de píloro → piloromiotomía</td></tr>
+<tr><td>Dolor lumbar + hipotensión + masa pulsátil</td><td>Aorta ≥ 3 cm</td><td>Rotura de AAA → quirófano sin esperar TC si está inestable</td></tr>
+<tr><td>Ascitis nueva</td><td>Características del líquido, hígado, nódulos peritoneales</td><td>Cirrosis vs carcinomatosis vs TB; paracentesis guiada</td></tr>
+<tr><td>Vómitos, distensión, cirugías previas</td><td>Asas dilatadas, peristaltismo, líquido libre</td><td>Obstrucción por bridas; signos de sufrimiento → cirugía</td></tr>
+<tr><td>Dolor abdominal desproporcionado en paciente con FA</td><td>Flujo en AMS (limitado)</td><td>Isquemia mesentérica aguda → angio-TC urgente</td></tr>
+</tbody></table></div>`
+        }
+      ]
+    }
+  ],
+
+  tarjetas: [
+    ['p1', 'Técnica de compresión graduada', 'Presión lenta y progresiva con transductor lineal para desplazar gas; el apéndice inflamado no se comprime (Puylaert).'],
+    ['p1', 'Cómo medir la aorta', 'De pared externa a pared externa, perpendicular al eje del vaso, en transversal.'],
+    ['p1', 'Ángulo Doppler para medir velocidades', '≤ 60°.'],
+    ['p2', 'Punto más declive de la cavidad peritoneal', 'La pelvis: fondo de saco de Douglas (mujer) o rectovesical (hombre). En el compartimento supramesocólico: Morison.'],
+    ['p2', 'Cinco capas de la pared intestinal', 'Hiper (luz–mucosa), hipo (muscularis mucosae), hiper (submucosa), hipo (muscular propia), hiper (serosa).'],
+    ['p2', 'Grosor normal de la pared intestinal', '≤ 3 mm en intestino delgado y colon distendidos.'],
+    ['p2', 'Apéndice normal', 'Fondo ciego, compresible, sin peristaltismo, ≤ 6 mm.'],
+    ['p2', 'Espacio pararrenal anterior: contenido', 'Páncreas, duodeno (2.ª–4.ª porción), colon ascendente y descendente.'],
+    ['p2', 'Signo de la gaviota', 'Tronco celíaco bifurcándose en hepática común y esplénica (corte transversal).'],
+    ['p2', 'Vaso que pasa entre la AMS y la aorta', 'La vena renal izquierda.'],
+    ['p2', 'Diámetro normal de la aorta abdominal', '≈ 2 cm; < 3 cm.'],
+    ['p2', 'Patrón Doppler de la AMS en ayunas vs posprandial', 'Ayunas: alta resistencia. Posprandial: baja resistencia.'],
+    ['p2', 'VCI ≤ 2,1 cm con colapso > 50 %', 'PAD estimada ≈ 3 mmHg.'],
+    ['p3', 'Criterios de apendicitis', 'No compresible, > 6 mm, apendicolito, hiperemia, grasa periapendicular hiperecoica, dolor focal.'],
+    ['p3', 'Signos de apendicitis perforada', 'Pérdida de la submucosa ecogénica, pared asimétrica, colección/absceso.'],
+    ['p3', 'Invaginación: signos', 'Diana o donut (transversal) y pseudorriñón (longitudinal).'],
+    ['p3', 'Criterios de estenosis hipertrófica del píloro', 'Grosor muscular ≥ 3 mm, longitud ≥ 15–17 mm.'],
+    ['p3', 'Obstrucción intestinal en ecografía', 'Asas > 2,5–3 cm con líquido, peristaltismo de vaivén.'],
+    ['p3', 'Signos de sufrimiento de asa', 'Aperistalsis, pared engrosada, líquido libre interasas, sin flujo Doppler.'],
+    ['p3', 'Pastel omental', 'Engrosamiento nodular del omento: carcinomatosis peritoneal (o TB).'],
+    ['p3', 'Signo del coágulo centinela', 'Coágulo más ecogénico cerca del órgano que sangra.'],
+    ['p3', 'Neumoperitoneo en ecografía', 'Línea peritoneal ecogénica con reverberación que no se desliza; signo de la cortina.'],
+    ['p3', 'Enfermedad de Crohn en ecografía', 'Íleon terminal engrosado, hiperemia, grasa reptante hiperecoica, estenosis, fístulas.'],
+    ['p3', 'Pseudorriñón en adulto', 'Engrosamiento asimétrico de pared intestinal con pérdida de capas: sospechar carcinoma.'],
+    ['p3', 'Definición de AAA', 'Diámetro ≥ 3 cm (o > 1,5 veces el normal).'],
+    ['p3', 'Umbral de reparación electiva del AAA', '≥ 5,5 cm en varones (≥ 5,0 en mujeres), crecimiento > 1 cm/año o síntomas.'],
+    ['p3', '¿La ecografía descarta la rotura de un AAA?', 'No: el hematoma suele ser retroperitoneal y poco visible.'],
+    ['p3', 'Transformación cavernomatosa de la porta', 'Colaterales serpiginosas en el hilio tras una trombosis portal crónica.'],
+    ['p3', 'Velocidad de estenosis ≥ 70 % de la AMS', 'Velocidad pico sistólica > 275 cm/s.'],
+    ['p3', 'Signo de la aorta flotante', 'Aorta desplazada hacia anterior por adenopatías retroperitoneales (linfoma).'],
+    ['p3', 'Fibrosis retroperitoneal', 'Manguito hipoecoico periaórtico + hidronefrosis bilateral.'],
+    ['p3', 'Ligamento arcuato medio', 'Compresión del tronco celíaco: velocidad alta en espiración que mejora en inspiración.'],
+    ['p4', 'Lactante con vómitos en proyectil no biliosos', 'Estenosis hipertrófica del píloro; alcalosis hipoclorémica hipopotasémica.'],
+    ['p4', 'Tríada de rotura de AAA', 'Dolor abdominal/lumbar, hipotensión y masa pulsátil.'],
+    ['p4', 'Invaginación en adulto', 'Buscar causa orgánica (tumor): tratamiento quirúrgico.']
+  ],
+
+  preguntas: [
+    { c: 'p1', q: 'Para evaluar el apéndice cecal, la técnica recomendada es:', o: ['Convexo con vejiga llena', 'Lineal con compresión graduada', 'Sectorial subxifoideo', 'Endocavitario'], a: 1, e: 'La compresión graduada con transductor lineal desplaza las asas con gas; el apéndice inflamado no se comprime.' },
+    { c: 'p1', q: 'El diámetro de la aorta abdominal debe medirse:', o: ['De pared interna a pared interna en longitudinal oblicuo', 'De pared externa a pared externa, perpendicular al eje', 'Solo la luz con Doppler color', 'En el plano coronal sin importar el ángulo'], a: 1, e: 'La medida externa-externa perpendicular evita subestimar el aneurisma y es la usada en las guías.' },
+    { c: 'p2', q: 'En decúbito supino, el espacio peritoneal más declive del abdomen superior es:', o: ['Espacio subfrénico izquierdo', 'Bolsa hepatorrenal de Morison', 'Transcavidad de los epiplones', 'Gotera parietocólica izquierda'], a: 1, e: 'Por eso es la primera ventana del FAST.' },
+    { c: 'p2', q: '¿Cuál capa de la pared intestinal es hiperecoica?', o: ['Muscular propia', 'Submucosa', 'Muscularis mucosae', 'Ninguna'], a: 1, e: 'Submucosa (3.ª capa) hiperecoica; muscular propia (4.ª) hipoecoica.' },
+    { c: 'p2', q: 'El vaso que cruza entre la arteria mesentérica superior y la aorta es:', o: ['Vena esplénica', 'Vena renal izquierda', 'Vena renal derecha', 'Arteria renal izquierda'], a: 1, e: 'Su compresión en ese punto es el síndrome de cascanueces.' },
+    { c: 'p2', q: 'Diámetro normal del apéndice cecal:', o: ['≤ 6 mm', '≤ 10 mm', '≤ 15 mm', '≤ 3 mm siempre'], a: 0, e: 'Por encima de 6 mm y no compresible sugiere apendicitis.' },
+    { c: 'p2', q: 'VCI de 2,5 cm sin colapso con el sniff. Presión de aurícula derecha estimada:', o: ['≈ 3 mmHg', '≈ 8 mmHg', '≈ 15 mmHg', 'No se puede estimar'], a: 2, e: 'VCI > 2,1 cm con colapso < 50 % → PAD alta (≈ 15 mmHg).' },
+    { c: 'p3', q: 'Apéndice de 9 mm, no compresible, con apendicolito y grasa periapendicular hiperecoica:', o: ['Apéndice normal', 'Apendicitis aguda', 'Mucocele', 'Enfermedad de Crohn'], a: 1, e: 'Hallazgos típicos de apendicitis.' },
+    { c: 'p3', q: 'Imagen en diana en hemiabdomen derecho de un niño de 18 meses con dolor cólico:', o: ['Apendicitis', 'Invaginación intestinal', 'Estenosis pilórica', 'Duplicación intestinal'], a: 1, e: 'Anillos concéntricos del intestino invaginado: invaginación ileocólica.' },
+    { c: 'p3', q: 'Píloro con grosor muscular de 4 mm y canal de 18 mm en lactante de 5 semanas:', o: ['Normal', 'Pilorospasmo', 'Estenosis hipertrófica del píloro', 'Reflujo gastroesofágico'], a: 2, e: 'Supera los umbrales (≥ 3 mm y ≥ 15–17 mm).' },
+    { c: 'p3', q: 'Asas de intestino delgado de 3,5 cm con contenido líquido y movimientos de vaivén:', o: ['Íleo paralítico sin obstrucción', 'Obstrucción intestinal mecánica', 'Normal', 'Ascitis'], a: 1, e: 'Dilatación con peristaltismo de vaivén = obstrucción mecánica.' },
+    { c: 'p3', q: 'Ascitis con septos, nódulos peritoneales y engrosamiento nodular del omento sugiere:', o: ['Cirrosis compensada', 'Carcinomatosis peritoneal', 'Insuficiencia cardíaca', 'Síndrome nefrótico'], a: 1, e: 'Pastel omental y nódulos: carcinomatosis (diagnóstico diferencial: TB peritoneal).' },
+    { c: 'p3', q: 'Aorta infrarrenal de 3,8 cm en un varón asintomático de 68 años. Clasificación:', o: ['Ectasia', 'Aneurisma de aorta abdominal', 'Normal para la edad', 'Disección'], a: 1, e: '≥ 3 cm es aneurisma. Con 3,8 cm corresponde seguimiento ecográfico periódico.' },
+    { c: 'p3', q: 'Colgajo intimal móvil en la luz aórtica con dos luces de flujo distinto:', o: ['Trombo mural', 'Disección aórtica', 'Artefacto de reverberación', 'Aneurisma sacular'], a: 1, e: 'El flap intimal es el signo directo de disección; confirmar con angio-TC.' },
+    { c: 'p3', q: 'Múltiples vasos serpiginosos en el hilio hepático sin vena porta identificable:', o: ['Hipertensión portal sin trombosis', 'Transformación cavernomatosa de la porta', 'Dilatación de vía biliar', 'Hemangioma'], a: 1, e: 'Es la secuela de una trombosis portal crónica.' },
+    { c: 'p3', q: 'Manguito de tejido hipoecoico alrededor de la aorta infrarrenal con hidronefrosis bilateral:', o: ['Aneurisma inflamatorio exclusivamente', 'Fibrosis retroperitoneal', 'Hematoma del psoas', 'Riñón en herradura'], a: 1, e: 'Atrapa los uréteres y causa hidronefrosis bilateral.' },
+    { c: 'p3', q: 'Velocidad pico sistólica de 320 cm/s en el origen de la AMS sugiere:', o: ['Flujo posprandial normal', 'Estenosis ≥ 70 %', 'Trombosis de la vena mesentérica', 'Aliasing sin significado'], a: 1, e: 'Umbral > 275 cm/s para estenosis significativa de la AMS.' },
+    { c: 'p3', q: 'Íleon terminal con pared de 7 mm, hiperemia y grasa mesentérica hiperecoica alrededor, en joven con diarrea crónica:', o: ['Apendicitis', 'Enfermedad de Crohn', 'Carcinoma de colon', 'Invaginación'], a: 1, e: 'Íleon terminal + grasa reptante + hiperemia = Crohn activo.' },
+    { c: 'p4', caso: true, q: 'Varón de 22 años con dolor periumbilical que migró a FID, fiebre de 38 °C y leucocitosis. Ecografía: apéndice de 10 mm no compresible, pared asimétrica sin capas y colección de 3 cm adyacente. Interpretación:', o: ['Apendicitis no complicada', 'Apendicitis perforada con absceso', 'Linfadenitis mesentérica', 'Ileítis por Yersinia'], a: 1, e: 'Pérdida de la submucosa y colección indican perforación.' },
+    { c: 'p4', caso: true, q: 'Lactante de 10 meses con crisis de llanto, vómitos y heces en jalea de grosella. Ecografía: imagen en donut de 3 cm en hipocondrio derecho, sin líquido libre ni signos de perforación. Conducta:', o: ['Cirugía inmediata', 'Reducción hidrostática o neumática guiada', 'Alta con dieta', 'TC de abdomen'], a: 1, e: 'Invaginación ileocólica no complicada: reducción no quirúrgica.' },
+    { c: 'p4', caso: true, q: 'Varón de 74 años, fumador, con dolor lumbar súbito, PA 70/40 y masa pulsátil. POCUS: aorta de 7 cm. Conducta:', o: ['Angio-TC para confirmar rotura antes de decidir', 'Traslado inmediato a quirófano / reparación urgente', 'Ecografía renal para descartar cólico', 'Observación'], a: 1, e: 'AAA con clínica de rotura y paciente inestable: no se debe retrasar la cirugía por una TC.' },
+    { c: 'p4', caso: true, q: 'Lactante de 4 semanas, varón, con vómitos en proyectil no biliosos después de cada toma; gasometría con alcalosis metabólica hipoclorémica. Hallazgo ecográfico esperado:', o: ['Diana en hemiabdomen derecho', 'Píloro engrosado ≥ 3 mm y alargado ≥ 15 mm', 'Doble burbuja', 'Asas dilatadas difusas'], a: 1, e: 'Estenosis hipertrófica del píloro.' },
+    { c: 'p4', caso: true, q: 'Paciente con antecedente de dos laparotomías, vómitos y distensión. Ecografía: asas dilatadas de 4 cm, una de ellas aperistáltica con pared engrosada y líquido libre entre asas. Interpretación:', o: ['Íleo paralítico benigno', 'Obstrucción con signos de sufrimiento de asa (estrangulación)', 'Gastroenteritis', 'Normal posoperatorio'], a: 1, e: 'Aperistalsis, pared gruesa y líquido interasas indican compromiso vascular: cirugía urgente.' },
+    { c: 'p4', caso: true, q: 'Mujer de 55 años con ascitis, pérdida de peso y masa anexial. Ecografía: ascitis tabicada y pastel omental. Sospecha:', o: ['Cirrosis', 'Carcinomatosis peritoneal por neoplasia de ovario', 'Insuficiencia cardíaca', 'Pancreatitis'], a: 1, e: 'Masa anexial + carcinomatosis: cáncer de ovario. CA-125 y TC.' }
+  ],
+
+  glosario: [
+    ['Morison', 'Bolsa hepatorrenal; espacio declive del compartimento supramesocólico.'],
+    ['Douglas', 'Fondo de saco rectouterino; punto más declive de la pelvis femenina.'],
+    ['Firma intestinal', 'Patrón de 5 capas alternantes de la pared intestinal.'],
+    ['Compresión graduada', 'Técnica de presión progresiva para explorar el intestino y el apéndice.'],
+    ['Pseudorriñón', 'Asa intestinal engrosada en corte longitudinal que simula un riñón.'],
+    ['Pastel omental', 'Engrosamiento infiltrativo del omento mayor.'],
+    ['Coágulo centinela', 'Coágulo más ecogénico adyacente al sitio de sangrado.'],
+    ['Transformación cavernomatosa', 'Colaterales periportales tras trombosis crónica de la porta.'],
+    ['Aorta flotante', 'Aorta desplazada hacia anterior por adenopatías retroperitoneales.'],
+    ['Signo de la gaviota', 'Bifurcación del tronco celíaco en arterias hepática común y esplénica.'],
+    ['Cascanueces', 'Compresión de la vena renal izquierda entre AMS y aorta.'],
+    ['Grasa reptante', 'Grasa mesentérica hipertrófica e hiperecoica que envuelve el intestino en la enfermedad de Crohn.'],
+    ['AAA', 'Aneurisma de aorta abdominal: diámetro ≥ 3 cm.']
+  ]
+});
+</script>
+<script>
+/* Sonoaula — motor de la plataforma de estudio.
+   El contenido vive en /contenido/*.js (uno por curso) y se registra con ECO.curso({...}).
+   El progreso se guarda en el navegador (localStorage). */
+(function () {
+  'use strict';
+
+  var CURSOS = (window.ECO && window.ECO.cursos) || [];
+  var app = document.getElementById('app');
+  var NUEVAS_POR_SESION = 20;
+  var KEY = 'sonoaula.v1';
+
+  /* ---------- Utilidades ---------- */
+  function hash(str) { var h = 5381; for (var i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+  function hoy() { var d = new Date(); return Math.floor((d.getTime() - d.getTimezoneOffset() * 60000) / 86400000); }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function pct(x) { return Math.round(x * 100); }
+  function letra(i) { return 'ABCDEFG'.charAt(i); }
+  function strip(html) { var d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+
+  /* ---------- Estado persistente ---------- */
+  function base() { return { cards: {}, quiz: {}, notas: {}, leidos: {}, sims: [] }; }
+  function cargar() {
+    try { var raw = localStorage.getItem(KEY); if (raw) { var o = JSON.parse(raw); var b = base(); for (var k in b) if (o[k]) b[k] = o[k]; return b; } } catch (e) {}
+    return base();
+  }
+  var S = cargar();
+  function guardar() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+
+  /* ---------- Normalizar contenido ---------- */
+  var porId = {};
+  CURSOS.forEach(function (c) {
+    porId[c.id] = c;
+    c.critMap = {};
+    c.criterios.forEach(function (cr, i) {
+      cr.n = i + 1; c.critMap[cr.id] = cr;
+      (cr.temas || []).forEach(function (t) { t.id = c.id + '-' + hash(t.titulo); });
+    });
+    c.tarjetas = (c.tarjetas || []).map(function (t) { return { id: c.id + '-t' + hash(t[1]), c: t[0], f: t[1], r: t[2], curso: c }; });
+    c.preguntas = (c.preguntas || []).map(function (p) { var o = { id: c.id + '-p' + hash(p.q), curso: c }; for (var k in p) o[k] = p[k]; return o; });
+    c.glosario = c.glosario || [];
+    c.fuentes = c.fuentes || [];
+  });
+
+  /* ---------- Repetición espaciada (SM-2 simplificado) ---------- */
+  function calcular(t, g) {
+    var s = S.cards[t.id] || { i: 0, e: 2.5, r: 0, l: 0, d: 0 };
+    var i = s.i, e = s.e, l = s.l;
+    if (g === 0) { i = 0; e = Math.max(1.3, e - 0.2); l++; }
+    else if (g === 1) { i = i < 1 ? 1 : Math.max(i + 1, Math.round(i * 1.2)); e = Math.max(1.3, e - 0.15); }
+    else if (g === 2) { i = i < 1 ? 1 : i < 3 ? 3 : Math.round(i * e); }
+    else { i = i < 1 ? 3 : Math.round(i * e * 1.3); e = e + 0.15; }
+    return { i: i, e: e, r: s.r + 1, l: l, d: hoy() + i };
+  }
+  function etiquetaIntervalo(i) { if (i === 0) return 'otra vez'; if (i < 30) return i + ' d'; if (i < 365) return Math.round(i / 30) + ' m'; return (i / 365).toFixed(1) + ' a'; }
+  function dominioTarjeta(t) { var s = S.cards[t.id]; if (!s) return 0; return s.i >= 10 ? 1 : s.i >= 3 ? 0.75 : s.i >= 1 ? 0.4 : 0.1; }
+  function vencida(t) { var s = S.cards[t.id]; return s && s.d <= hoy(); }
+  function nueva(t) { return !S.cards[t.id]; }
+  function todasTarjetas() { var a = []; CURSOS.forEach(function (c) { a = a.concat(c.tarjetas); }); return a; }
+  function pendientesHoy(lista) { var v = lista.filter(vencida).length; var n = Math.min(lista.filter(nueva).length, NUEVAS_POR_SESION); return v + n; }
+
+  /* ---------- Dominio ponderado ---------- */
+  function puntajeCriterio(c, cr) {
+    var ts = c.tarjetas.filter(function (t) { return t.c === cr.id; });
+    var ps = c.preguntas.filter(function (p) { return p.c === cr.id; });
+    var a = ts.length ? ts.reduce(function (s, t) { return s + dominioTarjeta(t); }, 0) / ts.length : null;
+    var b = ps.length ? ps.filter(function (p) { return S.quiz[p.id] && S.quiz[p.id].ok; }).length / ps.length : null;
+    if (a === null && b === null) return 0; if (a === null) return b; if (b === null) return a;
+    return (a + b) / 2;
+  }
+  function puntajeCurso(c) {
+    var tot = c.criterios.reduce(function (s, cr) { return s + cr.peso; }, 0) || 1;
+    return c.criterios.reduce(function (s, cr) { return s + cr.peso * puntajeCriterio(c, cr); }, 0) / tot;
+  }
+
+  /* ---------- Sesiones en memoria ---------- */
+  var ses = null;
+
+  /* ---------- Router ---------- */
+  function ruta() {
+    var h = (location.hash || '#inicio').slice(1) || 'inicio';
+    var partes = h.split('-');
+    if (porId[partes[0]]) return { vista: 'curso', curso: porId[partes[0]], tab: partes[1] || 'temario' };
+    return { vista: h };
+  }
+  function render() {
+    var r = ruta();
+    document.querySelectorAll('[data-nav]').forEach(function (a) {
+      a.classList.toggle('on', a.dataset.nav === r.vista || (r.vista === 'curso' && a.dataset.nav === 'inicio'));
+    });
+    actualizarBadge();
+    if (r.vista === 'curso') vistaCurso(r.curso, r.tab);
+    else if (r.vista === 'repaso') vistaRepaso();
+    else if (r.vista === 'glosario') vistaGlosario();
+    else if (r.vista === 'biblioteca') vistaBiblioteca();
+    else vistaInicio();
+    window.scrollTo(0, 0);
+  }
+  function actualizarBadge() {
+    var b = document.getElementById('badge-repaso'); if (!b) return;
+    var n = pendientesHoy(todasTarjetas());
+    b.textContent = n; b.hidden = n === 0;
+  }
+
+  /* ---------- Componentes ---------- */
+  function barrasCriterios(c) {
+    return '<div class="tgc">' + c.criterios.map(function (cr) {
+      var p = puntajeCriterio(c, cr);
+      return '<div class="l" title="' + esc(cr.descripcion) + '"><span class="w">' + cr.peso + '%</span>' +
+        '<span class="bar' + (p >= 0.8 ? ' ok' : '') + '"><i style="width:' + pct(p) + '%"></i></span><span class="v">' + pct(p) + '%</span></div>';
+    }).join('') + '</div>';
+  }
+
+  /* ---------- Inicio ---------- */
+  function vistaInicio() {
+    var todas = todasTarjetas();
+    var pend = pendientesHoy(todas);
+    var nPreg = 0, nOk = 0;
+    CURSOS.forEach(function (c) { c.preguntas.forEach(function (p) { nPreg++; if (S.quiz[p.id] && S.quiz[p.id].ok) nOk++; }); });
+    var estudiadas = todas.filter(function (t) { return !nueva(t); }).length;
+
+    app.innerHTML =
+      '<section class="hero">' +
+        '<div class="stack">' +
+          '<span class="eyebrow">Posgrado en ecografía · Gestión 2026</span>' +
+          '<h1>Tu sala de estudio de ecografía</h1>' +
+          '<p class="lead">Cuatro cursos organizados según sus criterios de evaluación. Cada criterio tiene su temario, tarjetas de repaso espaciado y preguntas con explicación. El dominio de cada curso se calcula con el mismo peso que usa la evaluación.</p>' +
+          '<div class="row">' +
+            '<a class="btn pri" href="#repaso">Repasar hoy' + (pend ? ' · ' + pend + ' tarjetas' : '') + '</a>' +
+            '<a class="btn ghost" href="#' + (CURSOS[0] ? CURSOS[0].id : 'inicio') + '">Empezar por Bases</a>' +
+          '</div>' +
+        '</div>' +
+        '<div class="scan" aria-hidden="true"><canvas id="bmode" width="640" height="480"></canvas>' +
+          '<div class="hud tl">C5-2 · ABD<br>FR 22 Hz · G 54</div><div class="hud tr">MI 0.9<br>TIS 0.4</div><div class="hud bl">+ 4.2 cm</div></div>' +
+      '</section>' +
+      '<section class="kpis">' +
+        '<div class="kpi"><b class="mono">' + pend + '</b><span>tarjetas para hoy</span></div>' +
+        '<div class="kpi"><b class="mono">' + estudiadas + '<span class="muted" style="font-size:1rem"> / ' + todas.length + '</span></b><span>tarjetas iniciadas</span></div>' +
+        '<div class="kpi"><b class="mono">' + nOk + '<span class="muted" style="font-size:1rem"> / ' + nPreg + '</span></b><span>preguntas acertadas</span></div>' +
+      '</section>' +
+      '<section class="stack"><div class="row" style="justify-content:space-between"><h2>Cursos</h2><span class="eyebrow">Dominio ponderado por criterio</span></div>' +
+      '<div class="cursos">' + CURSOS.map(function (c) {
+        return '<a class="curso" href="#' + c.id + '">' +
+          '<div class="head"><div><span class="eyebrow">' + esc(c.codigo) + '</span><h3>' + esc(c.titulo) + '</h3></div><span class="pct">' + pct(puntajeCurso(c)) + '%</span></div>' +
+          '<p class="sub">' + esc(c.resumen) + '</p>' + barrasCriterios(c) +
+          '<span class="muted mono" style="font-size:.8rem">' + c.tarjetas.length + ' tarjetas · ' + c.preguntas.length + ' preguntas · ' + c.criterios.reduce(function (s, cr) { return s + (cr.temas || []).length; }, 0) + ' temas</span>' +
+        '</a>';
+      }).join('') + '</div></section>';
+    pintarBmode(document.getElementById('bmode'));
+  }
+
+  /* Imagen decorativa en modo B: abanico convexo con speckle */
+  function pintarBmode(cv) {
+    if (!cv || !cv.getContext) return;
+    var ctx = cv.getContext('2d'), W = cv.width, H = cv.height;
+    var seed = 7; function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+    ctx.fillStyle = '#05080a'; ctx.fillRect(0, 0, W, H);
+    var cx = W / 2, cy = -60, r0 = 110, r1 = H + 40, a0 = Math.PI / 2 - 0.62, a1 = Math.PI / 2 + 0.62;
+    var img = ctx.getImageData(0, 0, W, H), d = img.data;
+    // estructuras: vesícula anecoica, pared hiperecoica, cálculo con sombra
+    var ves = { x: W * 0.47, y: H * 0.5, rx: 92, ry: 50 };
+    var lit = { x: W * 0.52, y: H * 0.58, r: 15 };
+    for (var y = 0; y < H; y++) {
+      for (var x = 0; x < W; x++) {
+        var dx = x - cx, dy = y - cy, r = Math.sqrt(dx * dx + dy * dy), a = Math.atan2(dy, dx);
+        if (r < r0 || r > r1 || a < a0 || a > a1) continue;
+        var prof = (r - r0) / (r1 - r0);
+        var v = 70 + 90 * rnd() * rnd() * 2.2;
+        v *= 1 - prof * 0.45; // atenuación
+        var ex = (x - ves.x) / ves.rx, ey = (y - ves.y) / ves.ry, e = ex * ex + ey * ey;
+        if (e < 1) v = 6 + 10 * rnd();
+        else if (e < 1.18) v = 150 + 80 * rnd();
+        var lx = x - lit.x, ly = y - lit.y;
+        if (lx * lx + ly * ly < lit.r * lit.r) v = 225 + 30 * rnd();
+        else if (y > lit.y && Math.abs(lx) < lit.r * 0.95 && e >= 0) { if (y > lit.y + lit.r * 0.5) v *= 0.12; }
+        // refuerzo posterior bajo la vesícula
+        if (e >= 1.18 && Math.abs(x - ves.x) < ves.rx * 0.8 && y > ves.y + ves.ry && !(Math.abs(lx) < lit.r)) v *= 1.35;
+        var k = (y * W + x) * 4; v = Math.max(0, Math.min(255, v));
+        d[k] = v; d[k + 1] = v; d[k + 2] = v; d[k + 3] = 255;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+    // escala de profundidad
+    ctx.fillStyle = '#9fb0b8';
+    for (var i = 0; i <= 14; i++) { var yy = 30 + i * ((H - 50) / 14); ctx.fillRect(W - 16, yy, i % 5 === 0 ? 10 : 5, 1.5); }
+    // calibradores
+    ctx.strokeStyle = '#f0b84a'; ctx.lineWidth = 2;
+    function cruz(x, y) { ctx.beginPath(); ctx.moveTo(x - 6, y); ctx.lineTo(x + 6, y); ctx.moveTo(x, y - 6); ctx.lineTo(x, y + 6); ctx.stroke(); }
+    cruz(ves.x - ves.rx + 4, ves.y); cruz(ves.x + ves.rx - 4, ves.y);
+    ctx.setLineDash([3, 5]); ctx.beginPath(); ctx.moveTo(ves.x - ves.rx + 10, ves.y); ctx.lineTo(ves.x + ves.rx - 10, ves.y); ctx.stroke(); ctx.setLineDash([]);
+  }
+
+  /* ---------- Vista curso ---------- */
+  var TABS = [['temario', 'Temario'], ['tarjetas', 'Tarjetas'], ['preguntas', 'Preguntas'], ['simulacro', 'Simulacro']];
+  function vistaCurso(c, tab) {
+    if (!TABS.some(function (t) { return t[0] === tab; })) tab = 'temario';
+    var cab =
+      '<section class="chead"><span class="eyebrow">' + esc(c.codigo) + ' · dominio ' + pct(puntajeCurso(c)) + '%</span><h1>' + esc(c.titulo) + '</h1>' +
+      '<p class="muted">' + esc(c.resumen) + '</p></section>' +
+      '<nav class="tabs" aria-label="Secciones del curso">' + TABS.map(function (t) {
+        return '<a href="#' + c.id + '-' + t[0] + '" class="' + (t[0] === tab ? 'on' : '') + '">' + t[1] + '</a>';
+      }).join('') + '</nav>';
+    var cuerpo = '';
+    if (tab === 'temario') cuerpo = temario(c);
+    app.innerHTML = cab + '<section id="cuerpo" class="stack">' + cuerpo + '</section>';
+    if (tab === 'tarjetas') iniciarTarjetas(c, 'todos', 'pendientes');
+    if (tab === 'preguntas') iniciarPreguntas(c, 'todos', false);
+    if (tab === 'simulacro') pantallaSimulacro(c);
+  }
+
+  function temario(c) {
+    return c.criterios.map(function (cr) {
+      var p = puntajeCriterio(c, cr);
+      return '<article class="crit">' +
+        '<header><div class="peso">' + cr.peso + '%<small>' + (cr.pesoEstimado ? 'estimado' : 'peso') + '</small></div>' +
+        '<div class="stack" style="gap:4px"><h3>' + esc(cr.titulo) + '</h3><p>' + esc(cr.descripcion) + '</p></div>' +
+        '<div class="dom">dominio ' + pct(p) + '%<div class="bar' + (p >= 0.8 ? ' ok' : '') + '" style="width:90px;margin-top:6px"><i style="width:' + pct(p) + '%"></i></div></div></header>' +
+        (cr.temas || []).map(function (t) {
+          return '<details class="tema" data-tema="' + t.id + '"><summary>' + esc(t.titulo) + (S.leidos[t.id] ? '<span class="chk">✓ estudiado</span>' : '') + '</summary>' +
+            '<div class="tema-body">' + t.html +
+            (t.fuente ? '<p class="fuente">Fuente: ' + esc(t.fuente) + '</p>' : '') +
+            '<div class="notas"><label for="n-' + t.id + '">Mis notas</label><textarea id="n-' + t.id + '" data-nota="' + t.id + '" placeholder="Apuntes de clase, dudas, páginas del libro…">' + esc(S.notas[t.id] || '') + '</textarea></div>' +
+            '<div class="row"><button class="btn sm' + (S.leidos[t.id] ? '' : ' pri') + '" data-act="leido" data-id="' + t.id + '">' + (S.leidos[t.id] ? 'Marcar como pendiente' : 'Marcar como estudiado') + '</button>' +
+            '<a class="btn sm ghost" href="#' + c.id + '-tarjetas" data-act="ir-crit" data-crit="' + cr.id + '">Tarjetas de este criterio</a></div>' +
+            '</div></details>';
+        }).join('') +
+      '</article>';
+    }).join('');
+  }
+
+  /* ---------- Tarjetas ---------- */
+  function selectCriterio(c, val, id) {
+    return '<select id="' + id + '" aria-label="Criterio"><option value="todos">Todos los criterios</option>' + c.criterios.map(function (cr) {
+      return '<option value="' + cr.id + '"' + (cr.id === val ? ' selected' : '') + '>' + cr.peso + '% · ' + esc(cr.titulo) + '</option>';
+    }).join('') + '</select>';
+  }
+  var critPreferido = null;
+  function iniciarTarjetas(c, crit, modo) {
+    if (critPreferido) { crit = critPreferido; critPreferido = null; }
+    var lista = c.tarjetas.filter(function (t) { return crit === 'todos' || t.c === crit; });
+    var cola;
+    if (modo === 'todas') cola = shuffle(lista);
+    else cola = shuffle(lista.filter(vencida)).concat(lista.filter(nueva).slice(0, NUEVAS_POR_SESION));
+    ses = { tipo: 'tarjetas', curso: c, crit: crit, modo: modo, cola: cola, total: cola.length, hechas: 0, vuelta: false };
+    pintarTarjeta();
+  }
+  function pintarTarjeta() {
+    var cont = document.getElementById('cuerpo'); if (!cont || !ses) return;
+    var global = ses.tipo === 'repaso';
+    var filtros = global ? '' :
+      '<div class="filtros">' + selectCriterio(ses.curso, ses.crit, 'f-crit-t') +
+      '<select id="f-modo" aria-label="Modo"><option value="pendientes"' + (ses.modo === 'pendientes' ? ' selected' : '') + '>Pendientes y nuevas</option><option value="todas"' + (ses.modo === 'todas' ? ' selected' : '') + '>Todas (repaso libre)</option></select></div>';
+    var t = ses.cola[0];
+    if (!t) {
+      cont.innerHTML = filtros + '<div class="fc"><h3>Sin tarjetas pendientes</h3><p class="muted">' +
+        (ses.hechas ? 'Repasaste ' + ses.hechas + ' tarjetas en esta sesión. ' : '') +
+        'Vuelve mañana para las siguientes repeticiones' + (global ? '.' : ', o usa el modo «Todas» para repasar libremente.') + '</p>' +
+        (global ? '<a class="btn" href="#inicio">Volver al inicio</a>' : '') + '</div>';
+      actualizarBadge(); return;
+    }
+    var cr = t.curso.critMap[t.c];
+    var est = S.cards[t.id];
+    var botones = [0, 1, 2, 3].map(function (g) {
+      var nombres = ['Otra vez', 'Difícil', 'Bien', 'Fácil'];
+      return '<button class="btn g' + g + '" data-act="calif" data-g="' + g + '">' + nombres[g] + '<small>' + etiquetaIntervalo(calcular(t, g).i) + '</small></button>';
+    }).join('');
+    cont.innerHTML = filtros +
+      '<div class="fc" id="fc">' +
+        '<div class="meta"><span class="eyebrow">' + (global ? esc(t.curso.corto) + ' · ' : '') + esc(cr ? cr.titulo : '') + '</span><span class="progreso">' + (ses.hechas + 1) + ' / ' + Math.max(ses.total, ses.hechas + ses.cola.length) + (est ? '' : ' · nueva') + '</span></div>' +
+        '<div class="q">' + t.f + '</div>' +
+        (ses.vuelta ? '<div class="a">' + t.r + '</div>' : '') +
+      '</div>' +
+      (ses.vuelta ? '<div class="grades">' + botones + '</div>' : '<button class="btn pri" data-act="voltear" style="width:100%">Mostrar respuesta <span class="mono muted" style="font-size:.75rem">(espacio)</span></button>');
+  }
+  function calificar(g) {
+    var t = ses.cola.shift();
+    S.cards[t.id] = calcular(t, g); guardar();
+    ses.hechas++; ses.vuelta = false;
+    if (g === 0) ses.cola.splice(Math.min(ses.cola.length, 4), 0, t);
+    pintarTarjeta(); actualizarBadge();
+  }
+
+  /* ---------- Repaso global ---------- */
+  function vistaRepaso() {
+    app.innerHTML = '<section class="chead"><span class="eyebrow">Todos los cursos</span><h1>Repaso del día</h1>' +
+      '<p class="muted">Tarjetas vencidas de los cuatro cursos y hasta ' + NUEVAS_POR_SESION + ' nuevas. Califica con honestidad: «Otra vez» la devuelve a la sesión; «Fácil» la aleja más en el tiempo.</p></section>' +
+      '<section id="cuerpo" class="stack"></section>';
+    var todas = todasTarjetas();
+    var cola = shuffle(todas.filter(vencida)).concat(todas.filter(nueva).slice(0, NUEVAS_POR_SESION));
+    ses = { tipo: 'repaso', cola: cola, total: cola.length, hechas: 0, vuelta: false };
+    pintarTarjeta();
+  }
+
+  /* ---------- Preguntas (práctica) ---------- */
+  function mezclarOpciones(p) {
+    var idx = shuffle(p.o.map(function (_, i) { return i; }));
+    return { p: p, orden: idx, resp: null };
+  }
+  function iniciarPreguntas(c, crit, soloFalladas) {
+    if (critPreferido) { crit = critPreferido; critPreferido = null; }
+    var lista = c.preguntas.filter(function (p) { return (crit === 'todos' || p.c === crit) && (!soloFalladas || !(S.quiz[p.id] && S.quiz[p.id].ok)); });
+    ses = { tipo: 'preguntas', curso: c, crit: crit, falladas: soloFalladas, items: shuffle(lista).map(mezclarOpciones), pos: 0, aciertos: 0 };
+    pintarPregunta();
+  }
+  function htmlPregunta(it, mostrarFeedback) {
+    var p = it.p, cr = p.curso.critMap[p.c];
+    return '<div class="qbox">' +
+      '<div class="row" style="justify-content:space-between"><span class="eyebrow">' + esc(cr ? cr.peso + '% · ' + cr.titulo : '') + '</span>' + (p.caso ? '<span class="caso-tag">Caso clínico</span>' : '') + '</div>' +
+      '<div class="enun">' + p.q + '</div>' +
+      '<div class="opts">' + it.orden.map(function (oi, k) {
+        var cls = '';
+        if (it.resp !== null) {
+          if (mostrarFeedback) { if (oi === p.a) cls = 'ok'; else if (oi === it.resp) cls = 'bad'; }
+          else if (oi === it.resp) cls = 'sel';
+        }
+        return '<button class="opt ' + cls + '" data-act="resp" data-oi="' + oi + '"' + (it.resp !== null && mostrarFeedback ? ' disabled' : '') + '><span class="k">' + letra(k) + '</span><span>' + p.o[oi] + '</span></button>';
+      }).join('') + '</div>' +
+      (it.resp !== null && mostrarFeedback ? '<div class="expl' + (it.resp === p.a ? '' : ' mal') + '"><b>' + (it.resp === p.a ? 'Correcto. ' : 'Incorrecto. ') + '</b>' + p.e + '</div>' : '') +
+      '</div>';
+  }
+  function pintarPregunta() {
+    var cont = document.getElementById('cuerpo'); if (!cont) return;
+    var filtros = '<div class="filtros">' + selectCriterio(ses.curso, ses.crit, 'f-crit-p') +
+      '<label><input type="checkbox" id="f-falladas"' + (ses.falladas ? ' checked' : '') + '> Solo las no acertadas</label></div>';
+    var it = ses.items[ses.pos];
+    if (!ses.items.length) { cont.innerHTML = filtros + '<div class="qbox"><h3>No hay preguntas con este filtro</h3><p class="muted">Cambia el criterio o desmarca «Solo las no acertadas».</p></div>'; return; }
+    if (!it) {
+      cont.innerHTML = filtros + '<div class="qbox res"><span class="eyebrow">Resultado de la práctica</span><div class="nota mono">' + ses.aciertos + '<small> / ' + ses.items.length + '</small></div>' +
+        '<p class="muted">Las preguntas falladas siguen contando como no dominadas hasta que las aciertes.</p>' +
+        '<div class="row"><button class="btn pri" data-act="reiniciar-p">Otra ronda</button><button class="btn" data-act="reiniciar-p-falladas">Repetir solo falladas</button></div></div>';
+      return;
+    }
+    cont.innerHTML = filtros + '<p class="progreso">Pregunta ' + (ses.pos + 1) + ' de ' + ses.items.length + ' · aciertos ' + ses.aciertos + '</p>' + htmlPregunta(it, true) +
+      (it.resp !== null ? '<button class="btn pri" data-act="sig-p" style="width:100%">Siguiente</button>' : '');
+  }
+  function registrar(p, ok) {
+    var q = S.quiz[p.id] || { n: 0, c: 0, ok: false };
+    q.n++; if (ok) q.c++; q.ok = ok; S.quiz[p.id] = q; guardar();
+  }
+
+  /* ---------- Simulacro ponderado ---------- */
+  function repartir(c, n) {
+    var tot = c.criterios.reduce(function (s, cr) { return s + cr.peso; }, 0);
+    var base = c.criterios.map(function (cr) {
+      var disp = c.preguntas.filter(function (p) { return p.c === cr.id; }).length;
+      var exacto = n * cr.peso / tot;
+      return { cr: cr, k: Math.min(disp, Math.floor(exacto)), resto: exacto - Math.floor(exacto), disp: disp };
+    });
+    var faltan = n - base.reduce(function (s, b) { return s + b.k; }, 0);
+    base.slice().sort(function (a, b) { return b.resto - a.resto; }).forEach(function (b) { if (faltan > 0 && b.k < b.disp) { b.k++; faltan--; } });
+    while (faltan > 0) { var hubo = false; base.forEach(function (b) { if (faltan > 0 && b.k < b.disp) { b.k++; faltan--; hubo = true; } }); if (!hubo) break; }
+    return base;
+  }
+  function pantallaSimulacro(c) {
+    var cont = document.getElementById('cuerpo');
+    var hist = S.sims.filter(function (s) { return s.curso === c.id; }).slice(-5).reverse();
+    var max = c.preguntas.length;
+    var opciones = [10, 20, 30].filter(function (n) { return n <= max; }); if (opciones.indexOf(max) < 0 && max < 30) opciones.push(max);
+    cont.innerHTML = '<div class="panel"><h3>Simulacro de examen</h3>' +
+      '<p class="muted">Preguntas repartidas según el peso de cada criterio. No verás si acertaste hasta el final; al terminar tendrás la nota sobre 100 ponderada por criterio y la revisión con explicaciones.</p>' +
+      '<div class="tabla"><table style="min-width:0;width:100%"><thead><tr><th>Peso</th><th>Criterio</th><th>Banco</th></tr></thead><tbody>' + c.criterios.map(function (cr) {
+        return '<tr><td class="mono">' + cr.peso + '%</td><td>' + esc(cr.titulo) + '</td><td class="mono">' + c.preguntas.filter(function (p) { return p.c === cr.id; }).length + '</td></tr>';
+      }).join('') + '</tbody></table></div>' +
+      '<div class="row">' + opciones.map(function (n) { return '<button class="btn' + (n === opciones[0] ? ' pri' : '') + '" data-act="sim-ini" data-n="' + n + '">' + n + ' preguntas</button>'; }).join('') + '</div></div>' +
+      (hist.length ? '<div class="panel"><h3>Intentos anteriores</h3>' + hist.map(function (h) {
+        return '<div class="row" style="justify-content:space-between"><span class="mono muted">' + new Date(h.t).toLocaleDateString('es') + ' · ' + h.n + ' preg.</span><b class="mono">' + h.nota + ' / 100</b></div>';
+      }).join('') + '</div>' : '');
+  }
+  function iniciarSimulacro(c, n) {
+    var rep = repartir(c, n), items = [];
+    rep.forEach(function (b) { items = items.concat(shuffle(c.preguntas.filter(function (p) { return p.c === b.cr.id; })).slice(0, b.k)); });
+    ses = { tipo: 'sim', curso: c, items: shuffle(items).map(mezclarOpciones), pos: 0, t0: Date.now() };
+    pintarSim();
+  }
+  function pintarSim() {
+    var cont = document.getElementById('cuerpo'); var it = ses.items[ses.pos];
+    if (!it) return resultadoSim();
+    cont.innerHTML = '<p class="progreso">Simulacro · ' + (ses.pos + 1) + ' de ' + ses.items.length + '</p>' + htmlPregunta(it, false) +
+      '<div class="row"><button class="btn" data-act="sim-ant"' + (ses.pos === 0 ? ' disabled' : '') + '>Anterior</button>' +
+      '<button class="btn pri" data-act="sim-sig" style="flex:1">' + (ses.pos === ses.items.length - 1 ? 'Terminar y ver nota' : 'Siguiente') + '</button></div>';
+  }
+  function resultadoSim() {
+    var c = ses.curso, cont = document.getElementById('cuerpo');
+    var porCrit = {};
+    ses.items.forEach(function (it) {
+      var k = it.p.c; porCrit[k] = porCrit[k] || { n: 0, ok: 0 }; porCrit[k].n++;
+      var ok = it.resp === it.p.a; if (ok) porCrit[k].ok++;
+      registrar(it.p, ok);
+    });
+    var pesoTot = 0, acum = 0;
+    c.criterios.forEach(function (cr) { var r = porCrit[cr.id]; if (r) { pesoTot += cr.peso; acum += cr.peso * r.ok / r.n; } });
+    var nota = Math.round(pesoTot ? acum / pesoTot * 100 : 0);
+    var min = Math.round((Date.now() - ses.t0) / 60000);
+    S.sims.push({ curso: c.id, t: Date.now(), n: ses.items.length, nota: nota }); guardar();
+    cont.innerHTML = '<div class="qbox res"><span class="eyebrow">Nota ponderada · ' + min + ' min</span><div class="nota mono">' + nota + '<small> / 100</small></div>' +
+      '<div class="tgc">' + c.criterios.map(function (cr) {
+        var r = porCrit[cr.id]; if (!r) return '';
+        var p = r.ok / r.n;
+        return '<div class="l"><span class="w">' + cr.peso + '%</span><span class="bar' + (p >= 0.8 ? ' ok' : '') + '"><i style="width:' + pct(p) + '%"></i></span><span class="v">' + r.ok + '/' + r.n + '</span></div><p class="muted" style="font-size:.85rem;margin:-2px 0 4px 3.2rem">' + esc(cr.titulo) + '</p>';
+      }).join('') + '</div>' +
+      '<div class="row"><button class="btn pri" data-act="sim-otra">Nuevo simulacro</button></div></div>' +
+      '<h3>Revisión</h3><div class="revision">' + ses.items.map(function (it, i) {
+        var ok = it.resp === it.p.a;
+        return '<div class="it ' + (ok ? 'bien' : 'mal') + '"><b>' + (i + 1) + '. ' + strip(it.p.q) + '</b>' +
+          '<span>' + (ok ? '✓ ' : '✗ Tu respuesta: ' + (it.resp === null ? 'sin responder' : strip(it.p.o[it.resp])) + ' · Correcta: ') + (ok ? strip(it.p.o[it.p.a]) : strip(it.p.o[it.p.a])) + '</span>' +
+          '<span class="muted">' + it.p.e + '</span></div>';
+      }).join('') + '</div>';
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- Glosario ---------- */
+  function vistaGlosario() {
+    var items = [];
+    CURSOS.forEach(function (c) { c.glosario.forEach(function (g) { items.push({ t: g[0], d: g[1], c: c }); }); });
+    items.sort(function (a, b) { return a.t.localeCompare(b.t, 'es'); });
+    app.innerHTML = '<section class="chead"><span class="eyebrow">' + items.length + ' términos</span><h1>Glosario</h1></section>' +
+      '<div class="filtros"><input type="search" id="buscar" placeholder="Buscar término o definición…" style="flex:1;min-width:0">' +
+      '<select id="glos-curso" aria-label="Curso"><option value="">Todos los cursos</option>' + CURSOS.map(function (c) { return '<option value="' + c.id + '">' + esc(c.corto) + '</option>'; }).join('') + '</select></div>' +
+      '<dl class="glos" id="glos"></dl>';
+    function filtrar() {
+      var q = (document.getElementById('buscar').value || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+      var cid = document.getElementById('glos-curso').value;
+      var html = items.filter(function (it) {
+        var txt = (it.t + ' ' + it.d).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+        return (!cid || it.c.id === cid) && (!q || txt.indexOf(q) >= 0);
+      }).map(function (it) { return '<div class="g"><dt>' + esc(it.t) + '<small>' + esc(it.c.corto) + '</small></dt><dd>' + it.d + '</dd></div>'; }).join('');
+      document.getElementById('glos').innerHTML = html || '<div class="g"><dd class="muted">Sin resultados.</dd></div>';
+    }
+    document.getElementById('buscar').addEventListener('input', filtrar);
+    document.getElementById('glos-curso').addEventListener('change', filtrar);
+    filtrar();
+  }
+
+  /* ---------- Biblioteca ---------- */
+  function vistaBiblioteca() {
+    var ref = (window.ECO && window.ECO.referencias) || [];
+    var propias = []; CURSOS.forEach(function (c) { c.fuentes.forEach(function (f) { propias.push({ f: f, c: c }); }); });
+    app.innerHTML = '<section class="chead"><span class="eyebrow">Fuentes</span><h1>Biblioteca</h1><p class="muted">Los libros de referencia del curso se integrarán aquí. Cada tema mostrará de qué libro y capítulo proviene.</p></section>' +
+      '<section class="panel"><h3>Libros del curso</h3>' + (propias.length ? '<div class="libros">' + propias.map(function (p) {
+        return '<div class="libro"><span class="lomo"></span><div><b>' + esc(p.f.titulo) + '</b><br><span class="muted">' + esc(p.f.autor || '') + ' · ' + esc(p.c.corto) + '</span></div></div>';
+      }).join('') + '</div>' : '<div class="vacio"><b>Todavía no hay libros cargados.</b><span>Cuando compartas los libros de referencia (PDF o fotos de los capítulos), el temario, las tarjetas y las preguntas se ampliarán con su contenido y la cita del capítulo.</span></div>') + '</section>' +
+      '<section class="panel"><h3>Textos clásicos de consulta</h3><p class="muted" style="font-size:.95rem">Referencias habituales en programas de ecografía; sirven para orientar la búsqueda mientras llegan los libros del curso.</p><div class="libros">' + ref.map(function (r) {
+        return '<div class="libro"><span class="lomo"></span><div><b>' + esc(r.titulo) + '</b><br><span class="muted">' + esc(r.autor) + '</span><br><span style="font-size:.9rem">' + esc(r.uso) + '</span></div></div>';
+      }).join('') + '</div></section>' +
+      '<section class="panel"><h3>Respaldo del progreso</h3><p class="muted" style="font-size:.95rem">El progreso se guarda solo en este navegador. Para pasarlo a otro dispositivo, copia el código y pégalo allá.</p>' +
+      '<div class="row"><button class="btn" data-act="copiar">Copiar código de progreso</button><span id="copiado" class="muted mono" style="font-size:.85rem"></span></div>' +
+      '<textarea id="respaldo" placeholder="Pega aquí un código de progreso para restaurarlo"></textarea>' +
+      '<div class="row"><button class="btn" data-act="restaurar">Restaurar progreso</button><button class="btn ghost" data-act="borrar">Borrar todo el progreso</button><span id="msg-resp" class="muted" style="font-size:.9rem"></span></div></section>';
+  }
+
+  /* ---------- Eventos ---------- */
+  var confirmarBorrado = false;
+  app.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]'); if (!b) return;
+    var act = b.dataset.act;
+    if (act === 'voltear') { ses.vuelta = true; pintarTarjeta(); }
+    else if (act === 'calif') calificar(+b.dataset.g);
+    else if (act === 'leido') {
+      var id = b.dataset.id; if (S.leidos[id]) delete S.leidos[id]; else S.leidos[id] = Date.now(); guardar();
+      var det = b.closest('details'); var open = det && det.open; var r = ruta(); vistaCurso(r.curso, r.tab);
+      var d2 = document.querySelector('[data-tema="' + id + '"]'); if (d2 && open) { d2.open = true; d2.scrollIntoView({ block: 'nearest' }); }
+    }
+    else if (act === 'ir-crit') { critPreferido = b.dataset.crit; }
+    else if (act === 'resp') {
+      if (ses.tipo === 'preguntas') {
+        var it = ses.items[ses.pos]; if (it.resp !== null) return;
+        it.resp = +b.dataset.oi; var ok = it.resp === it.p.a; if (ok) ses.aciertos++; registrar(it.p, ok); pintarPregunta();
+      } else if (ses.tipo === 'sim') { ses.items[ses.pos].resp = +b.dataset.oi; pintarSim(); }
+    }
+    else if (act === 'sig-p') { ses.pos++; pintarPregunta(); window.scrollTo(0, 0); }
+    else if (act === 'reiniciar-p') iniciarPreguntas(ses.curso, ses.crit, false);
+    else if (act === 'reiniciar-p-falladas') iniciarPreguntas(ses.curso, ses.crit, true);
+    else if (act === 'sim-ini') iniciarSimulacro(ruta().curso, +b.dataset.n);
+    else if (act === 'sim-sig') { ses.pos++; pintarSim(); window.scrollTo(0, 0); }
+    else if (act === 'sim-ant') { ses.pos = Math.max(0, ses.pos - 1); pintarSim(); }
+    else if (act === 'sim-otra') pantallaSimulacro(ruta().curso);
+    else if (act === 'copiar') {
+      var txt = btoa(unescape(encodeURIComponent(JSON.stringify(S))));
+      var out = document.getElementById('copiado');
+      var ta = document.getElementById('respaldo');
+      try {
+        navigator.clipboard.writeText(txt).then(function () { out.textContent = 'Copiado (' + Math.round(txt.length / 1024) + ' KB)'; }, function () { ta.value = txt; ta.select(); out.textContent = 'Selecciona y copia el texto de abajo'; });
+      } catch (err) { ta.value = txt; ta.select(); out.textContent = 'Selecciona y copia el texto de abajo'; }
+    }
+    else if (act === 'restaurar') {
+      var msg = document.getElementById('msg-resp');
+      try {
+        var o = JSON.parse(decodeURIComponent(escape(atob(document.getElementById('respaldo').value.trim()))));
+        var nb = base(); for (var k in nb) if (o[k]) nb[k] = o[k]; S = nb; guardar(); msg.textContent = 'Progreso restaurado.'; actualizarBadge();
+      } catch (err) { msg.textContent = 'El código no es válido. Cópialo completo desde «Copiar código de progreso».'; }
+    }
+    else if (act === 'borrar') {
+      var m = document.getElementById('msg-resp');
+      if (!confirmarBorrado) { confirmarBorrado = true; b.textContent = 'Pulsa otra vez para confirmar'; m.textContent = 'Se borrarán tarjetas, respuestas, notas y simulacros.'; return; }
+      S = base(); guardar(); confirmarBorrado = false; b.textContent = 'Borrar todo el progreso'; m.textContent = 'Progreso borrado.'; actualizarBadge();
+    }
+  });
+  app.addEventListener('change', function (e) {
+    var id = e.target.id;
+    if (id === 'f-crit-t' || id === 'f-modo') iniciarTarjetas(ses.curso, document.getElementById('f-crit-t').value, document.getElementById('f-modo').value);
+    else if (id === 'f-crit-p' || id === 'f-falladas') iniciarPreguntas(ses.curso, document.getElementById('f-crit-p').value, document.getElementById('f-falladas').checked);
+  });
+  var tNota = null;
+  app.addEventListener('input', function (e) {
+    var id = e.target.dataset && e.target.dataset.nota; if (!id) return;
+    S.notas[id] = e.target.value; clearTimeout(tNota); tNota = setTimeout(guardar, 400);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (!ses || (ses.tipo !== 'tarjetas' && ses.tipo !== 'repaso')) return;
+    var tag = (e.target.tagName || '').toLowerCase(); if (tag === 'textarea' || tag === 'input' || tag === 'select') return;
+    if (!document.getElementById('fc')) return;
+    if (!ses.vuelta && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); ses.vuelta = true; pintarTarjeta(); }
+    else if (ses.vuelta && /^[1-4]$/.test(e.key)) calificar(+e.key - 1);
+  });
+
+  window.addEventListener('hashchange', render);
+  render();
+})();
+</script>
+</body>
+</html>
