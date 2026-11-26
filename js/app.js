@@ -36,7 +36,7 @@
       cr.n = i + 1; c.critMap[cr.id] = cr;
       (cr.temas || []).forEach(function (t) { t.id = c.id + '-' + hash(t.titulo); });
     });
-    c.tarjetas = (c.tarjetas || []).map(function (t) { return { id: c.id + '-t' + hash(t[1]), c: t[0], f: t[1], r: t[2], curso: c }; });
+    c.tarjetas = (c.tarjetas || []).map(function (t) { return { id: c.id + '-t' + hash(t[1]), c: t[0], f: t[1], r: t[2], fuente: t[3] || '', curso: c }; });
     c.preguntas = (c.preguntas || []).map(function (p) { var o = { id: c.id + '-p' + hash(p.q), curso: c }; for (var k in p) o[k] = p[k]; return o; });
     c.glosario = c.glosario || [];
     c.fuentes = c.fuentes || [];
@@ -268,7 +268,7 @@
       '<div class="fc" id="fc">' +
         '<div class="meta"><span class="eyebrow">' + (global ? esc(t.curso.corto) + ' · ' : '') + esc(cr ? cr.titulo : '') + '</span><span class="progreso">' + (ses.hechas + 1) + ' / ' + Math.max(ses.total, ses.hechas + ses.cola.length) + (est ? '' : ' · nueva') + '</span></div>' +
         '<div class="q">' + t.f + '</div>' +
-        (ses.vuelta ? '<div class="a">' + t.r + '</div>' : '') +
+        (ses.vuelta ? '<div class="a">' + t.r + (t.fuente ? '<p class="fuente" style="margin-top:8px">' + esc(t.fuente) + '</p>' : '') + '</div>' : '') +
       '</div>' +
       (ses.vuelta ? '<div class="grades">' + botones + '</div>' : '<button class="btn pri" data-act="voltear" style="width:100%">Mostrar respuesta <span class="mono muted" style="font-size:.75rem">(espacio)</span></button>');
   }
@@ -315,7 +315,7 @@
         }
         return '<button class="opt ' + cls + '" data-act="resp" data-oi="' + oi + '"' + (it.resp !== null && mostrarFeedback ? ' disabled' : '') + '><span class="k">' + letra(k) + '</span><span>' + p.o[oi] + '</span></button>';
       }).join('') + '</div>' +
-      (it.resp !== null && mostrarFeedback ? '<div class="expl' + (it.resp === p.a ? '' : ' mal') + '"><b>' + (it.resp === p.a ? 'Correcto. ' : 'Incorrecto. ') + '</b>' + p.e + '</div>' : '') +
+      (it.resp !== null && mostrarFeedback ? '<div class="expl' + (it.resp === p.a ? '' : ' mal') + '"><b>' + (it.resp === p.a ? 'Correcto. ' : 'Incorrecto. ') + '</b>' + p.e + (p.f ? ' <span class="fuente">(' + esc(p.f) + ')</span>' : '') + '</div>' : '') +
       '</div>';
   }
   function pintarPregunta() {
@@ -403,7 +403,7 @@
         var ok = it.resp === it.p.a;
         return '<div class="it ' + (ok ? 'bien' : 'mal') + '"><b>' + (i + 1) + '. ' + strip(it.p.q) + '</b>' +
           '<span>' + (ok ? '✓ ' : '✗ Tu respuesta: ' + (it.resp === null ? 'sin responder' : strip(it.p.o[it.resp])) + ' · Correcta: ') + (ok ? strip(it.p.o[it.p.a]) : strip(it.p.o[it.p.a])) + '</span>' +
-          '<span class="muted">' + it.p.e + '</span></div>';
+          '<span class="muted">' + it.p.e + (it.p.f ? ' <i>(' + esc(it.p.f) + ')</i>' : '') + '</span></div>';
       }).join('') + '</div>';
     window.scrollTo(0, 0);
   }
@@ -434,12 +434,22 @@
   /* ---------- Biblioteca ---------- */
   function vistaBiblioteca() {
     var ref = (window.ECO && window.ECO.referencias) || [];
-    var propias = []; CURSOS.forEach(function (c) { c.fuentes.forEach(function (f) { propias.push({ f: f, c: c }); }); });
-    app.innerHTML = '<section class="chead"><span class="eyebrow">Fuentes</span><h1>Biblioteca</h1><p class="muted">Los libros de referencia del curso se integrarán aquí. Cada tema mostrará de qué libro y capítulo proviene.</p></section>' +
-      '<section class="panel"><h3>Libros del curso</h3>' + (propias.length ? '<div class="libros">' + propias.map(function (p) {
-        return '<div class="libro"><span class="lomo"></span><div><b>' + esc(p.f.titulo) + '</b><br><span class="muted">' + esc(p.f.autor || '') + ' · ' + esc(p.c.corto) + '</span></div></div>';
-      }).join('') + '</div>' : '<div class="vacio"><b>Todavía no hay libros cargados.</b><span>Cuando compartas los libros de referencia (PDF o fotos de los capítulos), el temario, las tarjetas y las preguntas se ampliarán con su contenido y la cita del capítulo.</span></div>') + '</section>' +
-      '<section class="panel"><h3>Textos clásicos de consulta</h3><p class="muted" style="font-size:.95rem">Referencias habituales en programas de ecografía; sirven para orientar la búsqueda mientras llegan los libros del curso.</p><div class="libros">' + ref.map(function (r) {
+    var libros = (window.ECO && window.ECO.libros) || [];
+    function cuenta(id) {
+      var n = { temas: 0, tarjetas: 0, preguntas: 0 }, re = new RegExp('\\b' + (libros.filter(function (l) { return l.id === id; })[0] || {}).corto + '\\b');
+      CURSOS.forEach(function (c) {
+        c.criterios.forEach(function (cr) { (cr.temas || []).forEach(function (t) { if (re.test(t.fuente || '')) n.temas++; }); });
+        c.tarjetas.forEach(function (t) { if (re.test(t.fuente)) n.tarjetas++; });
+        c.preguntas.forEach(function (p) { if (re.test(p.f || '')) n.preguntas++; });
+      });
+      return n;
+    }
+    app.innerHTML = '<section class="chead"><span class="eyebrow">Fuentes</span><h1>Biblioteca</h1><p class="muted">El contenido de la plataforma se basa en estos libros. Cada tema, tarjeta y pregunta indica el libro y la página o capítulo de donde sale.</p></section>' +
+      '<section class="panel"><h3>Libros del curso</h3>' + (libros.length ? '<div class="libros">' + libros.map(function (l) {
+        var n = cuenta(l.id);
+        return '<div class="libro"><span class="lomo"></span><div><b>' + esc(l.titulo) + '</b><br><span class="muted">' + esc(l.autor) + '</span><br><span style="font-size:.9rem">' + esc(l.detalle) + '</span><br><span class="mono muted" style="font-size:.8rem">Citado como «' + esc(l.corto) + '» en ' + n.temas + ' temas · ' + n.tarjetas + ' tarjetas · ' + n.preguntas + ' preguntas</span></div></div>';
+      }).join('') + '</div>' : '<div class="vacio"><b>Todavía no hay libros cargados.</b></div>') + '</section>' +
+      '<section class="panel"><h3>Otros textos de consulta</h3><p class="muted" style="font-size:.95rem">Referencias clásicas para ampliar un tema; no son la base del contenido de la plataforma.</p><div class="libros">' + ref.map(function (r) {
         return '<div class="libro"><span class="lomo"></span><div><b>' + esc(r.titulo) + '</b><br><span class="muted">' + esc(r.autor) + '</span><br><span style="font-size:.9rem">' + esc(r.uso) + '</span></div></div>';
       }).join('') + '</div></section>' +
       '<section class="panel"><h3>Respaldo del progreso</h3><p class="muted" style="font-size:.95rem">El progreso se guarda solo en este navegador. Para pasarlo a otro dispositivo, copia el código y pégalo allá.</p>' +
