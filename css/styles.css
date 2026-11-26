@@ -282,3 +282,6 @@ figure { margin: 0; }
   @keyframes entra { from { transform: translateY(4px); opacity: 0.6; } to { transform: none; opacity: 1; } }
 }
 .fig.dia svg { max-width: 680px; margin: 0 auto; }
+
+.side-btn { display: flex; align-items: center; gap: 8px; margin: 0 4px; padding: 10px 12px; min-height: 44px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel-2); color: var(--fg); font-weight: 600; cursor: pointer; }
+.side-btn:hover { border-color: var(--accent); color: var(--accent); }

@@ -288,6 +288,9 @@ figure { margin: 0; }
   @keyframes entra { from { transform: translateY(4px); opacity: 0.6; } to { transform: none; opacity: 1; } }
 }
 .fig.dia svg { max-width: 680px; margin: 0 auto; }
+
+.side-btn { display: flex; align-items: center; gap: 8px; margin: 0 4px; padding: 10px 12px; min-height: 44px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel-2); color: var(--fg); font-weight: 600; cursor: pointer; }
+.side-btn:hover { border-color: var(--accent); color: var(--accent); }
 </style>
 <button class="menu-btn" id="menu-btn" aria-label="Abrir menú" aria-controls="side" aria-expanded="false"><span></span><span></span><span></span></button>
 <aside class="side" id="side" aria-label="Menú principal">
@@ -305,6 +308,7 @@ figure { margin: 0; }
     <span class="side-tit">Cursos</span>
     <div id="nav-cursos" class="nav-cursos"></div>
   </nav>
+  <button class="side-btn" id="btn-full" type="button" hidden><span aria-hidden="true">⛶</span> <span class="lbl">Pantalla completa</span></button>
   <p class="side-pie">Basado en Bates (3.ª ed.) y el ABC de la ecografía abdominal.</p>
 </aside>
 <div class="velo" id="velo" hidden></div>
@@ -3243,6 +3247,27 @@ ECO.curso({
     if (!ses.vuelta && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); ses.vuelta = true; pintarTarjeta(); }
     else if (ses.vuelta && /^[1-4]$/.test(e.key)) calificar(+e.key - 1);
   });
+
+  /* ---------- Pantalla completa ---------- */
+  var btnFull = document.getElementById('btn-full');
+  var raizFS = document.documentElement;
+  var puedeFS = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  function enFS() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  function etiquetaFS() { if (btnFull) btnFull.querySelector('.lbl').textContent = enFS() ? 'Salir de pantalla completa' : 'Pantalla completa'; }
+  if (btnFull && puedeFS) {
+    btnFull.hidden = false;
+    btnFull.addEventListener('click', function () {
+      try {
+        if (enFS()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); }
+        else {
+          var r = (raizFS.requestFullscreen || raizFS.webkitRequestFullscreen).call(raizFS);
+          if (r && r.catch) r.catch(function () { btnFull.hidden = true; });
+        }
+      } catch (e) { btnFull.hidden = true; }
+    });
+    document.addEventListener('fullscreenchange', etiquetaFS);
+    document.addEventListener('webkitfullscreenchange', etiquetaFS);
+  }
 
   window.addEventListener('hashchange', render);
   render();

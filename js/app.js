@@ -595,6 +595,27 @@
     else if (ses.vuelta && /^[1-4]$/.test(e.key)) calificar(+e.key - 1);
   });
 
+  /* ---------- Pantalla completa ---------- */
+  var btnFull = document.getElementById('btn-full');
+  var raizFS = document.documentElement;
+  var puedeFS = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  function enFS() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  function etiquetaFS() { if (btnFull) btnFull.querySelector('.lbl').textContent = enFS() ? 'Salir de pantalla completa' : 'Pantalla completa'; }
+  if (btnFull && puedeFS) {
+    btnFull.hidden = false;
+    btnFull.addEventListener('click', function () {
+      try {
+        if (enFS()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); }
+        else {
+          var r = (raizFS.requestFullscreen || raizFS.webkitRequestFullscreen).call(raizFS);
+          if (r && r.catch) r.catch(function () { btnFull.hidden = true; });
+        }
+      } catch (e) { btnFull.hidden = true; }
+    });
+    document.addEventListener('fullscreenchange', etiquetaFS);
+    document.addEventListener('webkitfullscreenchange', etiquetaFS);
+  }
+
   window.addEventListener('hashchange', render);
   render();
 })();
