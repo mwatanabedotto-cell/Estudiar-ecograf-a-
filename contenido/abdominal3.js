@@ -10,17 +10,41 @@ ECO.curso({
       descripcion: 'Aplica la técnica, programación y manejo correcto del equipo de acuerdo con el órgano evaluado y sus características propias.',
       temas: [
         {
-          titulo: 'Técnica para peritoneo, intestino y vasos',
+          titulo: 'Aorta y vena cava inferior',
+          fuente: 'Bates, cap. 8, pp. 243–249',
           html: `
 <ul>
-<li><b>Peritoneo / líquido libre</b>: convexo 2–5 MHz; revisar espacios declives: Morison, perisplénico, goteras parietocólicas y pelvis. Cambiar de posición para ver si el líquido se desplaza.</li>
-<li><b>Tubo digestivo</b>: primero convexo para un panorama, luego <b>lineal 5–12 MHz</b> con <b>compresión graduada</b> (técnica de Puylaert): presión lenta y progresiva que desplaza las asas con gas; el apéndice inflamado <b>no se comprime</b>.</li>
-<li>Pedir al paciente que señale con un dedo el punto de máximo dolor y explorar ahí.</li>
-<li><b>Aorta</b>: desde el epigastrio hasta la bifurcación, en transversal y longitudinal. Medir el diámetro <b>de pared externa a pared externa</b>, perpendicular al eje del vaso.</li>
-<li><b>Doppler</b>: ángulo ≤ 60° para medir velocidades, ajustar escala/PRF y filtro de pared; volumen de muestra pequeño en el centro del vaso.</li>
-<li><b>VCI</b>: longitudinal subxifoideo, medir 1–2 cm distal a la desembocadura de las venas hepáticas, con respiración tranquila y con «sniff».</li>
+<li><b>Aorta proximal</b>: en la línea media bajo el apéndice xifoides, usando el <b>lóbulo hepático izquierdo</b> como ventana. En corte longitudinal se ven el <b>tronco celíaco</b> y la <b>AMS</b> saliendo de su cara anterior; las ramas del celíaco (hepática y esplénica) se aprecian mejor en transversal; por debajo, el origen de las arterias renales.</li>
+<li><b>Aorta distal</b>: discurre más anterior hacia la bifurcación y el gas puede taparla: usar cortes <b>coronales</b> desde la izquierda (ventana renal izquierda) o desde la derecha (ventana hepática). El coronal también muestra el origen de las arterias renales.</li>
+<li><b>Medición</b>: diámetro máximo en <b>corte longitudinal</b> con los calibres <b>perpendiculares a las paredes</b>, <b>de pared externa a pared externa</b> (incluyendo la adventicia). En transversal hay que mantener el transductor perpendicular al eje del vaso (tortuoso): si se pone perpendicular a la piel, como en la TC, se <b>sobrestima casi un 20 %</b>.</li>
+<li>Explorar también la bifurcación y las <b>ilíacas comunes</b>.</li>
+<li><b>VCI</b>: muy bien vista a través del hígado, mejor con el <b>lado derecho levantado</b>; la distal puede ocultarse por gas o compresión. Paredes finas, perfil más plano que la aorta; su luz <b>disminuye al inspirar o con Valsalva</b>. Las venas renales entran justo por debajo del páncreas. Doppler: pulsátil cerca de la aurícula, menos en la VCI distal; como suele quedar perpendicular al haz, ayuda el Doppler energía.</li>
+</ul>`
+        },
+        {
+          titulo: 'Tubo digestivo: técnica',
+          fuente: 'Bates, cap. 8, p. 257; cap. 9, pp. 287–291; ABC, p. 41',
+          html: `
+<ul>
+<li>Transductor <b>lineal o curvo de alta frecuencia</b> (hasta 12 MHz; en niños 7,5–15 MHz). Para el apéndice, ≥ 10 MHz.</li>
+<li>Pedir al paciente que <b>señale la zona dolorosa</b> antes de empezar.</li>
+<li><b>Compresión graduada</b>: presión suave y progresiva que desplaza gas y heces y acerca el asa; en la apendicitis la compresión y, sobre todo, la <b>descompresión deben ser muy lentas</b>.</li>
+<li>Elevar un poco el <b>lado izquierdo</b> del paciente aparta el gas de la fosa ilíaca derecha.</li>
+<li>Qué evaluar (ABC): <b>pared</b> (capas, grosor), <b>diámetro</b> (colapsada, distendida o dilatada), <b>peristaltismo</b> (normal, aumentado, disminuido o ausente) y <b>hallazgos extraintestinales</b> (líquido libre, grasa alterada, adenopatías, plastrón).</li>
+<li>Píloro en el lactante: de costado sobre el lado derecho, buscar el píloro a la derecha de la línea media en el epigastrio bajo; si el estómago está vacío, dar <b>agua con glucosa</b> (mejor que leche). Truco (ABC): localizar la vesícula y girar oblicuo hacia el estómago.</li>
 </ul>
-<div class="perla"><b>Perla</b>En un abdomen con mucho gas, la compresión sostenida durante unos segundos suele lograr más que cambiar de transductor.</div>`
+<div class="perla"><b>Perla</b>El intestino normal es difícil de ver por el gas, pero el intestino <b>anormal</b> (engrosado, lleno de líquido) es especialmente accesible a la ecografía (Bates).</div>`
+        },
+        {
+          titulo: 'Peritoneo y líquido libre: técnica',
+          fuente: 'Bates, cap. 10, pp. 298–302; cap. 4, tabla 4.7',
+          html: `
+<ul>
+<li>FAST: <b>al menos cuatro ventanas</b> (hepatorrenal, periesplénica, subcostal pericárdica y pelvis retrovesical/retrouterina).</li>
+<li>El líquido libre reciente puede ser difícil de ver: colocar la zona en el <b>campo cercano</b> con la zona focal ajustada (pequeñas cantidades se pasan por alto con mala técnica).</li>
+<li>El líquido pélvico se ve mejor con la vejiga llena; para que se acumule en la pelvis hay que elevar la cabecera (anti-Trendelenburg).</li>
+<li>Conocer las comunicaciones de los espacios peritoneales y retroperitoneales ayuda a deducir el origen del líquido: una colección ilíaca izquierda puede venir de un divertículo, de un aneurisma con fuga o de un páncreas inflamado.</li>
+</ul>`
         }
       ]
     },
@@ -29,62 +53,73 @@ ECO.curso({
       descripcion: 'Evalúa la anatomía normal de la cavidad peritoneal, el retroperitoneo, tubo digestivo y vasos abdominales, de acuerdo con patrones ecográficos estándares.',
       temas: [
         {
-          titulo: 'Espacios peritoneales y retroperitoneo',
+          titulo: 'Peritoneo y retroperitoneo',
+          fuente: 'Bates, cap. 8, p. 243; cap. 10, p. 298 (espacios: anatomía general)',
           html: `
 <ul>
-<li><b>Bolsa hepatorrenal (Morison)</b>: punto más declive del compartimento supramesocólico en supino.</li>
-<li><b>Pelvis</b>: fondo de saco rectouterino (Douglas) en la mujer y rectovesical en el hombre: el punto más declive de toda la cavidad peritoneal.</li>
-<li><b>Goteras parietocólicas</b>: la derecha es más ancha y comunica Morison con la pelvis; la izquierda está limitada por el ligamento frenocólico.</li>
-<li>Espacios subfrénicos, espacio esplenorrenal, transcavidad de los epiplones (bolsa omental).</li>
+<li>El <b>peritoneo</b> recubre la cavidad abdominal y forma prolongaciones: el <b>mesenterio</b> (sujeta el intestino delgado), el <b>mesocolon transverso</b> y los <b>epiplones</b> mayor y menor. Forman bolsas en cuyas partes declives se acumula líquido.</li>
+<li>En el <b>retroperitoneo</b> están riñones y uréteres, suprarrenales, páncreas y asa duodenal, grandes vasos, colon ascendente y descendente y el ciego.</li>
 </ul>
-<h4>Retroperitoneo</h4>
-<div class="tabla"><table><thead><tr><th>Espacio</th><th>Contenido</th></tr></thead><tbody>
-<tr><td>Pararrenal anterior</td><td>Páncreas, duodeno (2.ª–4.ª porción), colon ascendente y descendente</td></tr>
-<tr><td>Perirrenal (fascia de Gerota)</td><td>Riñones, suprarrenales, grasa perirrenal</td></tr>
+<h4>Espacios declives</h4>
+<ul>
+<li><b>Bolsa hepatorrenal (Morison)</b>: la más declive del abdomen superior en supino; primera ventana del FAST.</li>
+<li><b>Pelvis</b>: fondo de saco rectouterino (Douglas) en la mujer, rectovesical en el hombre; el punto más declive de la cavidad.</li>
+<li><b>Periesplénico / esplenorrenal</b>, goteras parietocólicas (la derecha comunica Morison con la pelvis), espacios subfrénicos, <b>saco menor</b> (transcavidad de los epiplones).</li>
+</ul>
+<div class="tabla"><table><thead><tr><th>Espacio retroperitoneal</th><th>Contenido</th></tr></thead><tbody>
+<tr><td>Pararrenal anterior</td><td>Páncreas, duodeno, colon ascendente y descendente</td></tr>
+<tr><td>Perirrenal</td><td>Riñones, suprarrenales, grasa perirrenal</td></tr>
 <tr><td>Pararrenal posterior</td><td>Grasa</td></tr>
-<tr><td>Grandes vasos</td><td>Aorta, VCI, ganglios linfáticos, músculos psoas</td></tr>
+<tr><td>Grandes vasos</td><td>Aorta, VCI, ganglios, psoas</td></tr>
 </tbody></table></div>`
         },
         {
-          titulo: 'Pared intestinal normal: la «firma intestinal»',
+          titulo: 'Pared intestinal normal',
+          fuente: 'ABC, p. 41; Bates, cap. 8, p. 257',
           html: `
-<p>Con transductor de alta frecuencia la pared muestra <b>5 capas</b> alternantes:</p>
+<p>La <b>marca o firma intestinal</b> es la alternancia de capas hiperecoicas e hipoecoicas que refleja la histología (ABC, fig. 88). No siempre se ven las 5 capas; en general se distinguen 3.</p>
 <ol>
-<li>Interfaz luz–mucosa: <b>hiperecoica</b></li>
-<li>Mucosa profunda (muscularis mucosae): <b>hipoecoica</b></li>
-<li>Submucosa: <b>hiperecoica</b></li>
-<li>Muscular propia: <b>hipoecoica</b></li>
-<li>Serosa / grasa: <b>hiperecoica</b></li>
+<li>Interfaz luz–mucosa: hiperecoica</li>
+<li>Mucosa profunda (muscularis mucosae): hipoecoica</li>
+<li>Submucosa: hiperecoica</li>
+<li>Muscular propia: hipoecoica</li>
+<li>Serosa: hiperecoica</li>
 </ol>
+<div class="tabla"><table><thead><tr><th>Parámetro</th><th>Valor</th></tr></thead><tbody>
+<tr><td>Grosor de pared (ABC)</td><td class="mono">2–3 mm distendida; 4–5 mm colapsada; <b>engrosada &gt; 6 mm</b></td></tr>
+<tr><td>Bates</td><td>Intestino grueso: comprimible, sin peristaltismo, pared &lt; 4 mm. Delgado: pared &lt; 2 mm, con peristaltismo</td></tr>
+<tr><td>Regla <b>3-6-9</b> (diámetro, ABC)</td><td class="mono">Delgado &lt; 3 cm · colon &lt; 6 cm · ciego &lt; 9 cm</td></tr>
+<tr><td>Apéndice normal</td><td>Fondo ciego, compresible, ≤ 6 mm</td></tr>
+</tbody></table></div>
 <ul>
-<li>Grosor normal: intestino delgado y colon <b>≤ 3 mm</b> (distendidos); estómago ≤ 5 mm (antro un poco más).</li>
-<li>Yeyuno: válvulas conniventes abundantes (imagen en «teclado de piano» si está distendido). Íleon: menos pliegues. Colon: haustras y contenido gaseoso.</li>
-<li><b>Apéndice normal</b>: estructura tubular de fondo ciego que nace del ciego, <b>compresible</b>, sin peristalsis, diámetro <b>≤ 6 mm</b>.</li>
-<li>Píloro del lactante normal: grosor muscular &lt; 3 mm, longitud del canal &lt; 15 mm.</li>
-</ul>`
+<li>El líquido en la luz deja ver las <b>válvulas conniventes</b> del delgado y las <b>haustras</b> del colon.</li>
+<li><b>Esófago abdominal</b>: se ve donde cruza el diafragma, anterior a la aorta y detrás del lóbulo izquierdo; no confundirlo con una masa. En niños mide 2–3 cm y forma un ángulo agudo con el estómago.</li>
+</ul>
+<h4>Píloro del lactante</h4>
+<div class="tabla"><table><thead><tr><th>Medida</th><th>Normal</th><th>Estenosis hipertrófica</th></tr></thead><tbody>
+<tr><td>Grosor muscular</td><td class="mono">&lt; 2,5 mm (Bates) · &lt; 3 mm (ABC)</td><td class="mono">≥ 3 mm</td></tr>
+<tr><td>Longitud del canal</td><td class="mono">&lt; 15 mm (Bates) · &lt; 16 mm (ABC)</td><td class="mono">≥ 16 mm</td></tr>
+<tr><td>Diámetro</td><td class="mono">&lt; 11 mm (Bates) · &lt; 14 mm (ABC)</td><td class="mono">≥ 11 mm</td></tr>
+</tbody></table></div>
+<p>Mnemotecnia del ABC: <b>π = 3,1416</b> → grosor &lt; 3 mm, diámetro &lt; 14 mm, longitud &lt; 16 mm.</p>`
         },
         {
-          titulo: 'Vasos abdominales',
+          titulo: 'Vasos abdominales normales',
+          fuente: 'Bates, cap. 8, pp. 243–250, 258–259; cap. 7, p. 195; cap. 9, p. 289',
           html: `
 <ul>
-<li><b>Aorta abdominal</b>: a la izquierda de la línea media, diámetro normal ≈ 2 cm (&lt; 3 cm). Se afina hacia distal.</li>
-<li><b>Tronco celíaco</b>: primera rama anterior; en transversal se bifurca en hepática común y esplénica: signo de la «<b>gaviota</b>».</li>
-<li><b>AMS</b>: ≈ 1 cm por debajo del celíaco, desciende paralela y anterior a la aorta rodeada de grasa ecogénica. La <b>vena renal izquierda</b> pasa entre la AMS y la aorta.</li>
-<li>Arterias renales (laterales), AMI (anterior, más distal), bifurcación ilíaca a nivel de L4 (ombligo).</li>
-<li><b>VCI</b>: a la derecha, de paredes finas, varía con la respiración (colapsa en inspiración).</li>
+<li><b>Aorta</b>: a la izquierda de la línea media; con la edad se vuelve <b>ectásica, tortuosa y calcificada</b> (sombra).</li>
+<li><b>Tronco celíaco</b>: primera rama anterior; en transversal se divide en <b>arteria hepática y esplénica</b>.</li>
+<li><b>AMS</b>: justo por debajo; la <b>vena esplénica</b> pasa por delante de ella.</li>
+<li><b>Vena renal izquierda</b>: pasa por delante de la arteria renal izquierda y de la aorta (entre AMS y aorta) para drenar en la VCI. La <b>arteria renal derecha</b> pasa por detrás de la VCI.</li>
+<li><b>VMS a la derecha de la AMS</b>: si está anterior o a la izquierda, sospechar malrotación intestinal (niños).</li>
+<li><b>VCI</b>: a la derecha, de paredes finas, colapsa con la inspiración; el pilar del diafragma queda detrás.</li>
 </ul>
-<div class="tabla"><table><thead><tr><th>Vaso</th><th>Patrón Doppler normal</th></tr></thead><tbody>
-<tr><td>Aorta infrarrenal</td><td>Alta resistencia, trifásico</td></tr>
-<tr><td>Tronco celíaco, arterias renales, hepática, esplénica</td><td>Baja resistencia (flujo diastólico continuo)</td></tr>
-<tr><td>AMS en ayunas</td><td>Alta resistencia; tras comer pasa a baja resistencia</td></tr>
-<tr><td>Vena porta</td><td>Hepatópeto, continuo, ondulado</td></tr>
-<tr><td>VCI / venas hepáticas</td><td>Fásico / trifásico</td></tr>
-</tbody></table></div>
-<h4>VCI y estado de volumen (estimación de presión de aurícula derecha)</h4>
-<div class="tabla"><table><thead><tr><th>Diámetro VCI</th><th>Colapso con sniff</th><th>PAD estimada</th></tr></thead><tbody>
-<tr><td class="mono">≤ 2,1 cm</td><td class="mono">&gt; 50 %</td><td class="mono">≈ 3 mmHg</td></tr>
-<tr><td colspan="2">Situaciones intermedias</td><td class="mono">≈ 8 mmHg</td></tr>
-<tr><td class="mono">&gt; 2,1 cm</td><td class="mono">&lt; 50 %</td><td class="mono">≈ 15 mmHg</td></tr>
+<div class="tabla"><table><thead><tr><th>Vaso</th><th>Doppler normal</th></tr></thead><tbody>
+<tr><td>AMS en ayunas</td><td>Alta resistencia</td></tr>
+<tr><td>AMS tras comer</td><td>Menos pulsátil, <b>baja resistencia</b> con aumento del flujo telediastólico</td></tr>
+<tr><td>Arterias renales, hepática</td><td>Baja resistencia, flujo diastólico continuo</td></tr>
+<tr><td>VCI proximal y venas hepáticas</td><td>Pulsátil, con flujo inverso en la sístole auricular</td></tr>
 </tbody></table></div>`
         }
       ]
@@ -94,94 +129,129 @@ ECO.curso({
       descripcion: 'Identifica patrones ecográficos que se presentan en enfermedades de la cavidad peritoneal, el retroperitoneo, tubo digestivo y vasos abdominales.',
       temas: [
         {
-          titulo: 'Peritoneo: ascitis, hemoperitoneo, carcinomatosis, neumoperitoneo',
+          titulo: 'Cavidad peritoneal: líquido, perforación y carcinomatosis',
+          fuente: 'Bates, cap. 4, tabla 4.7; cap. 8, p. 264; cap. 9, p. 291; cap. 10, pp. 298–302',
           html: `
+<h4>Causas de líquido libre intraperitoneal (tabla 4.7)</h4>
+<div class="tabla"><table><thead><tr><th>Grupo</th><th>Ejemplos</th></tr></thead><tbody>
+<tr><td>Fallo orgánico</td><td>Hepatopatía crónica con hipertensión portal, insuficiencia hepática aguda, renal o cardíaca</td></tr>
+<tr><td>Cáncer</td><td>Carcinomatosis peritoneal</td></tr>
+<tr><td>Inflamatorias</td><td>Pancreatitis aguda, colecistitis aguda, peritonitis, <b>tuberculosis</b>, Crohn</td></tr>
+<tr><td>Posoperatorias</td><td>Sangre, orina, bilis o linfa</td></tr>
+<tr><td>Lesión orgánica</td><td>Perforación vesicular, de vías urinarias o intestinal (diverticulitis)</td></tr>
+<tr><td>Traumatismo</td><td>Hígado, bazo, páncreas (hemoperitoneo)</td></tr>
+<tr><td>Ginecológicas</td><td><b>Embarazo ectópico roto</b>, rotura o torsión de quiste ovárico, carcinoma o fibroma ovárico (Meigs), enfermedad inflamatoria pélvica</td></tr>
+<tr><td>Otros</td><td>Diálisis peritoneal; pequeña cantidad normal en mujeres jóvenes</td></tr>
+</tbody></table></div>
 <ul>
-<li><b>Ascitis simple</b> (trasudado): anecoica, asas que flotan libremente.</li>
-<li><b>Ascitis complicada</b>: ecos finos, septos, loculaciones → exudado, sangre, pus, carcinomatosis o tuberculosis.</li>
-<li><b>Hemoperitoneo</b>: líquido con ecos; el <b>signo del coágulo centinela</b> (coágulo más ecogénico) señala el sitio probable del sangrado.</li>
-<li><b>Carcinomatosis peritoneal</b>: ascitis tabicada, nódulos peritoneales, engrosamiento del omento («<b>pastel omental</b>», omental cake), asas apelmazadas.</li>
-<li><b>Tuberculosis peritoneal</b>: ascitis con septos finos, engrosamiento del mesenterio y del omento, adenopatías con centro necrótico (hipoecoico).</li>
-<li><b>Neumoperitoneo</b>: línea peritoneal anterior ecogénica y engrosada con reverberación, que no se desplaza con la respiración y desaparece al comprimir y reaparece al soltar («signo de la cortina»). Confirmar con radiografía o TC.</li>
-<li><b>Abscesos</b>: colección compleja de pared gruesa, a veces con gas; drenaje percutáneo guiado.</li>
+<li><b>Perforación de víscera</b>: pequeñas cantidades de líquido «<b>espeso</b>» (partículas o burbujas de gas), localizado cerca del duodeno o en el saco menor. Algunos patrones de gas en ecografía pueden ser más sensibles que la radiografía simple para el <b>neumoperitoneo</b>.</li>
+<li>En niños, el líquido claro es inespecífico; el líquido <b>ecogénico</b> sugiere infección intraperitoneal o hemorragia (quiste ovárico roto).</li>
+<li><b>Metástasis peritoneales y del epiplón</b>: fáciles de ver cuando hay ascitis alrededor; suelen ser de origen ginecológico o urológico; se pueden biopsiar con guía ecográfica.</li>
 </ul>
-<div class="perla"><b>Perla</b>Volúmenes muy pequeños de líquido se ven primero en la pelvis (fondo de saco) y en el polo inferior del riñón derecho / gotera derecha.</div>`
+<h4>Hemoperitoneo y trauma</h4>
+<p>La ecografía detecta mejor el líquido (98 %) que la lesión del órgano (41 %). La ecografía con contraste muestra laceraciones de hígado y bazo antes de que haya hemoperitoneo; las lesiones pancreáticas pueden no verse al principio.</p>`
         },
         {
-          titulo: 'Tubo digestivo: apendicitis, invaginación, píloro, obstrucción',
-          html: `
-<h4>Apendicitis aguda</h4>
-<ul>
-<li>Apéndice <b>no compresible</b>, diámetro <b>&gt; 6 mm</b>, pared &gt; 3 mm, imagen en <b>diana</b> en corte transversal.</li>
-<li><b>Apendicolito</b> (foco con sombra), hiperemia de la pared en Doppler, <b>grasa periapendicular hiperecoica</b> (inflamada), líquido.</li>
-<li>Dolor máximo al comprimir con el transductor sobre el apéndice (McBurney ecográfico).</li>
-<li><b>Perforación</b>: pérdida de la ecogenicidad de la submucosa, pared asimétrica, colección o absceso periapendicular.</li>
-<li>Un apéndice no visualizado no excluye apendicitis: correlacionar con la clínica (escala de Alvarado), repetir o TC/RM según el caso.</li>
-</ul>
-<h4>Invaginación intestinal (intususcepción)</h4>
-<ul>
-<li>Niños de 3 meses a 3 años, más frecuente <b>ileocólica</b> (hipocondrio o flanco derecho).</li>
-<li>Transversal: «<b>diana</b>» o «<b>donut</b>» (anillos concéntricos); longitudinal: «<b>pseudorriñón</b>» o «sándwich».</li>
-<li>Tratamiento en niños: reducción hidrostática o neumática guiada si no hay perforación ni peritonitis. En adultos suele haber una <b>causa orgánica</b> (tumor) → cirugía.</li>
-</ul>
-<h4>Estenosis hipertrófica del píloro</h4>
-<ul>
-<li>Lactante de 2–8 semanas con <b>vómitos en proyectil no biliosos</b>, «oliva» palpable, alcalosis metabólica hipoclorémica e hipopotasémica.</li>
-<li>Criterios: <b>grosor muscular ≥ 3 mm</b>, <b>longitud del canal ≥ 15–17 mm</b>, sin paso de contenido gástrico. Signos de la diana y del «cérvix».</li>
-</ul>
-<h4>Obstrucción intestinal</h4>
-<ul>
-<li>Asas de intestino delgado dilatadas <b>&gt; 2,5–3 cm</b> con contenido líquido; peristaltismo de vaivén (<i>to-and-fro</i>).</li>
-<li>Signos de sufrimiento: asa aperistáltica, pared engrosada, líquido libre entre asas, ausencia de flujo en Doppler → isquemia/estrangulación: cirugía.</li>
-</ul>
-<h4>Engrosamiento de la pared</h4>
-<ul>
-<li><b>Enfermedad de Crohn</b>: íleon terminal engrosado, hiperemia, <b>grasa mesentérica hiperecoica</b> («grasa reptante»), estenosis, fístulas, abscesos.</li>
-<li><b>Carcinoma</b>: engrosamiento asimétrico, hipoecoico, con pérdida de las capas: imagen en «pseudorriñón».</li>
-<li><b>Linfoma</b>: engrosamiento muy hipoecoico, a veces con dilatación aneurismática de la luz.</li>
-<li><b>Diverticulitis</b>: divertículo inflamado (protrusión con foco ecogénico/gas) con grasa pericólica hiperecoica y pared colónica engrosada; colecciones.</li>
-</ul>
-<h4>Hernias de pared</h4>
-<p>Defecto de pared con contenido (grasa, asa); maniobra de Valsalva. Encarcelación/estrangulación: asa sin peristaltismo, pared engrosada, sin flujo, líquido en el saco.</p>`
-        },
-        {
-          titulo: 'Retroperitoneo',
+          titulo: 'Retroperitoneo: masas, ganglios y colecciones',
+          fuente: 'Bates, cap. 8, pp. 264–265; cap. 6, pp. 187–189; cap. 10, p. 305',
           html: `
 <ul>
-<li><b>Adenopatías</b>: redondeadas, hipoecoicas, pérdida del hilio graso, aumento del eje corto. Linfoma: masas confluentes, signo del «<b>sándwich</b>» (adenopatías mesentéricas rodeando los vasos) y de la «<b>aorta flotante</b>» (aorta desplazada hacia anterior).</li>
-<li><b>Fibrosis retroperitoneal</b>: manguito hipoecoico periaórtico infrarrenal, <b>hidronefrosis bilateral</b> por atrapamiento ureteral.</li>
-<li><b>Hematoma retroperitoneal</b>: anticoagulados, trauma, rotura de aneurisma; hematoma del psoas.</li>
-<li><b>Absceso del psoas</b>: colección en el músculo; causas: espondilodiscitis tuberculosa (mal de Pott), Crohn, diseminación hematógena.</li>
-<li>Sarcomas (liposarcoma): masas grandes; requieren TC/RM.</li>
+<li>La mayoría de los tumores retroperitoneales malignos son de origen <b>renal o suprarrenal</b>; aparte del <b>linfoma</b>, los primarios (liposarcoma, leiomiosarcoma) son raros, grandes y de aspecto complejo.</li>
+<li>Signos de origen retroperitoneal: <b>engloban los grandes vasos</b> y <b>desplazan hacia delante</b> páncreas, riñones, aorta y VCI. La TC y la RM definen mejor su extensión.</li>
+<li><b>Adenopatías</b>: ganglios ≥ 1,5 cm, hipoecoicos, redondos, sin hilio; pueden confluir en masas lobuladas; las del linfoma rodean y elevan la aorta y la VCI. En la porta hepatis pueden causar <b>ictericia obstructiva</b>; en el retroperitoneo, <b>obstrucción renal</b>. La sensibilidad de la ecografía en el retroperitoneo es baja.</li>
+<li>Otras masas: <b>hematomas</b>, <b>abscesos del psoas</b>, seudoquistes pancreáticos. Para absceso o hematoma del psoas, la ecografía es la primera investigación.</li>
+<li><b>Fibrosis retroperitoneal</b> (complemento, no detallada en los libros): manguito hipoecoico periaórtico con hidronefrosis bilateral.</li>
 </ul>`
         },
         {
-          titulo: 'Vasos: aneurisma, disección, trombosis, isquemia',
+          titulo: 'Aneurisma y disección de aorta',
+          fuente: 'Bates, cap. 8, pp. 244–248; cap. 10, p. 305',
           html: `
-<h4>Aneurisma de aorta abdominal (AAA)</h4>
 <ul>
-<li>Diámetro <b>≥ 3 cm</b> (o &gt; 1,5 veces el segmento normal). La mayoría son <b>infrarrenales</b>.</li>
-<li>Medir de <b>pared externa a pared externa</b>, perpendicular al eje; documentar trombo mural y la extensión a las ilíacas.</li>
-<li>Cribado: varones de 65–75 años que han fumado alguna vez (ecografía única).</li>
-<li>Reparación electiva: ≥ <b>5,5 cm</b> en varones (≥ 5,0 cm en mujeres), crecimiento rápido (&gt; 1 cm/año) o síntomas.</li>
-<li><b>Rotura</b>: dolor abdominal o lumbar + hipotensión + masa pulsátil. La ecografía demuestra el aneurisma pero <b>no excluye la rotura</b> (el hematoma suele ser retroperitoneal). Paciente inestable con AAA conocido o visto en POCUS → quirófano.</li>
+<li>Factores de riesgo: <b>varón, &gt; 65 años, tabaquismo, antecedentes familiares</b>. Se encuentra hasta en el <b>10 %</b> de los varones ≥ 65 años; cada vez se hace cribado ecográfico.</li>
+<li>La mayoría por <b>aterosclerosis</b>; fusiformes o saculares; con <b>trombo mural</b> por flujo turbulento y lento en los bordes. La gran mayoría son <b>infrarrenales</b> (la relación con las arterias renales es difícil de ver: TC).</li>
+<li>Definición usual: diámetro <b>≥ 3 cm</b> (dato general; Bates no lo precisa en el texto).</li>
+<li>Riesgo de rotura aumenta con el diámetro y es <b>drástico a partir de 6 cm</b> (mortalidad del 50 % en un año). La reparación (abierta o endovascular) está indicada a partir de <b>5,5 cm</b>.</li>
+<li>Medir <b>de pared externa a pared externa</b>, perpendicular al eje, en el punto más ancho; incluir ilíacas.</li>
+<li>Complicaciones: un AAA lleno de trombo puede comprimir el <b>uréter</b> (hidronefrosis); la afectación de arterias renales puede dar trombosis renal: revisar siempre los riñones.</li>
+<li><b>Fuga</b>: hematoma retroperitoneal; la TC es más fiable. La ecografía con contraste detecta fugas tras la reparación endovascular, incluso mejor que la TC.</li>
+<li><b>Rotura</b>: dolor abdominal o lumbar + <b>hipotensión grave</b>. La ecografía identifica el aneurisma pero <b>no debe usarse para evaluar la fuga</b>; no retrasar la cirugía urgente por estudios de imagen.</li>
 </ul>
-<h4>Disección aórtica</h4>
-<p>Colgajo intimal (<b>flap</b>) móvil que separa una luz verdadera y una falsa, con flujos distintos en Doppler color. Confirmar con angio-TC.</p>
-<h4>Sistema porta</h4>
+<h4>Disección</h4>
+<p>Poco común en el abdomen: <b>colgajo (flap) de la íntima</b> en la luz, con una luz falsa de flujo más lento, turbulento o invertido. Las capas de trombo pueden imitarla: el Doppler color ayuda.</p>`
+        },
+        {
+          titulo: 'VCI y sistema mesentérico',
+          fuente: 'Bates, cap. 8, pp. 250–252, 258–259; cap. 9, p. 289',
+          html: `
+<h4>Vena cava inferior</h4>
 <ul>
-<li><b>Trombosis portal</b>: material ecogénico intraluminal, ausencia de flujo; crónica: <b>transformación cavernomatosa</b> (múltiples colaterales serpiginosas en el hilio).</li>
-<li>Trombo tumoral: expande la vena y tiene <b>flujo arterial</b> dentro (carcinoma hepatocelular).</li>
-<li>Hipertensión portal: porta &gt; 13 mm, flujo lento o hepatófugo, colaterales (paraumbilical recanalizada, gástrica izquierda, esplenorrenal), esplenomegalia, ascitis.</li>
+<li><b>Trombo</b> benigno o tumoral: en escala de grises no se distinguen; el trombo tumoral tiene <b>vascularización</b> en Doppler. El trombo tumoral del <b>carcinoma renal</b> invade la VCI en ≈ 10 %; también de masas hepáticas o suprarrenales.</li>
+<li><b>Dilatación</b>: insuficiencia cardíaca congestiva, con venas hepáticas dilatadas.</li>
+<li><b>Compresión</b> por adenopatías, tumores hepáticos o caudado hipertrofiado: el Doppler confirma la permeabilidad y diferencia compresión de invasión.</li>
+<li>Budd-Chiari (trastornos de coagulación), filtros de VCI (comprobar permeabilidad), <b>leiomiosarcoma</b> (masa hiperecoica en la luz).</li>
+<li>Anomalía más común: duplicación (mejor TC o RM).</li>
 </ul>
-<h4>Isquemia mesentérica y compresiones</h4>
+<h4>Isquemia mesentérica</h4>
 <ul>
-<li>Estenosis significativa (≥ 70 %) de la <b>AMS</b>: velocidad pico sistólica &gt; 275 cm/s; del <b>tronco celíaco</b>: &gt; 200 cm/s.</li>
-<li>Síndrome del <b>ligamento arcuato medio</b>: compresión del tronco celíaco que aumenta la velocidad en espiración y mejora en inspiración.</li>
-<li>Síndrome de <b>cascanueces</b>: compresión de la vena renal izquierda entre la AMS y la aorta (hematuria, varicocele izquierdo).</li>
+<li>Aterosclerosis de los vasos mesentéricos; dolor posprandial, diarrea y adelgazamiento; puede llevar a necrosis intestinal.</li>
+<li>El Doppler puede mostrar estenosis u oclusión de la <b>AMS</b> (defecto de llenado). Pero el 18 % de ancianos asintomáticos tienen estenosis importantes: el hallazgo indica más estudios, no es diagnóstico.</li>
+<li>Respuesta posprandial anormal: en vez de aumentar, disminuyen las velocidades sistólica y telediastólica de la AMS.</li>
+<li>Complemento (fuera de los libros): VSM de la AMS &gt; 275 cm/s sugiere estenosis ≥ 70 %.</li>
 </ul>
-<h4>VCI en el paciente grave</h4>
-<p>VCI pequeña y colapsable: hipovolemia. VCI <b>pletórica</b> sin colapso: taponamiento, tromboembolia pulmonar masiva, falla del ventrículo derecho, sobrecarga.</p>`
+<h4>Malrotación y vólvulo del intestino medio (niños)</h4>
+<p><b>VMS anterior o a la izquierda de la AMS</b> (relación invertida) sugiere malrotación (una relación normal no la excluye). En el vólvulo, los vasos se enroscan alrededor del eje mesentérico: <b>signo del remolino</b>; duodeno proximal dilatado; vómitos biliosos: <b>cirugía urgente</b>.</p>`
+        },
+        {
+          titulo: 'Apendicitis y enfermedad inflamatoria',
+          fuente: 'ABC, pp. 41–42; Bates, cap. 8, pp. 259–261; cap. 9, p. 291',
+          html: `
+<h4>Apendicitis aguda</h4>
+<ul>
+<li>Signos (ABC): apéndice visible en fosa ilíaca derecha con diámetro <b>&gt; 6 mm</b>, <b>no compresible</b>, <b>aumento del flujo</b> en la pared, <b>líquido periapendicular</b> (sugiere perforación), <b>grasa regional hiperecoica</b> y <b>fecalito</b> (apendicolito con sombra).</li>
+<li>Bates: apéndice dilatado, hipoecoico y lleno de líquido; sensibilidad 74 %, especificidad 94 % con técnico experimentado. Entre el 15 y el 25 % de las laparotomías por sospecha encuentran apéndice normal.</li>
+<li><b>La ecografía puede confirmar la apendicitis, pero nunca descartarla</b>: si no se ven signos, el estudio es «no concluyente» → TC; manda la clínica (ABC).</li>
+<li><b>Perforación</b>: colección periapendicular, líquido libre, asas sin peristaltismo; masa líquida mal definida en fosa ilíaca derecha. En niños el líquido puede dispersarse y la perforación no verse.</li>
+<li>En niños pequeños el apéndice tiene posición variable (dolor no siempre en fosa ilíaca derecha); el retrocecal es difícil.</li>
+</ul>
+<h4>Enfermedad inflamatoria intestinal</h4>
+<ul>
+<li>ABC: engrosamiento difuso de la pared de un segmento con <b>pérdida de las capas</b> y <b>aumento del flujo</b> Doppler.</li>
+<li><b>Crohn</b> (Bates): sobre todo <b>íleon terminal</b> y unión ileocecal; pared engrosada e hipoecoica de todo el espesor; complicaciones: <b>abscesos intramurales</b> (focos ecogénicos con gas), colecciones drenables, fístulas. La ecografía vigila la actividad y las recurrencias; sensibilidad comparable a la TC.</li>
+<li><b>Colitis ulcerosa</b>: afecta la mucosa: pared engrosada pero <b>estratificada</b>; &gt; 3 mm es anormal.</li>
+<li>Doppler: hipervascularización; la AMS muestra más velocidad y menor IR (inespecífico).</li>
+</ul>
+<h4>Diverticulitis</h4>
+<p>Evaginaciones de la pared, sobre todo del <b>sigma</b>; pared hipoecoica engrosada. Con experiencia rivaliza con la TC; la TC sigue siendo de elección para complicaciones (absceso diverticular).</p>`
+        },
+        {
+          titulo: 'Obstrucción, tumores y patología pediátrica',
+          fuente: 'ABC, pp. 42–43; Bates, cap. 8, pp. 257–264; cap. 9, pp. 287–293; cap. 10, p. 302',
+          html: `
+<h4>Obstrucción intestinal</h4>
+<ul>
+<li><b>Asas dilatadas</b> por encima del punto de obstrucción (regla 3-6-9), <b>llenas de líquido</b>, con peristaltismo inefectivo. Al inicio el peristaltismo está <b>aumentado</b> (compensación); luego disminuye y puede desaparecer (ABC).</li>
+<li>Seguir las asas dilatadas hasta el punto donde aparecen asas colapsadas. Sensibilidad 89 % en el delgado; 88 % para nivel y causa en el colon. Aun así, ante la sospecha, <b>TC</b>; la radiografía simple sigue siendo de uso habitual (ABC).</li>
+<li>Buscar <b>hernias</b> (inguinales, crurales, epigástricas pequeñas con transductor de alta frecuencia): asa incarcerada con pared engrosada y edematosa.</li>
+</ul>
+<h4>Tumores</h4>
+<ul>
+<li>Localización más común del tumor intestinal del adulto: <b>cerca del ciego</b>. Masa <b>hipoecoica o mixta</b> con luz pequeña <b>excéntrica</b> llena de gas y <b>pérdida de capas</b>; flujo vigoroso (también en masas inflamatorias). Una ecografía normal no descarta cáncer; si se halla masa → TC. Buscar metástasis hepáticas (resecables en el colorrectal).</li>
+<li>Estómago y esófago: la ecografía puede ver engrosamiento parietal; la <b>ecoendoscopia</b> es el patrón oro para estadificar (T y N).</li>
+</ul>
+<h4>Estenosis hipertrófica del píloro</h4>
+<ul>
+<li>Lactante de ≈ <b>6 semanas</b>, vómitos en proyectil, alcalosis hipoclorémica, «oliva» palpable.</li>
+<li>Diagnóstico: <b>músculo engrosado (≥ 3 mm) y alargado</b>, peristaltismo gástrico aumentado e inefectivo, <b>píloro que no se relaja ni se abre</b>. El músculo hipertrofiado es hipoecoico y la mucosa central hiperecoica. Sensibilidad 97 % y especificidad 99 %. Si la sospecha persiste, repetir en 1–2 días.</li>
+</ul>
+<h4>Invaginación intestinal</h4>
+<ul>
+<li>Urgencia pediátrica común entre <b>3 meses y 3 años</b>, región <b>ileocecal</b>; dolor, masa, vómitos o sangrado rectal.</li>
+<li>«<b>Intestino dentro de intestino</b>»: en transversal, imagen en <b>rosquilla (donut)</b> de anillos concéntricos; asas dilatadas proximales.</li>
+<li>Reducción con <b>enema de aire</b> (hasta 120 mmHg) o hidrostática guiada. Contraindicaciones: <b>peritonitis y aire libre</b>. Peor éxito: borde hipoecoico &gt; 10 mm, sin flujo Doppler, mucho líquido atrapado. Recurre ≈ 10 %.</li>
+</ul>
+<h4>Otras pediátricas</h4>
+<p><b>Quiste de duplicación</b>: pared «doble» con mucosa hiperecoica interna, junto al intestino. Reflujo gastroesofágico: patológico si &gt; 3 episodios en 10 minutos.</p>`
         }
       ]
     },
@@ -191,15 +261,18 @@ ECO.curso({
       temas: [
         {
           titulo: 'Escenarios clínicos frecuentes',
+          fuente: 'Bates, cap. 10, pp. 297–305; cap. 8; cap. 9; ABC, pp. 41–43',
           html: `
 <div class="tabla"><table><thead><tr><th>Escenario</th><th>Qué buscar</th><th>Interpretación</th></tr></thead><tbody>
-<tr><td>Dolor en FID, fiebre, leucocitosis</td><td>Apéndice &gt; 6 mm no compresible, apendicolito, grasa inflamada</td><td>Apendicitis aguda → cirugía</td></tr>
-<tr><td>Lactante de 1 año con llanto paroxístico y heces en jalea de grosella</td><td>Diana / pseudorriñón en hemiabdomen derecho</td><td>Invaginación ileocólica → reducción</td></tr>
-<tr><td>Lactante de 4 semanas con vómitos en proyectil</td><td>Píloro ≥ 3 mm de grosor y ≥ 15 mm de longitud</td><td>Estenosis hipertrófica de píloro → piloromiotomía</td></tr>
-<tr><td>Dolor lumbar + hipotensión + masa pulsátil</td><td>Aorta ≥ 3 cm</td><td>Rotura de AAA → quirófano sin esperar TC si está inestable</td></tr>
-<tr><td>Ascitis nueva</td><td>Características del líquido, hígado, nódulos peritoneales</td><td>Cirrosis vs carcinomatosis vs TB; paracentesis guiada</td></tr>
-<tr><td>Vómitos, distensión, cirugías previas</td><td>Asas dilatadas, peristaltismo, líquido libre</td><td>Obstrucción por bridas; signos de sufrimiento → cirugía</td></tr>
-<tr><td>Dolor abdominal desproporcionado en paciente con FA</td><td>Flujo en AMS (limitado)</td><td>Isquemia mesentérica aguda → angio-TC urgente</td></tr>
+<tr><td>Dolor en fosa ilíaca derecha, fiebre</td><td>Apéndice &gt; 6 mm no compresible, fecalito, grasa, líquido</td><td>Apendicitis; si no se ve, «no concluyente» → TC según clínica</td></tr>
+<tr><td>Lactante de 6 semanas con vómitos en proyectil</td><td>Píloro ≥ 3 mm de grosor, que no se abre</td><td>Estenosis hipertrófica del píloro → piloromiotomía</td></tr>
+<tr><td>Niño de 1 año con llanto paroxístico y sangre en heces</td><td>Donut en hemiabdomen derecho</td><td>Invaginación ileocecal → reducción (si no hay peritonitis ni aire libre)</td></tr>
+<tr><td>Niño con vómitos biliosos</td><td>Relación AMS/VMS, signo del remolino, duodeno dilatado</td><td>Malrotación con vólvulo → cirugía urgente</td></tr>
+<tr><td>Dolor lumbar + hipotensión + masa pulsátil</td><td>Aorta aneurismática</td><td>Rotura de AAA → quirófano sin esperar TC</td></tr>
+<tr><td>Vómitos, distensión, cirugías previas</td><td>Asas dilatadas con líquido, peristaltismo, hernias</td><td>Obstrucción; TC para la causa</td></tr>
+<tr><td>Ascitis nueva</td><td>Hígado, nódulos peritoneales, masa anexial</td><td>Cirrosis vs carcinomatosis vs TB; paracentesis guiada</td></tr>
+<tr><td>Diarrea crónica, joven</td><td>Íleon terminal engrosado, hiperemia, abscesos</td><td>Enfermedad de Crohn</td></tr>
+<tr><td>Ictericia con ganglios en la porta</td><td>Adenopatías que comprimen el colédoco</td><td>Ictericia obstructiva por adenopatía (linfoma, metástasis)</td></tr>
 </tbody></table></div>`
         }
       ]
@@ -207,83 +280,94 @@ ECO.curso({
   ],
 
   tarjetas: [
-    ['p1', 'Técnica de compresión graduada', 'Presión lenta y progresiva con transductor lineal para desplazar gas; el apéndice inflamado no se comprime (Puylaert).'],
-    ['p1', 'Cómo medir la aorta', 'De pared externa a pared externa, perpendicular al eje del vaso, en transversal.'],
-    ['p1', 'Ángulo Doppler para medir velocidades', '≤ 60°.'],
-    ['p2', 'Punto más declive de la cavidad peritoneal', 'La pelvis: fondo de saco de Douglas (mujer) o rectovesical (hombre). En el compartimento supramesocólico: Morison.'],
-    ['p2', 'Cinco capas de la pared intestinal', 'Hiper (luz–mucosa), hipo (muscularis mucosae), hiper (submucosa), hipo (muscular propia), hiper (serosa).'],
-    ['p2', 'Grosor normal de la pared intestinal', '≤ 3 mm en intestino delgado y colon distendidos.'],
-    ['p2', 'Apéndice normal', 'Fondo ciego, compresible, sin peristaltismo, ≤ 6 mm.'],
-    ['p2', 'Espacio pararrenal anterior: contenido', 'Páncreas, duodeno (2.ª–4.ª porción), colon ascendente y descendente.'],
-    ['p2', 'Signo de la gaviota', 'Tronco celíaco bifurcándose en hepática común y esplénica (corte transversal).'],
-    ['p2', 'Vaso que pasa entre la AMS y la aorta', 'La vena renal izquierda.'],
-    ['p2', 'Diámetro normal de la aorta abdominal', '≈ 2 cm; < 3 cm.'],
-    ['p2', 'Patrón Doppler de la AMS en ayunas vs posprandial', 'Ayunas: alta resistencia. Posprandial: baja resistencia.'],
-    ['p2', 'VCI ≤ 2,1 cm con colapso > 50 %', 'PAD estimada ≈ 3 mmHg.'],
-    ['p3', 'Criterios de apendicitis', 'No compresible, > 6 mm, apendicolito, hiperemia, grasa periapendicular hiperecoica, dolor focal.'],
-    ['p3', 'Signos de apendicitis perforada', 'Pérdida de la submucosa ecogénica, pared asimétrica, colección/absceso.'],
-    ['p3', 'Invaginación: signos', 'Diana o donut (transversal) y pseudorriñón (longitudinal).'],
-    ['p3', 'Criterios de estenosis hipertrófica del píloro', 'Grosor muscular ≥ 3 mm, longitud ≥ 15–17 mm.'],
-    ['p3', 'Obstrucción intestinal en ecografía', 'Asas > 2,5–3 cm con líquido, peristaltismo de vaivén.'],
-    ['p3', 'Signos de sufrimiento de asa', 'Aperistalsis, pared engrosada, líquido libre interasas, sin flujo Doppler.'],
-    ['p3', 'Pastel omental', 'Engrosamiento nodular del omento: carcinomatosis peritoneal (o TB).'],
-    ['p3', 'Signo del coágulo centinela', 'Coágulo más ecogénico cerca del órgano que sangra.'],
-    ['p3', 'Neumoperitoneo en ecografía', 'Línea peritoneal ecogénica con reverberación que no se desliza; signo de la cortina.'],
-    ['p3', 'Enfermedad de Crohn en ecografía', 'Íleon terminal engrosado, hiperemia, grasa reptante hiperecoica, estenosis, fístulas.'],
-    ['p3', 'Pseudorriñón en adulto', 'Engrosamiento asimétrico de pared intestinal con pérdida de capas: sospechar carcinoma.'],
-    ['p3', 'Definición de AAA', 'Diámetro ≥ 3 cm (o > 1,5 veces el normal).'],
-    ['p3', 'Umbral de reparación electiva del AAA', '≥ 5,5 cm en varones (≥ 5,0 en mujeres), crecimiento > 1 cm/año o síntomas.'],
-    ['p3', '¿La ecografía descarta la rotura de un AAA?', 'No: el hematoma suele ser retroperitoneal y poco visible.'],
-    ['p3', 'Transformación cavernomatosa de la porta', 'Colaterales serpiginosas en el hilio tras una trombosis portal crónica.'],
-    ['p3', 'Velocidad de estenosis ≥ 70 % de la AMS', 'Velocidad pico sistólica > 275 cm/s.'],
-    ['p3', 'Signo de la aorta flotante', 'Aorta desplazada hacia anterior por adenopatías retroperitoneales (linfoma).'],
-    ['p3', 'Fibrosis retroperitoneal', 'Manguito hipoecoico periaórtico + hidronefrosis bilateral.'],
-    ['p3', 'Ligamento arcuato medio', 'Compresión del tronco celíaco: velocidad alta en espiración que mejora en inspiración.'],
-    ['p4', 'Lactante con vómitos en proyectil no biliosos', 'Estenosis hipertrófica del píloro; alcalosis hipoclorémica hipopotasémica.'],
-    ['p4', 'Tríada de rotura de AAA', 'Dolor abdominal/lumbar, hipotensión y masa pulsátil.'],
-    ['p4', 'Invaginación en adulto', 'Buscar causa orgánica (tumor): tratamiento quirúrgico.']
+    ['p1', 'Ventana para la aorta proximal', 'Lóbulo hepático izquierdo, línea media bajo el xifoides.', 'Bates, cap. 8, p. 243'],
+    ['p1', 'Aorta distal tapada por gas: solución', 'Cortes coronales desde la izquierda (ventana renal) o la derecha (ventana hepática).', 'Bates, cap. 8, p. 243'],
+    ['p1', 'Cómo medir un AAA', 'Diámetro máximo, perpendicular al eje, de pared externa a pared externa (incluye adventicia).', 'Bates, cap. 8, p. 244'],
+    ['p1', 'Error de medir la aorta con el transductor perpendicular a la piel', 'Sobrestima el diámetro casi un 20 % en una aorta oblicua.', 'Bates, cap. 8, fig. 8.2F'],
+    ['p1', 'Comportamiento de la VCI con la respiración', 'Su luz disminuye al inspirar o con Valsalva.', 'Bates, cap. 8, p. 248'],
+    ['p1', 'Técnica de compresión graduada', 'Presión suave y progresiva que desplaza gas y heces; descompresión lenta.', 'Bates, cap. 8, p. 257'],
+    ['p1', 'Cuatro cosas a evaluar en un asa intestinal', 'Pared, diámetro, peristaltismo y hallazgos extraintestinales.', 'ABC, p. 41'],
+    ['p1', 'Cómo ver el píloro del lactante', 'Sobre el lado derecho; dar agua con glucosa; buscar a la derecha de la línea media.', 'Bates, cap. 9, p. 287'],
+    ['p2', 'Espacio más declive del abdomen superior en supino', 'Bolsa hepatorrenal de Morison.'],
+    ['p2', 'Contenido del retroperitoneo (Bates)', 'Riñones, uréteres, suprarrenales, páncreas, duodeno, grandes vasos, colon ascendente y descendente, ciego.', 'Bates, cap. 8, p. 243'],
+    ['p2', 'Capas de la firma intestinal', 'Hiper (luz–mucosa), hipo (muscularis mucosae), hiper (submucosa), hipo (muscular propia), hiper (serosa).', 'ABC, p. 41'],
+    ['p2', 'Grosor de pared intestinal (ABC)', '2–3 mm distendida, 4–5 mm colapsada; engrosada > 6 mm.', 'ABC, p. 41'],
+    ['p2', 'Pared intestinal según Bates', 'Grueso < 4 mm, comprimible, sin peristaltismo; delgado < 2 mm con peristaltismo.', 'Bates, cap. 8, p. 257'],
+    ['p2', 'Regla 3-6-9', 'Diámetro máximo: delgado 3 cm, colon 6 cm, ciego 9 cm.', 'ABC, p. 43'],
+    ['p2', 'Mnemotecnia del π para el píloro', 'Grosor < 3 mm, diámetro < 14 mm, longitud < 16 mm.', 'ABC, p. 43'],
+    ['p2', 'Píloro normal según Bates (tabla 9.3)', 'Longitud < 15 mm, ancho < 11 mm, grosor < 2,5 mm.', 'Bates, tabla 9.3'],
+    ['p2', 'Vaso que pasa entre la AMS y la aorta', 'La vena renal izquierda.', 'Bates, cap. 8, fig. 8.2C'],
+    ['p2', 'Relación normal AMS–VMS', 'VMS a la derecha de la AMS; invertida sugiere malrotación.', 'Bates, cap. 9, p. 289'],
+    ['p2', 'Doppler de la AMS en ayunas y posprandial', 'Ayunas: alta resistencia. Tras comer: baja resistencia, más flujo telediastólico.', 'Bates, cap. 8, p. 258'],
+    ['p3', 'Líquido «espeso» cerca del duodeno o en el saco menor', 'Sugiere perforación de víscera.', 'Bates, cap. 10, p. 302'],
+    ['p3', 'Causas ginecológicas de líquido libre', 'Ectópico roto, quiste ovárico roto o torcido, carcinoma o fibroma (Meigs), EIP.', 'Bates, tabla 4.7'],
+    ['p3', 'Signos de origen retroperitoneal de una masa', 'Engloba grandes vasos y desplaza hacia delante páncreas, riñones, aorta y VCI.', 'Bates, cap. 8, p. 264'],
+    ['p3', 'Origen más frecuente de tumores retroperitoneales malignos', 'Renal o suprarrenal (y linfoma).', 'Bates, cap. 8, p. 264'],
+    ['p3', 'Factores de riesgo de AAA', 'Varón, > 65 años, tabaquismo, antecedentes familiares.', 'Bates, cap. 8, p. 244'],
+    ['p3', 'Diámetro de AAA con indicación de reparación', '> 5,5 cm.', 'Bates, cap. 8, p. 244'],
+    ['p3', 'Riesgo de rotura de AAA a los 6 cm', 'Aumenta drásticamente: mortalidad del 50 % en un año.', 'Bates, cap. 8, p. 244'],
+    ['p3', 'Localización más frecuente del AAA', 'Infrarrenal.', 'Bates, cap. 8, p. 244'],
+    ['p3', 'Signo ecográfico de disección aórtica', 'Colgajo de íntima con luz falsa de flujo distinto.', 'Bates, cap. 8, p. 248'],
+    ['p3', 'Trombo tumoral vs blando en la VCI', 'El tumoral tiene vascularización en Doppler; CCR invade la VCI en ≈ 10 %.', 'Bates, cap. 8, p. 250'],
+    ['p3', 'Estenosis de AMS en ancianos asintomáticos', '≈ 18 %: el hallazgo no basta para diagnosticar isquemia mesentérica.', 'Bates, cap. 8, p. 258'],
+    ['p3', 'Signo del remolino', 'Vasos mesentéricos enroscados: vólvulo del intestino medio.', 'Bates, cap. 9, p. 289'],
+    ['p3', 'Signos de apendicitis (ABC)', '> 6 mm, no compresible, hiperemia, líquido periapendicular, grasa hiperecoica, fecalito.', 'ABC, p. 42'],
+    ['p3', 'Sensibilidad y especificidad de la ecografía en apendicitis (Bates)', '74 % y 94 %.', 'Bates, cap. 8, p. 259'],
+    ['p3', '¿La ecografía descarta apendicitis?', 'No: si no hay signos es «no concluyente»; TC y clínica.', 'ABC, p. 42'],
+    ['p3', 'Crohn en ecografía', 'Íleon terminal engrosado e hipoecoico (todo el espesor), abscesos intramurales con gas, fístulas.', 'Bates, cap. 8, p. 260'],
+    ['p3', 'Colitis ulcerosa en ecografía', 'Pared engrosada pero estratificada (mucosa); > 3 mm anormal.', 'Bates, cap. 8, p. 261'],
+    ['p3', 'Diverticulitis', 'Evaginaciones del sigma con pared hipoecoica engrosada; TC para complicaciones.', 'Bates, cap. 8, p. 261'],
+    ['p3', 'Peristaltismo en la obstrucción intestinal', 'Al inicio aumentado; luego disminuye y puede desaparecer.', 'ABC, p. 43'],
+    ['p3', 'Tumor intestinal del adulto en ecografía', 'Masa hipoecoica o mixta con luz excéntrica con gas y pérdida de capas; cerca del ciego.', 'Bates, cap. 8, p. 261'],
+    ['p3', 'Criterios de estenosis hipertrófica del píloro', 'Músculo ≥ 3 mm y alargado, peristaltismo inefectivo, píloro que no se abre.', 'Bates, cap. 9, p. 287'],
+    ['p3', 'Invaginación: imagen típica', 'Donut o rosquilla de anillos concéntricos («intestino dentro de intestino»).', 'Bates, cap. 9, p. 289'],
+    ['p3', 'Contraindicaciones de reducción no quirúrgica de invaginación', 'Peritonitis y aire libre intraperitoneal.', 'Bates, cap. 9, p. 289'],
+    ['p4', 'AAA roto en paciente inestable', 'Cirugía urgente sin retrasar por TC.', 'Bates, cap. 10, p. 305'],
+    ['p4', 'Absceso o hematoma del psoas: primera prueba', 'Ecografía.', 'Bates, cap. 10, p. 305']
   ],
 
   preguntas: [
-    { c: 'p1', q: 'Para evaluar el apéndice cecal, la técnica recomendada es:', o: ['Convexo con vejiga llena', 'Lineal con compresión graduada', 'Sectorial subxifoideo', 'Endocavitario'], a: 1, e: 'La compresión graduada con transductor lineal desplaza las asas con gas; el apéndice inflamado no se comprime.' },
-    { c: 'p1', q: 'El diámetro de la aorta abdominal debe medirse:', o: ['De pared interna a pared interna en longitudinal oblicuo', 'De pared externa a pared externa, perpendicular al eje', 'Solo la luz con Doppler color', 'En el plano coronal sin importar el ángulo'], a: 1, e: 'La medida externa-externa perpendicular evita subestimar el aneurisma y es la usada en las guías.' },
-    { c: 'p2', q: 'En decúbito supino, el espacio peritoneal más declive del abdomen superior es:', o: ['Espacio subfrénico izquierdo', 'Bolsa hepatorrenal de Morison', 'Transcavidad de los epiplones', 'Gotera parietocólica izquierda'], a: 1, e: 'Por eso es la primera ventana del FAST.' },
-    { c: 'p2', q: '¿Cuál capa de la pared intestinal es hiperecoica?', o: ['Muscular propia', 'Submucosa', 'Muscularis mucosae', 'Ninguna'], a: 1, e: 'Submucosa (3.ª capa) hiperecoica; muscular propia (4.ª) hipoecoica.' },
-    { c: 'p2', q: 'El vaso que cruza entre la arteria mesentérica superior y la aorta es:', o: ['Vena esplénica', 'Vena renal izquierda', 'Vena renal derecha', 'Arteria renal izquierda'], a: 1, e: 'Su compresión en ese punto es el síndrome de cascanueces.' },
-    { c: 'p2', q: 'Diámetro normal del apéndice cecal:', o: ['≤ 6 mm', '≤ 10 mm', '≤ 15 mm', '≤ 3 mm siempre'], a: 0, e: 'Por encima de 6 mm y no compresible sugiere apendicitis.' },
-    { c: 'p2', q: 'VCI de 2,5 cm sin colapso con el sniff. Presión de aurícula derecha estimada:', o: ['≈ 3 mmHg', '≈ 8 mmHg', '≈ 15 mmHg', 'No se puede estimar'], a: 2, e: 'VCI > 2,1 cm con colapso < 50 % → PAD alta (≈ 15 mmHg).' },
-    { c: 'p3', q: 'Apéndice de 9 mm, no compresible, con apendicolito y grasa periapendicular hiperecoica:', o: ['Apéndice normal', 'Apendicitis aguda', 'Mucocele', 'Enfermedad de Crohn'], a: 1, e: 'Hallazgos típicos de apendicitis.' },
-    { c: 'p3', q: 'Imagen en diana en hemiabdomen derecho de un niño de 18 meses con dolor cólico:', o: ['Apendicitis', 'Invaginación intestinal', 'Estenosis pilórica', 'Duplicación intestinal'], a: 1, e: 'Anillos concéntricos del intestino invaginado: invaginación ileocólica.' },
-    { c: 'p3', q: 'Píloro con grosor muscular de 4 mm y canal de 18 mm en lactante de 5 semanas:', o: ['Normal', 'Pilorospasmo', 'Estenosis hipertrófica del píloro', 'Reflujo gastroesofágico'], a: 2, e: 'Supera los umbrales (≥ 3 mm y ≥ 15–17 mm).' },
-    { c: 'p3', q: 'Asas de intestino delgado de 3,5 cm con contenido líquido y movimientos de vaivén:', o: ['Íleo paralítico sin obstrucción', 'Obstrucción intestinal mecánica', 'Normal', 'Ascitis'], a: 1, e: 'Dilatación con peristaltismo de vaivén = obstrucción mecánica.' },
-    { c: 'p3', q: 'Ascitis con septos, nódulos peritoneales y engrosamiento nodular del omento sugiere:', o: ['Cirrosis compensada', 'Carcinomatosis peritoneal', 'Insuficiencia cardíaca', 'Síndrome nefrótico'], a: 1, e: 'Pastel omental y nódulos: carcinomatosis (diagnóstico diferencial: TB peritoneal).' },
-    { c: 'p3', q: 'Aorta infrarrenal de 3,8 cm en un varón asintomático de 68 años. Clasificación:', o: ['Ectasia', 'Aneurisma de aorta abdominal', 'Normal para la edad', 'Disección'], a: 1, e: '≥ 3 cm es aneurisma. Con 3,8 cm corresponde seguimiento ecográfico periódico.' },
-    { c: 'p3', q: 'Colgajo intimal móvil en la luz aórtica con dos luces de flujo distinto:', o: ['Trombo mural', 'Disección aórtica', 'Artefacto de reverberación', 'Aneurisma sacular'], a: 1, e: 'El flap intimal es el signo directo de disección; confirmar con angio-TC.' },
-    { c: 'p3', q: 'Múltiples vasos serpiginosos en el hilio hepático sin vena porta identificable:', o: ['Hipertensión portal sin trombosis', 'Transformación cavernomatosa de la porta', 'Dilatación de vía biliar', 'Hemangioma'], a: 1, e: 'Es la secuela de una trombosis portal crónica.' },
-    { c: 'p3', q: 'Manguito de tejido hipoecoico alrededor de la aorta infrarrenal con hidronefrosis bilateral:', o: ['Aneurisma inflamatorio exclusivamente', 'Fibrosis retroperitoneal', 'Hematoma del psoas', 'Riñón en herradura'], a: 1, e: 'Atrapa los uréteres y causa hidronefrosis bilateral.' },
-    { c: 'p3', q: 'Velocidad pico sistólica de 320 cm/s en el origen de la AMS sugiere:', o: ['Flujo posprandial normal', 'Estenosis ≥ 70 %', 'Trombosis de la vena mesentérica', 'Aliasing sin significado'], a: 1, e: 'Umbral > 275 cm/s para estenosis significativa de la AMS.' },
-    { c: 'p3', q: 'Íleon terminal con pared de 7 mm, hiperemia y grasa mesentérica hiperecoica alrededor, en joven con diarrea crónica:', o: ['Apendicitis', 'Enfermedad de Crohn', 'Carcinoma de colon', 'Invaginación'], a: 1, e: 'Íleon terminal + grasa reptante + hiperemia = Crohn activo.' },
-    { c: 'p4', caso: true, q: 'Varón de 22 años con dolor periumbilical que migró a FID, fiebre de 38 °C y leucocitosis. Ecografía: apéndice de 10 mm no compresible, pared asimétrica sin capas y colección de 3 cm adyacente. Interpretación:', o: ['Apendicitis no complicada', 'Apendicitis perforada con absceso', 'Linfadenitis mesentérica', 'Ileítis por Yersinia'], a: 1, e: 'Pérdida de la submucosa y colección indican perforación.' },
-    { c: 'p4', caso: true, q: 'Lactante de 10 meses con crisis de llanto, vómitos y heces en jalea de grosella. Ecografía: imagen en donut de 3 cm en hipocondrio derecho, sin líquido libre ni signos de perforación. Conducta:', o: ['Cirugía inmediata', 'Reducción hidrostática o neumática guiada', 'Alta con dieta', 'TC de abdomen'], a: 1, e: 'Invaginación ileocólica no complicada: reducción no quirúrgica.' },
-    { c: 'p4', caso: true, q: 'Varón de 74 años, fumador, con dolor lumbar súbito, PA 70/40 y masa pulsátil. POCUS: aorta de 7 cm. Conducta:', o: ['Angio-TC para confirmar rotura antes de decidir', 'Traslado inmediato a quirófano / reparación urgente', 'Ecografía renal para descartar cólico', 'Observación'], a: 1, e: 'AAA con clínica de rotura y paciente inestable: no se debe retrasar la cirugía por una TC.' },
-    { c: 'p4', caso: true, q: 'Lactante de 4 semanas, varón, con vómitos en proyectil no biliosos después de cada toma; gasometría con alcalosis metabólica hipoclorémica. Hallazgo ecográfico esperado:', o: ['Diana en hemiabdomen derecho', 'Píloro engrosado ≥ 3 mm y alargado ≥ 15 mm', 'Doble burbuja', 'Asas dilatadas difusas'], a: 1, e: 'Estenosis hipertrófica del píloro.' },
-    { c: 'p4', caso: true, q: 'Paciente con antecedente de dos laparotomías, vómitos y distensión. Ecografía: asas dilatadas de 4 cm, una de ellas aperistáltica con pared engrosada y líquido libre entre asas. Interpretación:', o: ['Íleo paralítico benigno', 'Obstrucción con signos de sufrimiento de asa (estrangulación)', 'Gastroenteritis', 'Normal posoperatorio'], a: 1, e: 'Aperistalsis, pared gruesa y líquido interasas indican compromiso vascular: cirugía urgente.' },
-    { c: 'p4', caso: true, q: 'Mujer de 55 años con ascitis, pérdida de peso y masa anexial. Ecografía: ascitis tabicada y pastel omental. Sospecha:', o: ['Cirrosis', 'Carcinomatosis peritoneal por neoplasia de ovario', 'Insuficiencia cardíaca', 'Pancreatitis'], a: 1, e: 'Masa anexial + carcinomatosis: cáncer de ovario. CA-125 y TC.' }
+    { c: 'p1', q: 'Para medir correctamente un aneurisma de aorta abdominal:', o: ['Luz interna en transversal perpendicular a la piel', 'De pared externa a pared externa, perpendicular al eje del vaso', 'Solo con Doppler color', 'Diámetro de la luz permeable sin trombo'], a: 1, e: 'La medición transversal perpendicular a la piel en una aorta oblicua sobrestima casi un 20 %.', f: 'Bates, cap. 8, pp. 244–246' },
+    { c: 'p1', q: 'La aorta distal está oculta por gas en el corte sagital. Mejor alternativa:', o: ['Subir la frecuencia', 'Cortes coronales desde el flanco', 'Doppler pulsado', 'Trendelenburg'], a: 1, e: 'Ventana renal izquierda o hepática derecha.', f: 'Bates, cap. 8, p. 243' },
+    { c: 'p1', q: 'Antes de explorar el intestino con compresión graduada conviene:', o: ['Pedir al paciente que señale la zona de dolor', 'Llenar la vejiga', 'Ayuno de 24 h', 'Usar sonda sectorial'], a: 0, e: 'La exploración interactiva orienta hacia la patología.', f: 'Bates, cap. 8, p. 257' },
+    { c: 'p2', q: 'Grosor a partir del cual la pared intestinal se considera engrosada según el ABC:', o: ['2 mm', '4 mm', '6 mm', '10 mm'], a: 2, e: '2–3 mm distendida, 4–5 mm colapsada, engrosada > 6 mm.', f: 'ABC, p. 41' },
+    { c: 'p2', q: 'Según la regla 3-6-9, el diámetro máximo normal del colon es:', o: ['3 cm', '6 cm', '9 cm', '12 cm'], a: 1, e: 'Delgado 3, colon 6, ciego 9 cm.', f: 'ABC, p. 43' },
+    { c: 'p2', q: '¿Qué capa de la pared intestinal es hiperecoica?', o: ['Muscular propia', 'Submucosa', 'Muscularis mucosae', 'Ninguna'], a: 1, e: 'Tercera capa (submucosa).', f: 'ABC, p. 41' },
+    { c: 'p2', q: 'En un niño con dolor intermitente, la VMS está a la izquierda de la AMS. Sugiere:', o: ['Normalidad', 'Malrotación intestinal', 'Trombosis mesentérica', 'Invaginación'], a: 1, e: 'Relación invertida; una relación normal no excluye malrotación.', f: 'Bates, cap. 9, p. 289' },
+    { c: 'p2', q: 'Respuesta normal de la AMS tras la comida:', o: ['Aumenta la resistencia', 'Disminuye la resistencia con más flujo telediastólico', 'No cambia', 'Se invierte el flujo'], a: 1, e: 'En la isquemia mesentérica la respuesta posprandial es anormal.', f: 'Bates, cap. 8, p. 258' },
+    { c: 'p3', q: 'Pequeña cantidad de líquido con ecos y burbujas en el saco menor cerca del duodeno en un paciente con dolor epigástrico súbito:', o: ['Ascitis por cirrosis', 'Perforación de víscera (úlcera)', 'Normal', 'Pancreatitis crónica'], a: 1, e: 'El líquido «espeso» localizado sugiere perforación.', f: 'Bates, cap. 10, p. 302' },
+    { c: 'p3', q: 'Masa retroperitoneal que engloba la aorta y la desplaza hacia delante en un paciente con fiebre y sudores:', o: ['Aneurisma', 'Linfoma (adenopatías)', 'Quiste renal', 'Hematoma del psoas'], a: 1, e: 'Las adenopatías linfomatosas rodean y elevan la aorta y la VCI.', f: 'Bates, cap. 8, p. 264; cap. 9, p. 286' },
+    { c: 'p3', q: 'Varón de 68 años con aorta infrarrenal de 5,8 cm asintomática. Conducta según Bates:', o: ['Control en 5 años', 'Reparación (abierta o endovascular)', 'Nada', 'Anticoagulación'], a: 1, e: 'Reparación indicada por encima de 5,5 cm.', f: 'Bates, cap. 8, p. 244' },
+    { c: 'p3', q: 'Colgajo móvil en la luz aórtica con dos luces de flujo diferente:', o: ['Trombo mural', 'Disección aórtica', 'Reverberación', 'Aneurisma sacular'], a: 1, e: 'Las capas de trombo pueden imitarla: Doppler.', f: 'Bates, cap. 8, p. 248' },
+    { c: 'p3', q: 'Paciente con carcinoma renal derecho; material ecogénico en la VCI con flujo arterial en su interior:', o: ['Trombo blando', 'Trombo tumoral', 'Artefacto', 'Filtro de VCI'], a: 1, e: 'El trombo tumoral está vascularizado; ocurre en ≈ 10 % de los CCR.', f: 'Bates, cap. 8, p. 250' },
+    { c: 'p3', q: 'Apéndice de 9 mm, no compresible, con fecalito y grasa hiperecoica alrededor:', o: ['Normal', 'Apendicitis aguda', 'Mucocele', 'Crohn'], a: 1, e: 'Signos típicos del ABC.', f: 'ABC, p. 42' },
+    { c: 'p3', q: 'Paciente con clínica clara de apendicitis y ecografía donde no se ve el apéndice. Interpretación:', o: ['Se descarta apendicitis', 'Estudio no concluyente; valorar TC según la clínica', 'Alta', 'Apendicitis perforada segura'], a: 1, e: 'La ecografía puede apoyar el diagnóstico, nunca descartarlo.', f: 'ABC, p. 42' },
+    { c: 'p3', q: 'Íleon terminal con pared hipoecoica engrosada en todo su espesor y focos ecogénicos con gas en la pared:', o: ['Colitis ulcerosa', 'Enfermedad de Crohn con abscesos intramurales', 'Apendicitis', 'Linfoma gástrico'], a: 1, e: 'Crohn afecta todo el espesor; la CU afecta la mucosa y conserva la estratificación.', f: 'Bates, cap. 8, p. 260' },
+    { c: 'p3', q: 'Asas de delgado de 4 cm llenas de líquido con peristaltismo de vaivén:', o: ['Íleo paralítico sin obstrucción', 'Obstrucción intestinal', 'Ascitis', 'Normal'], a: 1, e: 'Supera los 3 cm de la regla 3-6-9; buscar el punto de transición y hernias.', f: 'ABC, p. 43' },
+    { c: 'p3', q: 'Masa hipoecoica cerca del ciego con luz excéntrica con gas y pérdida de las capas en un adulto con cambio del hábito intestinal:', o: ['Apendicitis', 'Probable carcinoma intestinal → TC', 'Invaginación del lactante', 'Normal'], a: 1, e: 'Localización más frecuente del tumor intestinal del adulto.', f: 'Bates, cap. 8, p. 261' },
+    { c: 'p3', q: 'Píloro con músculo de 4 mm y canal de 18 mm que no se abre en un lactante de 5 semanas:', o: ['Normal', 'Pilorospasmo transitorio', 'Estenosis hipertrófica del píloro', 'Reflujo'], a: 2, e: 'Sensibilidad 97 % y especificidad 99 % en manos expertas.', f: 'Bates, cap. 9, p. 287' },
+    { c: 'p3', q: 'En una invaginación, ¿qué contraindica la reducción con enema?', o: ['Edad de 1 año', 'Peritonitis o aire libre intraperitoneal', 'Localización ileocecal', 'Imagen en donut'], a: 1, e: 'Los signos de mal pronóstico (borde > 10 mm, sin flujo) no la contraindican.', f: 'Bates, cap. 9, p. 289' },
+    { c: 'p4', caso: true, q: 'Varón de 22 años con dolor migratorio a fosa ilíaca derecha y fiebre. Apéndice de 11 mm con líquido periapendicular y aumento del flujo. Interpretación:', o: ['Apendicitis no complicada', 'Apendicitis con signos de perforación', 'Linfadenitis mesentérica', 'Normal'], a: 1, e: 'El líquido periapendicular sugiere perforación (ABC, fig. 91).', f: 'ABC, p. 42' },
+    { c: 'p4', caso: true, q: 'Lactante de 10 meses con crisis de llanto y heces con sangre. Imagen en donut en hipocondrio derecho, sin líquido libre ni aire. Conducta:', o: ['Cirugía inmediata', 'Reducción con enema de aire o hidrostática guiada', 'Alta', 'TC'], a: 1, e: 'Invaginación ileocecal no complicada.', f: 'Bates, cap. 9, p. 289' },
+    { c: 'p4', caso: true, q: 'Recién nacido con vómitos biliosos; los vasos mesentéricos giran alrededor de la AMS («remolino»). Conducta:', o: ['Observación', 'Cirugía urgente por vólvulo del intestino medio', 'Enema de aire', 'Dieta'], a: 1, e: 'Riesgo de infarto de casi todo el intestino delgado.', f: 'Bates, cap. 9, p. 289' },
+    { c: 'p4', caso: true, q: 'Varón de 74 años, fumador, dolor lumbar súbito, PA 70/40, masa pulsátil; aorta de 7 cm en POCUS. Conducta:', o: ['TC para confirmar la fuga antes de operar', 'Quirófano urgente', 'Ecografía renal', 'Observación'], a: 1, e: 'No se debe retrasar la cirugía urgente por imágenes.', f: 'Bates, cap. 10, p. 305' },
+    { c: 'p4', caso: true, q: 'Mujer de 55 años con ascitis, pérdida de peso y masa anexial; nódulos peritoneales visibles gracias a la ascitis. Sospecha:', o: ['Cirrosis', 'Carcinomatosis peritoneal de origen ginecológico', 'Insuficiencia cardíaca', 'Pancreatitis'], a: 1, e: 'Las metástasis peritoneales suelen ser ginecológicas o urológicas; biopsia guiada.', f: 'Bates, cap. 8, p. 264' },
+    { c: 'p4', caso: true, q: 'Paciente anticoagulado con dolor en flanco y caída de hemoglobina; colección en el músculo psoas. Primera prueba y diagnóstico probable:', o: ['Ecografía; hematoma del psoas', 'Colonoscopia; tumor', 'Radiografía; litiasis', 'Gammagrafía; infarto'], a: 0, e: 'La ecografía es la primera investigación ante sospecha de hematoma o absceso del psoas.', f: 'Bates, cap. 10, p. 305' }
   ],
 
   glosario: [
-    ['Morison', 'Bolsa hepatorrenal; espacio declive del compartimento supramesocólico.'],
+    ['Morison', 'Bolsa hepatorrenal; espacio declive del abdomen superior.'],
     ['Douglas', 'Fondo de saco rectouterino; punto más declive de la pelvis femenina.'],
-    ['Firma intestinal', 'Patrón de 5 capas alternantes de la pared intestinal.'],
-    ['Compresión graduada', 'Técnica de presión progresiva para explorar el intestino y el apéndice.'],
-    ['Pseudorriñón', 'Asa intestinal engrosada en corte longitudinal que simula un riñón.'],
-    ['Pastel omental', 'Engrosamiento infiltrativo del omento mayor.'],
-    ['Coágulo centinela', 'Coágulo más ecogénico adyacente al sitio de sangrado.'],
-    ['Transformación cavernomatosa', 'Colaterales periportales tras trombosis crónica de la porta.'],
-    ['Aorta flotante', 'Aorta desplazada hacia anterior por adenopatías retroperitoneales.'],
-    ['Signo de la gaviota', 'Bifurcación del tronco celíaco en arterias hepática común y esplénica.'],
-    ['Cascanueces', 'Compresión de la vena renal izquierda entre AMS y aorta.'],
-    ['Grasa reptante', 'Grasa mesentérica hipertrófica e hiperecoica que envuelve el intestino en la enfermedad de Crohn.'],
-    ['AAA', 'Aneurisma de aorta abdominal: diámetro ≥ 3 cm.']
+    ['Saco menor', 'Transcavidad de los epiplones, detrás del estómago.'],
+    ['Firma intestinal', 'Patrón de capas alternantes de la pared intestinal.'],
+    ['Compresión graduada', 'Presión progresiva con el transductor para explorar intestino y apéndice.'],
+    ['Regla 3-6-9', 'Diámetros máximos: delgado 3 cm, colon 6 cm, ciego 9 cm.'],
+    ['Signo del remolino', 'Vasos mesentéricos enroscados en el vólvulo.'],
+    ['Donut', 'Imagen de anillos concéntricos de la invaginación.'],
+    ['AAA', 'Aneurisma de aorta abdominal.'],
+    ['Flap intimal', 'Colgajo de íntima en la disección aórtica.'],
+    ['Paraganglioma', 'Tumor cromafín extrasuprarrenal.'],
+    ['Carcinomatosis', 'Diseminación tumoral por el peritoneo.'],
+    ['Meigs', 'Fibroma ovárico con ascitis (y derrame pleural).']
   ]
 });

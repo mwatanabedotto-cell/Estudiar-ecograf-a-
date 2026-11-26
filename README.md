@@ -13,6 +13,15 @@ organizada según los **criterios de evaluación y sus pesos**:
 Abdominal II y III: técnica 10 %, anatomía normal 20 %, patrones patológicos 40 %, correlación clínica 30 %.
 \*En Abdominal I los porcentajes no se veían en la captura; se asumieron iguales (marcados como «estimado»).
 
+## Libros en los que se basa
+
+- **Bates J.** *Ecografía abdominal: cómo, por qué y cuándo*, 3.ª ed. Elsevier España, 2012 (citado como «Bates», con capítulo y página).
+- **Rodríguez L.** *El ABC de la ecografía abdominal*, 1.ª ed. RayosPedia (citado como «ABC», con página).
+
+Cada tema, tarjeta y pregunta indica de qué libro y página sale. Los pocos datos que no están en los libros
+se marcan como «complemento» o «dato general». Cuando los dos libros dan cifras distintas (p. ej., pared
+vesicular < 2 mm en Bates y < 3 mm en el ABC), se muestran ambas.
+
 ## Qué incluye
 
 - **Temario** por criterio, con tablas, perlas clínicas y espacio para notas propias.
@@ -31,7 +40,7 @@ Abdominal II y III: técnica 10 %, anatomía normal 20 %, patrones patológicos 
 
 Cada curso está en `contenido/<curso>.js`. El formato está documentado en `contenido/registro.js`:
 temas (`html` + `fuente`), tarjetas `[criterio, frente, reverso]`, preguntas `{c, q, o, a, e, caso}`,
-glosario y `fuentes` (los libros integrados aparecen en la Biblioteca).
+glosario. Las tarjetas aceptan un 4.º elemento con la fuente y las preguntas un campo `f`.
 
 Después de editar, regenerar el archivo único:
 
