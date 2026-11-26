@@ -53,6 +53,31 @@ ECO.curso({
       descripcion: 'Evalúa la anatomía normal de la cavidad peritoneal, el retroperitoneo, tubo digestivo y vasos abdominales, de acuerdo con patrones ecográficos estándares.',
       temas: [
         {
+          titulo: 'Referencias anatómicas: vasos, peritoneo e intestino',
+          fuente: 'Bates, cap. 8, pp. 243–250, 257; cap. 10, p. 298; ABC, pp. 41–43',
+          html: `
+<h4>Grandes vasos</h4>
+<ul>
+<li><b>Aorta</b>: delante de la columna, algo a la izquierda; pared gruesa y pulsátil. De arriba abajo: <b>tronco celíaco</b> (hepática común y esplénica en «gaviota»), <b>AMS</b> (≈ 1 cm por debajo, paralela a la aorta, rodeada de grasa), <b>arterias renales</b> (laterales), <b>AMI</b> y bifurcación en ilíacas (≈ ombligo, L4).</li>
+<li><b>VCI</b>: a la derecha de la aorta, más anterior al atravesar el diafragma; recibe venas renales (justo bajo el páncreas) y hepáticas. Colapsa con la inspiración.</li>
+<li><b>Pinza aortomesentérica</b>: la vena renal izquierda y el duodeno (3.ª porción) pasan entre AMS y aorta.</li>
+<li><b>Sistema porta</b>: la vena esplénica y la VMS se unen detrás del cuello del páncreas (confluente) para formar la porta.</li>
+</ul>
+<h4>Peritoneo</h4>
+<ul>
+<li>Los espacios más <b>declives</b> acumulan el líquido primero: <b>Morison</b> (abdomen superior en supino) y <b>pelvis</b> (Douglas o rectovesical, el más declive de todos). La <b>gotera parietocólica derecha</b> une ambos.</li>
+<li>El <b>saco menor</b> (detrás del estómago) recoge líquido en pancreatitis y perforaciones de úlcera posterior.</li>
+<li>El <b>mesenterio</b> sujeta el delgado; el <b>epiplón mayor</b> cuelga delante de las asas (se engrosa en la carcinomatosis).</li>
+</ul>
+<h4>Intestino</h4>
+<ul>
+<li><b>Estómago</b>: bajo el lóbulo izquierdo; el antro y el píloro, a la derecha de la línea media, cerca de la vesícula (truco del ABC para encontrar el píloro).</li>
+<li><b>Duodeno</b>: rodea la cabeza del páncreas; su gas tapa el colédoco distal.</li>
+<li><b>Yeyuno</b> (izquierda, válvulas conniventes) e <b>íleon</b> (derecha y pelvis); el <b>íleon terminal</b> entra en el ciego en la fosa ilíaca derecha, junto al <b>apéndice</b>, que suele cruzar por delante del psoas y los vasos ilíacos.</li>
+<li><b>Colon</b>: marco periférico con haustras y gas; el sigma en la fosa ilíaca izquierda (diverticulitis).</li>
+</ul>`
+        },
+        {
           titulo: 'Peritoneo y retroperitoneo',
           fuente: 'Bates, cap. 8, p. 243; cap. 10, p. 298 (espacios: anatomía general)',
           html: `

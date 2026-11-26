@@ -86,14 +86,17 @@
   function render() {
     var r = ruta();
     document.querySelectorAll('[data-nav]').forEach(function (a) {
-      a.classList.toggle('on', a.dataset.nav === r.vista || (r.vista === 'curso' && a.dataset.nav === 'inicio'));
+      a.classList.toggle('on', a.dataset.nav === r.vista);
     });
     actualizarBadge();
     if (r.vista === 'curso') vistaCurso(r.curso, r.tab);
     else if (r.vista === 'repaso') vistaRepaso();
     else if (r.vista === 'glosario') vistaGlosario();
     else if (r.vista === 'biblioteca') vistaBiblioteca();
+    else if (r.vista === 'atlas') vistaAtlas();
     else vistaInicio();
+    pintarNavCursos(r);
+    cerrarMenu();
     window.scrollTo(0, 0);
   }
   function actualizarBadge() {
@@ -217,7 +220,7 @@
         '<div class="dom">dominio ' + pct(p) + '%<div class="bar' + (p >= 0.8 ? ' ok' : '') + '" style="width:90px;margin-top:6px"><i style="width:' + pct(p) + '%"></i></div></div></header>' +
         (cr.temas || []).map(function (t) {
           return '<details class="tema" data-tema="' + t.id + '"><summary>' + esc(t.titulo) + (S.leidos[t.id] ? '<span class="chk">✓ estudiado</span>' : '') + '</summary>' +
-            '<div class="tema-body">' + t.html +
+            '<div class="tema-body">' + t.html + figurasTema(c, t) +
             (t.fuente ? '<p class="fuente">Fuente: ' + esc(t.fuente) + '</p>' : '') +
             '<div class="notas"><label for="n-' + t.id + '">Mis notas</label><textarea id="n-' + t.id + '" data-nota="' + t.id + '" placeholder="Apuntes de clase, dudas, páginas del libro…">' + esc(S.notas[t.id] || '') + '</textarea></div>' +
             '<div class="row"><button class="btn sm' + (S.leidos[t.id] ? '' : ' pri') + '" data-act="leido" data-id="' + t.id + '">' + (S.leidos[t.id] ? 'Marcar como pendiente' : 'Marcar como estudiado') + '</button>' +
@@ -458,11 +461,80 @@
       '<div class="row"><button class="btn" data-act="restaurar">Restaurar progreso</button><button class="btn ghost" data-act="borrar">Borrar todo el progreso</button><span id="msg-resp" class="muted" style="font-size:.9rem"></span></div></section>';
   }
 
+  /* ---------- Figuras: esquemas propios y figuras de los libros ---------- */
+  var FIGL = (window.ECO && window.ECO.figLibro) || {};
+  var IMGL = (window.ECO && window.ECO.imgLibro) || {};
+  var DIAS = (window.ECO && window.ECO.diagramas) || {};
+  var FIGT = (window.ECO && window.ECO.figTemas) || {};
+  function citaFig(f) { return f.libro + ', fig. ' + f.fig + ', p. ' + f.pag; }
+  function figuraHTML(ref) {
+    var tipo = ref.split(':')[0], k = ref.slice(tipo.length + 1);
+    if (tipo === 'dia' && DIAS[k]) {
+      return '<figure class="fig dia" data-act="ampliar" data-ref="' + ref + '">' + DIAS[k].svg + '<figcaption><span class="fig-tag">Esquema</span> ' + esc(DIAS[k].pie) + '</figcaption></figure>';
+    }
+    if (tipo === 'libro' && FIGL[k]) {
+      var f = FIGL[k];
+      if (IMGL[k]) return '<figure class="fig foto" data-act="ampliar" data-ref="' + ref + '"><img src="' + IMGL[k] + '" alt="' + esc(f.pie) + '" loading="lazy"><figcaption><span class="fig-tag">' + esc(citaFig(f)) + '</span> ' + esc(f.pie) + '</figcaption></figure>';
+      return '<figure class="fig ref"><div class="ref-ico" aria-hidden="true">' + esc(f.libro) + '</div><figcaption><span class="fig-tag">Ver ' + esc(citaFig(f)) + '</span> ' + esc(f.pie) + '</figcaption></figure>';
+    }
+    return '';
+  }
+  function figurasTema(c, t) {
+    var refs = FIGT[c.id + '|' + t.titulo]; if (!refs || !refs.length) return '';
+    var dias = refs.filter(function (r) { return r.indexOf('dia:') === 0; });
+    var libs = refs.filter(function (r) { return r.indexOf('libro:') === 0; });
+    var out = '';
+    if (dias.length) out += '<div class="figs-dia">' + dias.map(figuraHTML).join('') + '</div>';
+    if (libs.length) out += '<h4>Imágenes de referencia del libro</h4><div class="galeria">' + libs.map(figuraHTML).join('') + '</div>';
+    return out;
+  }
+  function vistaAtlas() {
+    var hayImg = Object.keys(IMGL).length > 0;
+    app.innerHTML = '<section class="chead"><span class="eyebrow">' + Object.keys(FIGL).length + ' figuras de los libros · ' + Object.keys(DIAS).length + ' esquemas</span><h1>Atlas de imágenes</h1>' +
+      '<p class="muted">Todas las imágenes de referencia, agrupadas por curso. Toca una imagen para ampliarla.' + (hayImg ? '' : ' Esta versión no incluye las imágenes de los libros (tienen derechos de autor): cada figura indica dónde encontrarla.') + '</p></section>' +
+      '<section class="stack"><h2>Esquemas anatómicos</h2><div class="figs-dia">' + Object.keys(DIAS).map(function (k) { return figuraHTML('dia:' + k); }).join('') + '</div></section>' +
+      CURSOS.map(function (c) {
+        var ks = Object.keys(FIGL).filter(function (k) { return FIGL[k].curso === c.id; });
+        if (!ks.length) return '';
+        return '<section class="stack"><h2>' + esc(c.titulo) + '</h2><div class="galeria">' + ks.map(function (k) { return figuraHTML('libro:' + k); }).join('') + '</div></section>';
+      }).join('');
+  }
+  var lb = document.getElementById('lightbox');
+  function ampliar(ref) {
+    if (!lb) return;
+    var tipo = ref.split(':')[0], k = ref.slice(tipo.length + 1), cont = '', pie = '';
+    if (tipo === 'dia' && DIAS[k]) { cont = DIAS[k].svg; pie = DIAS[k].pie; }
+    else if (tipo === 'libro' && IMGL[k]) { cont = '<img src="' + IMGL[k] + '" alt="">'; pie = citaFig(FIGL[k]) + ' · ' + FIGL[k].pie; }
+    else return;
+    lb.querySelector('.lb-cont').innerHTML = cont; lb.querySelector('.lb-pie').textContent = pie; lb.hidden = false;
+    lb.querySelector('.lb-cerrar').focus();
+  }
+  if (lb) {
+    lb.addEventListener('click', function (e) { if (e.target === lb || e.target.closest('.lb-cerrar')) lb.hidden = true; });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { lb.hidden = true; cerrarMenu(); } });
+  }
+
+  /* ---------- Barra lateral ---------- */
+  var side = document.getElementById('side'), velo = document.getElementById('velo'), menuBtn = document.getElementById('menu-btn');
+  function abrirMenu() { if (!side) return; side.classList.add('abierto'); velo.hidden = false; menuBtn.setAttribute('aria-expanded', 'true'); }
+  function cerrarMenu() { if (!side) return; side.classList.remove('abierto'); if (velo) velo.hidden = true; if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false'); }
+  if (menuBtn) menuBtn.addEventListener('click', function () { side.classList.contains('abierto') ? cerrarMenu() : abrirMenu(); });
+  if (velo) velo.addEventListener('click', cerrarMenu);
+  function pintarNavCursos(r) {
+    var nav = document.getElementById('nav-cursos'); if (!nav) return;
+    nav.innerHTML = CURSOS.map(function (c) {
+      var activo = r.vista === 'curso' && r.curso === c;
+      return '<a href="#' + c.id + '" class="nav-curso' + (activo ? ' on' : '') + '"><span class="nc-tit">' + esc(c.corto) + '</span><span class="nc-pct mono">' + pct(puntajeCurso(c)) + '%</span><span class="nc-bar"><i style="width:' + pct(puntajeCurso(c)) + '%"></i></span></a>' +
+        (activo ? '<div class="nav-sub">' + TABS.map(function (t) { return '<a href="#' + c.id + '-' + t[0] + '" class="' + (r.tab === t[0] || (t[0] === 'temario' && !TABS.some(function (x) { return x[0] === r.tab; })) ? 'on' : '') + '">' + t[1] + '</a>'; }).join('') + '</div>' : '');
+    }).join('');
+  }
+
   /* ---------- Eventos ---------- */
   var confirmarBorrado = false;
   app.addEventListener('click', function (e) {
     var b = e.target.closest('[data-act]'); if (!b) return;
     var act = b.dataset.act;
+    if (act === 'ampliar') { ampliar(b.dataset.ref); return; }
     if (act === 'voltear') { ses.vuelta = true; pintarTarjeta(); }
     else if (act === 'calif') calificar(+b.dataset.g);
     else if (act === 'leido') {

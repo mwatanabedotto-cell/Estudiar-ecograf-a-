@@ -22,12 +22,24 @@ Cada tema, tarjeta y pregunta indica de qué libro y página sale. Los pocos dat
 se marcan como «complemento» o «dato general». Cuando los dos libros dan cifras distintas (p. ej., pared
 vesicular < 2 mm en Bates y < 3 mm en el ABC), se muestran ambas.
 
+## Imágenes
+
+- **Esquemas anatómicos propios** (`contenido/diagramas.js`, SVG): orientación, artefactos, ondas Doppler, Couinaud,
+  porta hepatis, páncreas y sus vasos, niveles de obstrucción biliar, riñón, hidronefrosis, suprarrenales, aorta,
+  pared intestinal, FAST y medición del aneurisma.
+- **Figuras de los libros** (`contenido/figuras-libro.js`): solo pies y citas. Las imágenes tienen derechos de autor y
+  **no se guardan en este repositorio público**. En esta versión cada figura aparece como «Ver libro, fig., página».
+  La versión privada (artifact) las incluye; se genera con
+  `node scripts/construir.mjs --imagenes <carpeta> --salida <archivo fuera del repo>`.
+- **Atlas de imágenes**: todas las figuras y esquemas agrupados por curso.
+
 ## Qué incluye
 
 - **Temario** por criterio, con tablas, perlas clínicas y espacio para notas propias.
 - **Tarjetas** con repetición espaciada (Otra vez / Difícil / Bien / Fácil).
 - **Preguntas** de opción múltiple y casos clínicos con explicación.
 - **Simulacro** con preguntas repartidas según el peso de cada criterio y nota ponderada sobre 100.
+- Menú en **barra lateral** (desplegable en el móvil) y tema oscuro.
 - **Repaso del día** de los cuatro cursos, **glosario** con buscador y **biblioteca** de fuentes.
 - El progreso se guarda en el navegador; se puede copiar y restaurar en otro dispositivo.
 

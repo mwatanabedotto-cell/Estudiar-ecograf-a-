@@ -11,23 +11,38 @@
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-<header class="top">
-  <div class="top-in">
-    <a class="marca" href="#inicio" aria-label="Sonoaula, inicio">
-      <svg viewBox="0 0 40 28" width="34" height="24" aria-hidden="true"><path d="M20 26 L4 6 A20 20 0 0 1 36 6 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><circle cx="21" cy="13" r="3.2" fill="currentColor"/></svg>
-      <span>Sonoaula</span>
-    </a>
-    <nav class="nav" aria-label="Secciones">
-      <a href="#inicio" data-nav="inicio">Inicio</a>
-      <a href="#repaso" data-nav="repaso">Repaso <b id="badge-repaso" class="badge" hidden>0</b></a>
-      <a href="#glosario" data-nav="glosario">Glosario</a>
-      <a href="#biblioteca" data-nav="biblioteca">Biblioteca</a>
-    </nav>
-  </div>
-</header>
-<main id="app" class="wrap"></main>
-<footer class="pie wrap">Material de estudio personal. Contenido de referencia general; se ampliará con los libros del curso.</footer>
+<button class="menu-btn" id="menu-btn" aria-label="Abrir menú" aria-controls="side" aria-expanded="false"><span></span><span></span><span></span></button>
+<aside class="side" id="side" aria-label="Menú principal">
+  <a class="marca" href="#inicio" aria-label="Sonoaula, inicio">
+    <svg viewBox="0 0 40 28" width="34" height="24" aria-hidden="true"><path d="M20 26 L4 6 A20 20 0 0 1 36 6 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><circle cx="21" cy="13" r="3.2" fill="currentColor"/></svg>
+    <span>Sonoaula</span>
+  </a>
+  <nav class="side-nav">
+    <span class="side-tit">Estudio</span>
+    <a href="#inicio" data-nav="inicio">Inicio</a>
+    <a href="#repaso" data-nav="repaso">Repaso del día <b id="badge-repaso" class="badge" hidden>0</b></a>
+    <a href="#atlas" data-nav="atlas">Atlas de imágenes</a>
+    <a href="#glosario" data-nav="glosario">Glosario</a>
+    <a href="#biblioteca" data-nav="biblioteca">Biblioteca</a>
+    <span class="side-tit">Cursos</span>
+    <div id="nav-cursos" class="nav-cursos"></div>
+  </nav>
+  <p class="side-pie">Basado en Bates (3.ª ed.) y el ABC de la ecografía abdominal.</p>
+</aside>
+<div class="velo" id="velo" hidden></div>
+<div class="col">
+  <main id="app" class="wrap"></main>
+  <footer class="pie wrap">Material de estudio personal. Cada tema cita el libro y la página de donde sale.</footer>
+</div>
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Imagen ampliada" hidden>
+  <button class="lb-cerrar" aria-label="Cerrar">×</button>
+  <div class="lb-cont"></div>
+  <p class="lb-pie"></p>
+</div>
 <script src="contenido/registro.js"></script>
+<script src="contenido/diagramas.js"></script>
+<script src="contenido/figuras-libro.js"></script>
+<script src="contenido/figuras-temas.js"></script>
 <script src="contenido/bases.js"></script>
 <script src="contenido/abdominal1.js"></script>
 <script src="contenido/abdominal2.js"></script>

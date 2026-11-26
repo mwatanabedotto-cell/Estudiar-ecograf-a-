@@ -56,6 +56,32 @@ ECO.curso({
       descripcion: 'Evalúa la anatomía normal del riñón, glándulas suprarrenales y bazo, de acuerdo con patrones ecográficos estándares.',
       temas: [
         {
+          titulo: 'Referencias anatómicas: riñón, suprarrenales y bazo',
+          fuente: 'Bates, cap. 7, pp. 192–195; cap. 8, pp. 249–254; cap. 6, p. 175; ABC, pp. 29, 32',
+          html: `
+<h4>Riñones</h4>
+<ul>
+<li><b>Derecho</b>: posterior e inferior al hígado, que le sirve de ventana; entre ambos queda la <b>bolsa de Morison</b>. Más bajo que el izquierdo.</li>
+<li><b>Izquierdo</b>: detrás del estómago y del ángulo esplénico del colon; se ve por el <b>bazo</b> en corte coronal. Su polo superior se relaciona con el bazo y la suprarrenal izquierda.</li>
+<li><b>Hilio</b> (medial): de delante hacia atrás, <b>vena, arteria y pelvis</b>. Los vasos del hilio pueden simular una dilatación: Doppler.</li>
+<li><b>Vena renal izquierda</b>: cruza por delante de la aorta y por detrás de la AMS para llegar a la VCI. <b>Arteria renal derecha</b>: pasa por detrás de la VCI.</li>
+<li>Dentro del riñón: corteza → pirámides (vértice al seno) → seno central graso. La <b>columna de Bertin</b> es corteza que entra en el seno entre dos pirámides.</li>
+<li>Por detrás: músculos <b>psoas</b> (medial) y <b>cuadrado lumbar</b>; por arriba, el diafragma.</li>
+</ul>
+<h4>Suprarrenales</h4>
+<ul>
+<li><b>Derecha</b>: por encima y medial al polo superior del riñón derecho, <b>detrás de la VCI</b>, entre el hígado y el <b>pilar derecho del diafragma</b>.</li>
+<li><b>Izquierda</b>: anteromedial al polo superior del riñón izquierdo, lateral a la aorta, en el triángulo <b>bazo–riñón–pilar</b>.</li>
+<li>Forma de V, Y o λ: un reborde central y dos alas finas (≤ 2 mm).</li>
+</ul>
+<h4>Bazo</h4>
+<ul>
+<li>Cuadrante superior izquierdo, bajo el diafragma, posterolateral al estómago, sobre el riñón izquierdo. Forma de medialuna: cara diafragmática convexa, cara visceral cóncava con el <b>hilio</b> (arteria y vena esplénicas).</li>
+<li>La <b>cola del páncreas</b> llega al hilio esplénico: puede simular una masa periesplénica.</li>
+<li>Se mide la longitud mayor (polo a polo) en corte coronal intercostal.</li>
+</ul>`
+        },
+        {
           titulo: 'Riñón normal y Doppler',
           fuente: 'ABC, p. 32; Bates, cap. 7, pp. 193–195',
           html: `

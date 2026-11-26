@@ -4,14 +4,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
-/* Layout: consola de ecógrafo — fondo de sala oscura, texto de calibrador ámbar, Doppler rojo/azul solo para estado. Columna única de lectura, rejillas que se apilan en móvil. */
+/* Layout: consola de ecógrafo en sala oscura — barra lateral fija con el menú, columna de lectura a la derecha. Tema oscuro único. */
 :root {
-  --bg: #0c1114;
-  --panel: #131a1f;
-  --panel-2: #1a2329;
-  --line: #27333b;
+  --bg: #0a0f12;
+  --side: #0f161a;
+  --panel: #131b20;
+  --panel-2: #1a242a;
+  --line: #26333b;
   --fg: #e4eaed;
-  --muted: #8d9ea8;
+  --muted: #8fa1ab;
   --accent: #f0b84a;
   --accent-ink: #1b1305;
   --accent-soft: rgba(240, 184, 74, 0.14);
@@ -22,36 +23,21 @@
   --dop-r: #e5484d;
   --dop-b: #3e8ef7;
   --scan-bg: #05080a;
+  --side-w: 264px;
   --f-disp: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
   --f-text: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
   --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   --r: 10px;
   color-scheme: dark;
 }
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    --bg: #eef2f4; --panel: #ffffff; --panel-2: #e5ebee; --line: #cfd8de;
-    --fg: #13212a; --muted: #566873; --accent: #a8700c; --accent-ink: #ffffff;
-    --accent-soft: rgba(168, 112, 12, 0.12); --ok: #1c8a55; --ok-soft: rgba(28, 138, 85, 0.12);
-    --bad: #c23b33; --bad-soft: rgba(194, 59, 51, 0.10); --dop-r: #c8303a; --dop-b: #2a6fd6;
-    --scan-bg: #0b1013; color-scheme: light;
-  }
-}
-:root[data-theme="light"] {
-  --bg: #eef2f4; --panel: #ffffff; --panel-2: #e5ebee; --line: #cfd8de;
-  --fg: #13212a; --muted: #566873; --accent: #a8700c; --accent-ink: #ffffff;
-  --accent-soft: rgba(168, 112, 12, 0.12); --ok: #1c8a55; --ok-soft: rgba(28, 138, 85, 0.12);
-  --bad: #c23b33; --bad-soft: rgba(194, 59, 51, 0.10); --dop-r: #c8303a; --dop-b: #2a6fd6;
-  --scan-bg: #0b1013; color-scheme: light;
-}
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--bg); color: var(--fg);
   font: 400 1.0625rem/1.55 var(--f-text);
 }
-body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--panel); }
 a { color: var(--accent); }
 h1, h2, h3, h4 { font-family: var(--f-disp); font-weight: 700; line-height: 1.1; text-wrap: balance; margin: 0; letter-spacing: 0.005em; }
 h1 { font-size: clamp(2rem, 6vw, 2.9rem); }
@@ -67,16 +53,51 @@ button, input, select, textarea { font: inherit; color: inherit; }
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
 
-/* Barra superior */
-.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line); }
-.top-in { max-width: 980px; margin: 0 auto; display: flex; align-items: center; gap: 12px 20px; flex-wrap: wrap;
-  padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-.marca { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); text-decoration: none; font: 700 1.5rem/1 var(--f-disp); letter-spacing: 0.02em; }
-.nav { display: flex; gap: 4px; overflow-x: auto; margin-left: auto; scrollbar-width: none; }
-.nav a { color: var(--muted); text-decoration: none; padding: 6px 10px; border-radius: 6px; white-space: nowrap; font-weight: 600; font-size: 0.98rem; display: inline-flex; gap: 6px; align-items: center; }
-.nav a:hover { color: var(--fg); background: var(--panel-2); }
-.nav a.on { color: var(--fg); background: var(--panel-2); box-shadow: inset 0 -2px 0 var(--accent); }
+/* Barra lateral */
+.side {
+  position: fixed; inset: 0 auto 0 0; width: var(--side-w); z-index: 20;
+  background: var(--side); border-right: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 18px; overflow-y: auto;
+  padding: calc(18px + env(safe-area-inset-top, 0px)) 14px calc(18px + env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px));
+}
+.marca { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); text-decoration: none; font: 700 1.6rem/1 var(--f-disp); letter-spacing: 0.02em; padding: 2px 8px; }
+.side-nav { display: grid; gap: 2px; }
+.side-tit { font: 600 0.68rem/1 var(--f-mono); text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted); padding: 14px 10px 6px; }
+.side-nav > a { color: var(--fg); text-decoration: none; padding: 9px 10px; border-radius: 7px; font-weight: 600; font-size: 0.98rem; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.side-nav > a:hover { background: var(--panel-2); }
+.side-nav > a.on { background: var(--accent-soft); color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+.nav-cursos { display: grid; gap: 4px; }
+.nav-curso { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 8px; align-items: center; padding: 9px 10px; border-radius: 7px; text-decoration: none; color: var(--fg); }
+.nav-curso:hover { background: var(--panel-2); }
+.nav-curso.on { background: var(--panel-2); box-shadow: inset 3px 0 0 var(--accent); }
+.nc-tit { font-weight: 600; }
+.nc-pct { font-size: 0.75rem; color: var(--muted); }
+.nc-bar { grid-column: 1 / -1; height: 4px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.nc-bar i { display: block; height: 100%; background: var(--accent); }
+.nav-sub { display: grid; gap: 1px; margin: 0 0 6px 14px; border-left: 1px solid var(--line); padding-left: 8px; }
+.nav-sub a { color: var(--muted); text-decoration: none; padding: 6px 8px; border-radius: 6px; font-size: 0.92rem; }
+.nav-sub a:hover { color: var(--fg); }
+.nav-sub a.on { color: var(--accent); }
+.side-pie { margin-top: auto; font-size: 0.78rem; color: var(--muted); padding: 0 10px; }
 .badge { font: 600 0.72rem/1 var(--f-mono); background: var(--accent); color: var(--accent-ink); padding: 3px 6px; border-radius: 99px; }
+.col { margin-left: var(--side-w); min-width: 0; }
+.menu-btn { display: none; }
+.velo { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); z-index: 15; }
+
+@media (max-width: 900px) {
+  .col { margin-left: 0; }
+  .side { transform: translateX(-102%); transition: transform 0.2s ease; box-shadow: 0 0 40px rgba(0,0,0,.5); }
+  .side.abierto { transform: none; }
+  .menu-btn {
+    display: inline-grid; gap: 4px; place-content: center; position: fixed; z-index: 25;
+    top: calc(10px + env(safe-area-inset-top, 0px)); left: max(12px, env(safe-area-inset-left, 0px));
+    width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); cursor: pointer;
+  }
+  .side .marca { margin-left: 52px; }
+  .menu-btn span { display: block; width: 20px; height: 2px; background: var(--fg); border-radius: 2px; }
+  main.wrap { padding-top: 70px !important; }
+}
+@media (max-width: 900px) and (prefers-reduced-motion: reduce) { .side { transition: none; } }
 
 main.wrap { padding-block: 22px 40px; display: grid; gap: 28px; }
 .pie { color: var(--muted); font-size: 0.85rem; padding-block: 0 32px; }
@@ -175,6 +196,25 @@ details.tema > summary .chk { margin-left: auto; font: 600 0.72rem/1 var(--f-mon
 figure { margin: 0; }
 .notas label { font-size: 0.85rem; color: var(--muted); display: block; margin-bottom: 4px; }
 
+/* Figuras */
+.figs-dia { display: grid; gap: 14px; }
+.galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 12px; }
+.fig.dia, .fig.foto { cursor: zoom-in; }
+.fig.dia { background: #0d1418; border: 1px solid var(--line); }
+.fig.foto { padding: 8px; background: var(--panel-2); display: grid; gap: 6px; align-content: start; }
+.fig.foto img { width: 100%; height: auto; border-radius: 6px; background: #000; display: block; }
+.fig.foto figcaption, .fig.dia figcaption, .fig.ref figcaption { margin-top: 0; font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
+.fig-tag { font: 600 0.68rem/1.3 var(--f-mono); color: var(--accent); letter-spacing: 0.04em; display: block; margin-bottom: 2px; }
+.fig.ref { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 10px; align-items: start; padding: 10px; background: var(--panel-2); border: 1px dashed var(--line); }
+.ref-ico { width: 46px; height: 58px; border-radius: 4px; border: 1px solid var(--line); border-left: 5px solid var(--accent); display: grid; place-items: center; font: 600 0.7rem/1 var(--f-mono); color: var(--muted); }
+.lightbox { position: fixed; inset: 0; z-index: 50; background: rgba(3, 6, 8, 0.92); display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 10px; place-items: center;
+  padding: calc(56px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.lb-cont { width: 100%; height: 100%; display: grid; place-items: center; min-height: 0; overflow: auto; }
+.lb-cont img, .lb-cont svg { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
+.lb-cont svg { width: min(100%, 1100px); background: #0d1418; border-radius: 8px; }
+.lb-pie { color: var(--fg); max-width: 80ch; text-align: center; font-size: 0.95rem; }
+.lb-cerrar { position: absolute; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(14px, env(safe-area-inset-right, 0px)); width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); color: var(--fg); font-size: 1.6rem; line-height: 1; cursor: pointer; }
+
 /* Tarjetas */
 .fc { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px 20px; min-height: 260px; display: grid; gap: 16px; align-content: start; }
 .fc .q { font-size: 1.22rem; font-weight: 600; line-height: 1.4; }
@@ -236,7 +276,6 @@ figure { margin: 0; }
   .glos .g { grid-template-columns: minmax(0, 1fr); }
   .crit > header { grid-template-columns: auto minmax(0, 1fr); }
   .crit > header .dom { grid-column: 2; text-align: left; }
-  .nav { margin-left: 0; width: 100%; }
 }
 @media (max-width: 420px) {
   .kpis { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
@@ -248,23 +287,36 @@ figure { margin: 0; }
   .fc, .qbox { animation: entra 0.18s ease-out; }
   @keyframes entra { from { transform: translateY(4px); opacity: 0.6; } to { transform: none; opacity: 1; } }
 }
+.fig.dia svg { max-width: 680px; margin: 0 auto; }
 </style>
-<header class="top">
-  <div class="top-in">
-    <a class="marca" href="#inicio" aria-label="Sonoaula, inicio">
-      <svg viewBox="0 0 40 28" width="34" height="24" aria-hidden="true"><path d="M20 26 L4 6 A20 20 0 0 1 36 6 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><circle cx="21" cy="13" r="3.2" fill="currentColor"/></svg>
-      <span>Sonoaula</span>
-    </a>
-    <nav class="nav" aria-label="Secciones">
-      <a href="#inicio" data-nav="inicio">Inicio</a>
-      <a href="#repaso" data-nav="repaso">Repaso <b id="badge-repaso" class="badge" hidden>0</b></a>
-      <a href="#glosario" data-nav="glosario">Glosario</a>
-      <a href="#biblioteca" data-nav="biblioteca">Biblioteca</a>
-    </nav>
-  </div>
-</header>
-<main id="app" class="wrap"></main>
-<footer class="pie wrap">Material de estudio personal. Contenido de referencia general; se ampliará con los libros del curso.</footer>
+<button class="menu-btn" id="menu-btn" aria-label="Abrir menú" aria-controls="side" aria-expanded="false"><span></span><span></span><span></span></button>
+<aside class="side" id="side" aria-label="Menú principal">
+  <a class="marca" href="#inicio" aria-label="Sonoaula, inicio">
+    <svg viewBox="0 0 40 28" width="34" height="24" aria-hidden="true"><path d="M20 26 L4 6 A20 20 0 0 1 36 6 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><circle cx="21" cy="13" r="3.2" fill="currentColor"/></svg>
+    <span>Sonoaula</span>
+  </a>
+  <nav class="side-nav">
+    <span class="side-tit">Estudio</span>
+    <a href="#inicio" data-nav="inicio">Inicio</a>
+    <a href="#repaso" data-nav="repaso">Repaso del día <b id="badge-repaso" class="badge" hidden>0</b></a>
+    <a href="#atlas" data-nav="atlas">Atlas de imágenes</a>
+    <a href="#glosario" data-nav="glosario">Glosario</a>
+    <a href="#biblioteca" data-nav="biblioteca">Biblioteca</a>
+    <span class="side-tit">Cursos</span>
+    <div id="nav-cursos" class="nav-cursos"></div>
+  </nav>
+  <p class="side-pie">Basado en Bates (3.ª ed.) y el ABC de la ecografía abdominal.</p>
+</aside>
+<div class="velo" id="velo" hidden></div>
+<div class="col">
+  <main id="app" class="wrap"></main>
+  <footer class="pie wrap">Material de estudio personal. Cada tema cita el libro y la página de donde sale.</footer>
+</div>
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Imagen ampliada" hidden>
+  <button class="lb-cerrar" aria-label="Cerrar">×</button>
+  <div class="lb-cont"></div>
+  <p class="lb-pie"></p>
+</div>
 <script>
 /* Registro de contenido de Sonoaula.
    Cada archivo de curso llama a ECO.curso({...}). Formato:
@@ -295,6 +347,352 @@ window.ECO.referencias = [
 ];
 </script>
 <script>
+/* Diagramas anatómicos originales de Sonoaula (esquemas propios, no copias de los libros).
+   Uso en un tema: {{dia:clave}}. Pensados para fondo oscuro. */
+(function () {
+  var T = 'font-family="Source Sans 3, sans-serif" font-size="13" fill="#dbe3e7"';
+  var S = 'font-family="JetBrains Mono, monospace" font-size="11" fill="#9fb0b9"';
+  var C = { higado: '#8b5e47', higadoB: '#a8735a', porta: '#8f7cf0', vena: '#4d8fe8', arteria: '#e5534b', bilis: '#4fbf83', pancreas: '#e2c15a', rinon: '#c9757d', seno: '#f0d9c8', grasa: '#e9e2c9', liq: '#0b1114', tejido: '#4a5961', hueso: '#d7dde0', acento: '#f0b84a' };
+  function svg(vb, body, label) { return '<svg viewBox="' + vb + '" role="img" aria-label="' + label + '" xmlns="http://www.w3.org/2000/svg">' + body + '</svg>'; }
+  function t(x, y, s, a) { return '<text x="' + x + '" y="' + y + '" ' + T + (a ? ' text-anchor="' + a + '"' : '') + '>' + s + '</text>'; }
+  function m(x, y, s, a) { return '<text x="' + x + '" y="' + y + '" ' + S + (a ? ' text-anchor="' + a + '"' : '') + '>' + s + '</text>'; }
+  function ln(x1, y1, x2, y2, c, w, d) { return '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + (c || '#9fb0b9') + '" stroke-width="' + (w || 1) + '"' + (d ? ' stroke-dasharray="' + d + '"' : '') + '/>'; }
+
+  window.ECO = window.ECO || { cursos: [] };
+  window.ECO.diagramas = {
+    'orientacion': { pie: 'Orientación: la marca del transductor (ámbar) corresponde a la marca de la pantalla. Arriba siempre lo superficial.', svg: svg('0 0 560 230',
+      '<rect x="20" y="40" width="240" height="170" rx="8" fill="#10181c" stroke="#33434c"/><rect x="300" y="40" width="240" height="170" rx="8" fill="#10181c" stroke="#33434c"/>' +
+      '<circle cx="34" cy="54" r="5" fill="' + C.acento + '"/><circle cx="314" cy="54" r="5" fill="' + C.acento + '"/>' +
+      t(140, 30, 'Transversal (marca → derecha del paciente)', 'middle') + t(420, 30, 'Longitudinal (marca → cabeza)', 'middle') +
+      m(40, 120, 'DERECHA') + m(250, 120, 'IZQUIERDA', 'end') + m(320, 120, 'CRANEAL') + m(530, 120, 'CAUDAL', 'end') +
+      m(140, 70, 'superficial', 'middle') + m(140, 200, 'profundo', 'middle') + m(420, 70, 'superficial', 'middle') + m(420, 200, 'profundo', 'middle') +
+      '<path d="M140 80 v100" stroke="#5d6f78" stroke-dasharray="3 4"/><path d="M420 80 v100" stroke="#5d6f78" stroke-dasharray="3 4"/>', 'Orientación en cortes transversal y longitudinal') },
+
+    'artefactos': { pie: 'Los tres artefactos esenciales: sombra detrás de lo muy reflectante, refuerzo detrás del líquido y reverberación entre interfaces paralelas.', svg: svg('0 0 600 220',
+      '<defs><linearGradient id="dsp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b7a82"/><stop offset="1" stop-color="#4a5961"/></linearGradient></defs>' +
+      [0, 1, 2].map(function (i) { return '<rect x="' + (20 + i * 195) + '" y="30" width="175" height="170" fill="url(#dsp)" rx="6"/>'; }).join('') +
+      '<circle cx="107" cy="80" r="16" fill="#f2f4f5"/><rect x="91" y="96" width="32" height="104" fill="#070b0d"/>' + t(107, 22, 'Sombra acústica', 'middle') + m(107, 215, 'cálculo, calcio, hueso', 'middle') +
+      '<circle cx="302" cy="80" r="26" fill="' + C.liq + '"/><rect x="278" y="106" width="48" height="94" fill="#9aa8b0" opacity=".85"/>' + t(302, 22, 'Refuerzo posterior', 'middle') + m(302, 215, 'quiste, vejiga, vesícula', 'middle') +
+      '<rect x="420" y="55" width="140" height="5" fill="#f2f4f5"/>' + [0, 1, 2, 3, 4].map(function (k) { return '<rect x="420" y="' + (80 + k * 24) + '" width="140" height="3" fill="#f2f4f5" opacity="' + (0.8 - k * 0.15) + '"/>'; }).join('') + t(497, 22, 'Reverberación', 'middle') + m(497, 215, 'aire, aguja, catéter', 'middle'), 'Sombra, refuerzo y reverberación') },
+
+    'doppler-ondas': { pie: 'Ondas Doppler espectrales típicas. La forma de la onda refleja la resistencia del lecho vascular distal.', svg: svg('0 0 600 330',
+      (function () {
+        var out = '', items = [
+          ['Vena porta', 'monofásica, hepatópeta, ondulada', 'M0 30 C20 22 40 22 60 30 S100 38 120 30 S160 22 180 30', C.porta],
+          ['Venas hepáticas', 'trifásica (sístole auricular invertida)', 'M0 30 L15 46 L35 40 L52 50 L66 18 L80 30 L95 46 L115 40 L132 50 L146 18 L160 30 L175 46', C.vena],
+          ['Arteria baja resistencia', 'hepática, renal, AMS posprandial', 'M0 44 L8 6 L22 24 L60 34 L68 44 L76 6 L90 24 L128 34 L136 44 L144 6 L158 24 L178 30', C.arteria],
+          ['Arteria alta resistencia', 'aorta infrarrenal, AMS en ayunas', 'M0 44 L8 4 L18 44 L24 52 L34 44 L60 44 L68 4 L78 44 L84 52 L94 44 L120 44 L128 4 L138 44 L144 52 L154 44 L178 44', C.arteria],
+          ['Parvus-tardus', 'distal a estenosis: ascenso lento', 'M0 44 C25 40 35 22 50 20 C70 22 80 36 100 40 C125 38 135 22 150 20 C165 22 172 32 178 36', C.acento]
+        ];
+        items.forEach(function (it, i) {
+          var y = 18 + i * 62;
+          out += t(10, y + 12, it[0]) + m(10, y + 28, it[1]) + '<g transform="translate(330 ' + (y - 6) + ') scale(1.4 1)"><line x1="0" y1="44" x2="180" y2="44" stroke="#3b4a52"/><path d="' + it[2] + '" fill="none" stroke="' + it[3] + '" stroke-width="2"/></g>';
+        });
+        return out;
+      })(), 'Ondas Doppler normales y patológicas') },
+
+    'couinaud': { pie: 'Segmentos de Couinaud (vista anterior esquemática). Las venas hepáticas dividen en sentido vertical; el plano de la porta separa los segmentos superiores (II, IV a, VIII, VII) de los inferiores (III, IV b, V, VI). El I (caudado) es posterior y drena directo a la VCI.', svg: svg('0 0 560 300',
+      '<path d="M40 120 C40 60 140 30 280 34 C400 36 520 60 525 95 C530 130 470 150 400 175 C330 200 250 250 170 262 C90 270 40 210 40 120 Z" fill="' + C.higado + '" stroke="#d7a58a" stroke-width="1.5"/>' +
+      '<rect x="262" y="8" width="26" height="110" rx="10" fill="' + C.vena + '" opacity=".9"/>' + m(240, 22, 'VCI', 'end') +
+      '<path d="M270 40 C220 70 170 110 120 150" stroke="' + C.vena + '" stroke-width="7" fill="none"/>' + '<path d="M275 45 C270 90 262 140 250 190" stroke="' + C.vena + '" stroke-width="7" fill="none"/>' + '<path d="M282 40 C330 70 380 95 430 110" stroke="' + C.vena + '" stroke-width="7" fill="none"/>' +
+      ln(40, 150, 520, 120, C.porta, 3, '8 5') + m(500, 138, 'plano portal', 'end') +
+      t(95, 105, 'VII') + t(100, 205, 'VI') + t(190, 100, 'VIII') + t(195, 210, 'V') + t(300, 95, 'IV a') + t(285, 185, 'IV b') + t(400, 85, 'II') + t(390, 155, 'III') +
+      '<circle cx="318" cy="135" r="13" fill="' + C.higadoB + '" stroke="#f0d0b8"/>' + t(318, 140, 'I', 'middle') +
+      m(120, 290, 'VHD', 'middle') + m(250, 290, 'VHM (línea de Cantlie)', 'middle') + m(440, 290, 'VHI', 'middle'), 'Segmentos hepáticos de Couinaud') },
+
+    'porta-hepatis': { pie: 'Corte transversal del hilio hepático («Mickey Mouse»): la vena porta es la cabeza; el colédoco (anterolateral, a la derecha del paciente) y la arteria hepática (anteromedial) son las orejas. Con Doppler, el colédoco no tiene flujo.', svg: svg('0 0 520 250',
+      '<rect x="0" y="0" width="520" height="250" fill="#10181c" rx="8"/>' + m(20, 24, 'DERECHA del paciente') + m(500, 24, 'IZQUIERDA', 'end') + m(260, 24, 'anterior', 'middle') + m(260, 240, 'posterior', 'middle') +
+      '<circle cx="260" cy="150" r="52" fill="' + C.porta + '" opacity=".9"/>' + t(260, 155, 'Vena porta', 'middle') +
+      '<circle cx="200" cy="82" r="24" fill="' + C.bilis + '"/>' + t(150, 60, 'Colédoco', 'end') +
+      '<circle cx="318" cy="84" r="15" fill="' + C.arteria + '"/>' + t(345, 62, 'Arteria hepática') +
+      m(260, 220, 'colédoco ≤ 6 mm · porta ≤ 13–16 mm', 'middle'), 'Signo de Mickey Mouse en la porta hepatis') },
+
+    'pancreas': { pie: 'Corte transversal del epigastrio a la altura del páncreas. La vena esplénica (detrás del cuerpo y la cola) es la referencia principal; la AMS, rodeada de grasa ecogénica, queda detrás de ella; la vena renal izquierda cruza entre AMS y aorta. En la cabeza: colédoco posterolateral y gastroduodenal anterolateral.', svg: svg('0 0 600 334',
+      '<rect width="600" height="334" fill="#10181c" rx="8"/>' + m(14, 20, 'DERECHA') + m(586, 20, 'IZQUIERDA', 'end') +
+      '<path d="M0 30 C120 70 260 80 360 60 C450 42 540 30 600 34 L600 0 L0 0 Z" fill="' + C.higado + '" opacity=".8"/>' + m(300, 40, 'lóbulo hepático izquierdo (ventana)', 'middle') +
+      '<path d="M110 150 C110 110 170 100 230 112 C300 125 380 118 450 100 C500 88 545 96 555 120 C560 140 520 150 470 152 C400 158 330 168 270 170 C220 172 200 200 160 200 C120 200 110 180 110 150 Z" fill="' + C.pancreas + '" opacity=".85"/>' +
+      t(150, 165, 'Cabeza') + t(330, 150, 'Cuerpo', 'middle') + t(505, 128, 'Cola', 'middle') +
+      '<path d="M235 182 C300 178 400 170 470 162 C520 156 560 150 590 150" stroke="' + C.vena + '" stroke-width="12" fill="none"/>' + m(560, 175, 'vena esplénica', 'end') +
+      '<circle cx="232" cy="182" r="13" fill="' + C.vena + '"/>' + m(214, 214, 'confluente / VMS', 'end') +
+      '<circle cx="286" cy="214" r="17" fill="' + C.grasa + '" opacity=".9"/><circle cx="286" cy="214" r="9" fill="' + C.arteria + '"/>' + m(312, 218, 'AMS') +
+      '<path d="M250 246 C290 240 330 238 400 236" stroke="' + C.vena + '" stroke-width="7" fill="none"/>' + m(404, 240, 'VRI') +
+      '<circle cx="292" cy="270" r="20" fill="' + C.arteria + '"/>' + m(292, 275, 'Ao', 'middle') +
+      '<ellipse cx="190" cy="262" rx="26" ry="16" fill="' + C.vena + '"/>' + m(190, 266, 'VCI', 'middle') +
+      '<circle cx="128" cy="182" r="7" fill="' + C.bilis + '"/>' + m(118, 205, 'colédoco', 'end') +
+      '<circle cx="142" cy="128" r="5" fill="' + C.arteria + '"/>' + m(132, 114, 'gastroduodenal', 'end') +
+      '<path d="M235 318 C260 290 330 290 355 318 Z" fill="' + C.hueso + '" opacity=".7"/>' +       m(586, 322, 'cabeza ≤ 3 · cuerpo ≤ 2,5 · cola ≤ 2 cm', 'end'), 'Páncreas y referencias vasculares') },
+
+    'obstruccion-biliar': { pie: 'Qué se dilata según el nivel de la obstrucción: el nivel se deduce de qué segmentos están dilatados.', svg: svg('0 0 600 320',
+      '<path d="M160 30 L200 110 M240 30 L200 110" stroke="' + C.bilis + '" stroke-width="7" fill="none"/>' + '<path d="M200 110 L210 200 L225 270" stroke="' + C.bilis + '" stroke-width="9" fill="none"/>' +
+      '<path d="M206 160 C170 165 140 185 120 215" stroke="' + C.bilis + '" stroke-width="5" fill="none"/>' + '<ellipse cx="95" cy="240" rx="38" ry="26" fill="' + C.bilis + '" opacity=".55"/>' + m(95, 286, 'vesícula', 'middle') +
+      '<path d="M226 268 C300 262 380 250 470 236" stroke="' + C.pancreas + '" stroke-width="6" fill="none"/>' + m(470, 262, 'Wirsung', 'end') +
+      '<circle cx="228" cy="276" r="8" fill="' + C.acento + '"/>' + m(244, 300, 'ampolla') +
+      [[200, 105, '1'], [130, 205, '2'], [214, 225, '3'], [228, 276, '4']].map(function (p) { return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="11" fill="#0c1114" stroke="' + C.acento + '" stroke-width="2"/>' + '<text x="' + p[0] + '" y="' + (p[1] + 4) + '" ' + S + ' text-anchor="middle" fill="' + C.acento + '">' + p[2] + '</text>'; }).join('') +
+      t(300, 50, '1 · Hilio (Klatskin): dilatación intrahepática bilateral,') + m(318, 68, 'colédoco normal, vesícula colapsada') +
+      t(300, 100, '2 · Cuello/cístico: solo vesícula dilatada (mucocele);') + m(318, 118, 'Mirizzi: + dilatación intrahepática') +
+      t(300, 150, '3 · Colédoco: intrahepáticos + colédoco dilatados') + m(318, 168, 'coledocolitiasis') +
+      t(300, 200, '4 · Ampolla/cabeza: doble conducto') + m(318, 218, 'colédoco + Wirsung; vesícula distendida'), 'Niveles de obstrucción biliar') },
+
+    'rinon': { pie: 'Riñón en corte longitudinal: corteza y pirámides forman el parénquima; el seno central es hiperecogénico. La lobulación fetal hace muescas entre pirámides; una cicatriz, sobre una pirámide.', svg: svg('0 0 560 270',
+      '<rect width="560" height="270" fill="#10181c" rx="8"/>' +
+      '<path d="M90 135 C90 60 180 30 280 32 C380 34 470 60 470 135 C470 210 380 238 280 238 C180 238 90 210 90 135 Z" fill="' + C.rinon + '" opacity=".75" stroke="#f3e9e4" stroke-width="2"/>' +
+      [[150, 85, -35], [215, 62, -12], [290, 58, 0], [365, 64, 12], [420, 90, 35], [150, 185, 35], [215, 208, 12], [290, 212, 0], [365, 206, -12], [420, 180, -35]].map(function (p) { return '<path d="M-16 -18 L16 -18 L0 22 Z" transform="translate(' + p[0] + ' ' + p[1] + ') rotate(' + (p[1] > 135 ? 180 + p[2] : p[2]) + ')" fill="#3a2a2d"/>'; }).join('') +
+      '<path d="M175 135 C175 110 230 100 290 102 C350 104 395 112 395 135 C395 158 350 168 290 168 C230 168 175 160 175 135 Z" fill="' + C.seno + '"/>' + '<text x="285" y="140" font-family="Source Sans 3, sans-serif" font-size="13" fill="#3a2a2d" text-anchor="middle">Seno renal (hiperecoico)</text>' +
+      ln(90, 252, 470, 252, C.acento, 1.5) + m(280, 266, 'longitud 9–12 cm (asimetría ≤ 1,5 cm)', 'middle') +
+      m(150, 26, 'pirámides (hipoecoicas)', 'middle') + m(480, 50, 'cápsula', 'start') + m(485, 140, 'corteza', 'start') + ln(470, 135, 482, 137) +
+      m(485, 175, 'parénquima ≥ 1,5 cm', 'start'), 'Anatomía ecográfica del riñón') },
+
+    'hidronefrosis': { pie: 'Grados de hidronefrosis (esquema): I pelvis; II pelvis y cálices sin atrofia; III moderada con atrofia leve; IV severa con atrofia significativa del parénquima.', svg: svg('0 0 600 190',
+      [0, 1, 2, 3].map(function (g) {
+        var x = 20 + g * 145, par = [28, 26, 18, 7][g], cal = [0, 9, 14, 20][g], pel = [16, 20, 28, 36][g];
+        var cals = '';
+        if (cal) for (var k = 0; k < 4; k++) { var a = -1.1 + k * 0.73; cals += '<circle cx="' + (x + 62 + Math.cos(a) * (40 - par / 3)) + '" cy="' + (90 + Math.sin(a) * (40 - par / 3)) + '" r="' + (cal / 2) + '" fill="' + C.liq + '"/>'; }
+        return '<ellipse cx="' + (x + 62) + '" cy="90" rx="62" ry="62" fill="' + C.rinon + '" opacity=".75"/>' + '<ellipse cx="' + (x + 62) + '" cy="90" rx="' + (62 - par) + '" ry="' + (62 - par) + '" fill="' + C.seno + '"/>' + cals + '<ellipse cx="' + (x + 70) + '" cy="96" rx="' + pel + '" ry="' + (pel * 0.7) + '" fill="' + C.liq + '"/>' + t(x + 62, 178, 'Grado ' + ['I', 'II', 'III', 'IV'][g], 'middle');
+      }).join(''), 'Grados de hidronefrosis') },
+
+    'suprarrenales': { pie: 'Dónde buscar las suprarrenales. Derecha: ventana hepática, entre hígado y pilar del diafragma, con el reborde por detrás de la VCI. Izquierda: corte coronal por el bazo, en el triángulo entre bazo, riñón y pilar. Alas hipoecoicas ≤ 2 mm (forma de V, Y o λ).', svg: svg('0 0 600 260',
+      '<rect width="600" height="260" fill="#10181c" rx="8"/>' + t(150, 24, 'Derecha (transversal oblicuo)', 'middle') + t(450, 24, 'Izquierda (coronal por el bazo)', 'middle') +
+      '<path d="M20 60 C80 40 200 40 260 70 L260 230 C200 230 120 220 20 200 Z" fill="' + C.higado + '" opacity=".75"/>' + m(70, 120, 'hígado') +
+      '<ellipse cx="225" cy="110" rx="24" ry="16" fill="' + C.vena + '"/>' + m(225, 114, 'VCI', 'middle') +
+      '<path d="M255 150 C265 180 265 210 250 240" stroke="#7d8f98" stroke-width="10" fill="none"/>' + m(268, 205, 'pilar') +
+      '<path d="M205 140 L218 168 L232 140 M218 168 L218 190" stroke="' + C.acento + '" stroke-width="5" fill="none" stroke-linecap="round"/>' + m(160, 160, 'suprarrenal', 'end') +
+      '<ellipse cx="150" cy="215" rx="45" ry="20" fill="' + C.rinon + '" opacity=".75"/>' + m(150, 219, 'polo sup. RD', 'middle') +
+      '<path d="M330 70 C380 45 470 45 520 75 C540 110 520 140 480 150 C430 158 360 140 330 110 Z" fill="#6f7c8e"/>' + m(420, 100, 'bazo', 'middle') +
+      '<ellipse cx="420" cy="215" rx="70" ry="26" fill="' + C.rinon + '" opacity=".75"/>' + m(420, 219, 'riñón izquierdo', 'middle') +
+      '<path d="M545 120 C560 160 560 200 545 240" stroke="#7d8f98" stroke-width="10" fill="none"/>' + m(560, 255, 'pilar', 'end') +
+      '<path d="M470 165 L490 185 L510 165 M490 185 L492 200" stroke="' + C.acento + '" stroke-width="5" fill="none" stroke-linecap="round"/>' + m(500, 158, 'suprarrenal'), 'Localización de las suprarrenales') },
+
+    'aorta': { pie: 'Aorta abdominal y ramas. En longitudinal: tronco celíaco y AMS salen de la cara anterior; la AMS desciende paralela, rodeada de grasa. La vena renal izquierda pasa entre AMS y aorta. Medir de pared externa a pared externa, perpendicular al eje.', svg: svg('0 0 600 300',
+      '<rect width="600" height="300" fill="#10181c" rx="8"/>' + t(160, 22, 'Longitudinal', 'middle') + t(450, 22, 'Transversal (bajo el páncreas)', 'middle') +
+      '<path d="M60 70 L290 70 L290 100 L60 100 Z" fill="' + C.arteria + '" opacity=".9"/>' + m(70, 90, 'craneal') + m(280, 90, 'caudal', 'end') +
+      '<path d="M100 70 C100 50 112 40 128 36" stroke="' + C.arteria + '" stroke-width="9" fill="none"/>' + m(130, 34, 'tronco celíaco') +
+      '<path d="M135 70 C140 55 170 52 280 50" stroke="' + C.arteria + '" stroke-width="8" fill="none"/>' + m(285, 52, 'AMS') +
+      '<path d="M150 64 C152 58 156 56 160 56" stroke="' + C.vena + '" stroke-width="7" fill="none"/>' +
+      '<path d="M180 100 L180 124 M180 70 L180 70" stroke="' + C.arteria + '" stroke-width="6"/>' + m(186, 124, 'a. renales (≈1 cm bajo AMS)') +
+      '<path d="M250 100 C255 115 250 125 245 135" stroke="' + C.arteria + '" stroke-width="5" fill="none"/>' + m(235, 150, 'AMI') +
+      ln(60, 180, 290, 180, '#5d6f78', 1, '4 4') + m(175, 200, 'bifurcación ≈ L4 (ombligo)', 'middle') +
+      '<rect x="80" y="225" width="200" height="48" rx="6" fill="#16222a" stroke="#33434c"/>' + m(180, 244, 'AAA: ≥ 3 cm · reparar > 5,5 cm', 'middle') + m(180, 262, 'rotura: riesgo drástico ≥ 6 cm', 'middle') +
+      '<circle cx="450" cy="110" r="16" fill="' + C.grasa + '"/><circle cx="450" cy="110" r="8" fill="' + C.arteria + '"/>' + m(472, 108, 'AMS') +
+      '<path d="M380 152 C420 148 480 148 520 140" stroke="' + C.vena + '" stroke-width="9" fill="none"/>' + m(525, 140, 'VRI') +
+      '<circle cx="455" cy="195" r="26" fill="' + C.arteria + '"/>' + m(455, 199, 'Ao', 'middle') + '<ellipse cx="370" cy="190" rx="26" ry="16" fill="' + C.vena + '"/>' + m(370, 194, 'VCI', 'middle') +
+      '<path d="M410 290 C430 260 480 260 500 290 Z" fill="' + C.hueso + '" opacity=".6"/>', 'Aorta y ramas') },
+
+    'pared-intestinal': { pie: 'Firma intestinal: cinco capas alternantes. En la práctica se ven bien tres. Pared normal 2–3 mm distendida, 4–5 mm colapsada; engrosada > 6 mm (ABC).', svg: svg('0 0 560 260',
+      '<rect width="560" height="260" fill="#10181c" rx="8"/>' +
+      [[110, '#e8eef0'], [96, '#2a3236'], [84, '#c9d2d6'], [70, '#3a4347'], [54, '#e8eef0'], [44, C.liq]].map(function (c) { return '<circle cx="140" cy="130" r="' + c[0] + '" fill="' + c[1] + '"/>'; }).join('') +
+      m(140, 134, 'luz', 'middle') +
+      [['1 · Interfaz luz–mucosa', 'hiperecoica', 49], ['2 · Muscularis mucosae', 'hipoecoica', 62], ['3 · Submucosa', 'hiperecoica', 77], ['4 · Muscular propia', 'hipoecoica', 90], ['5 · Serosa', 'hiperecoica', 103]].map(function (r, i) {
+        var y = 50 + i * 38; return ln(140 + r[2], 130, 300, y - 4, '#7d8f98') + t(306, y, r[0]) + m(306, y + 15, r[1]);
+      }).join(''), 'Capas de la pared intestinal') },
+
+    'fast': { pie: 'Espacios donde se acumula líquido y ventanas del FAST: 1 hepatorrenal (Morison), 2 periesplénica/esplenorrenal, 3 pelvis (rectovesical o Douglas), 4 subxifoidea pericárdica. La gotera parietocólica derecha comunica Morison con la pelvis.', svg: svg('0 0 420 420',
+      '<path d="M210 20 C290 20 330 60 335 120 C345 200 340 300 300 380 L120 380 C80 300 75 200 85 120 C90 60 130 20 210 20 Z" fill="#16222a" stroke="#4a5961" stroke-width="2"/>' +
+      '<path d="M100 120 C140 100 200 105 230 130 C210 160 150 170 105 160 Z" fill="' + C.higado + '" opacity=".7"/>' + m(150, 140, 'hígado', 'middle') +
+      '<ellipse cx="290" cy="140" rx="34" ry="22" fill="#6f7c8e"/>' + m(290, 144, 'bazo', 'middle') +
+      '<ellipse cx="135" cy="190" rx="22" ry="34" fill="' + C.rinon + '" opacity=".7"/><ellipse cx="285" cy="190" rx="22" ry="34" fill="' + C.rinon + '" opacity=".7"/>' +
+      '<path d="M190 330 C200 310 220 310 230 330 C230 350 190 350 190 330 Z" fill="' + C.liq + '" stroke="#6f8a96"/>' + m(210, 368, 'vejiga', 'middle') +
+      '<path d="M105 230 C105 270 115 310 150 335" stroke="' + C.vena + '" stroke-width="5" fill="none" stroke-dasharray="6 5" opacity=".8"/>' + m(70, 285, 'gotera D', 'middle') +
+      [[140, 172, '1'], [300, 170, '2'], [210, 315, '3'], [210, 70, '4']].map(function (p) { return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="14" fill="' + C.acento + '"/><text x="' + p[0] + '" y="' + (p[1] + 5) + '" ' + S + ' text-anchor="middle" fill="#1b1305">' + p[2] + '</text>'; }).join('') +
+      '<path d="M190 60 C200 50 220 50 230 60 C232 80 188 80 190 60 Z" fill="none" stroke="' + C.arteria + '" stroke-width="2"/>' + m(240, 52, 'corazón'), 'Ventanas del FAST y espacios declives') },
+
+    'medicion-aaa': { pie: 'Medición del aneurisma: con el transductor perpendicular al eje del vaso (izquierda) se mide el diámetro real; perpendicular a la piel en una aorta oblicua (derecha) se obtiene un corte elíptico que sobrestima casi un 20 % (Bates, fig. 8.2F).', svg: svg('0 0 560 220',
+      '<rect width="560" height="220" fill="#10181c" rx="8"/>' + '<circle cx="140" cy="110" r="60" fill="' + C.arteria + '" opacity=".35" stroke="' + C.arteria + '" stroke-width="4"/>' + '<circle cx="140" cy="110" r="40" fill="#2a1a1a"/>' + ln(80, 110, 200, 110, C.acento, 2) + m(140, 196, 'correcto: externo–externo', 'middle') +
+      '<ellipse cx="410" cy="110" rx="90" ry="60" fill="' + C.arteria + '" opacity=".35" stroke="' + C.arteria + '" stroke-width="4"/>' + '<ellipse cx="410" cy="110" rx="70" ry="40" fill="#2a1a1a"/>' + ln(320, 110, 500, 110, C.bad || '#ef6a5f', 2) + m(410, 196, 'corte oblicuo: sobrestima', 'middle'), 'Medición correcta e incorrecta de la aorta') }
+  };
+})();
+</script>
+<script>
+/* Catálogo de figuras de los libros de referencia.
+   Aquí solo hay pies y citas. Las imágenes tienen derechos de autor: NO se guardan en este repositorio
+   (es público); se incrustan únicamente en la versión privada de la plataforma (scripts/construir-privado.mjs).
+   Sin imágenes, cada figura se muestra como una referencia «ver libro, figura, página».
+   Uso en un tema: {{libro:clave}}  ·  curso: para agruparla en el Atlas. */
+window.ECO = window.ECO || { cursos: [] };
+window.ECO.figLibro = {
+  // ---- Bases
+  'abc-sonido': { curso: 'bases', libro: 'ABC', fig: '1', pag: 6, pie: 'Escala de sonidos según la frecuencia: infrasonido, rango audible (20 Hz–20 kHz) y ultrasonido.' },
+  'abc-transductores': { curso: 'bases', libro: 'ABC', fig: '2', pag: 7, pie: 'Tipos de transductor: convexo, lineal, sectorial y endocavitario, con la forma de su haz.' },
+  'abc-ecogenicidad': { curso: 'bases', libro: 'ABC', fig: '3', pag: 7, pie: 'Ecogenicidades (hiper, hipo, iso, anecoico, mixta) y artefactos de refuerzo y sombra posterior.' },
+  'abc-sombra': { curso: 'bases', libro: 'ABC', fig: '4', pag: 8, pie: 'Litiasis vesicular: foco hiperecoico (asterisco) con sombra acústica posterior (azul).' },
+  'abc-refuerzo': { curso: 'bases', libro: 'ABC', fig: '5', pag: 8, pie: 'Quiste hepático anecoico (asterisco) con refuerzo acústico posterior (azul).' },
+  'abc-reverberacion': { curso: 'bases', libro: 'ABC', fig: '6', pag: 8, pie: 'Punción: la aguja (rojo) genera artefacto de reverberación (azul).' },
+  'abc-profundidad': { curso: 'bases', libro: 'ABC', fig: '7', pag: 9, pie: 'Arriba lo superficial (piel, tejido subcutáneo, músculo); abajo lo profundo (aorta, VCI, cuerpo vertebral).' },
+  'abc-marca': { curso: 'bases', libro: 'ABC', fig: '8', pag: 9, pie: 'La marca de un extremo del transductor coincide con la marca de la pantalla.' },
+  'abc-modos': { curso: 'bases', libro: 'ABC', fig: '9', pag: 10, pie: 'Riñón en modo B (A) y en modo Doppler (B) mostrando su vascularización.' },
+  'b-frecuencia': { curso: 'bases', libro: 'Bates', fig: '1.1', pag: 4, pie: 'Efecto de la frecuencia: a 2,7 MHz los alambres del fantoma se resuelven mal y a 5,1 MHz bien; un nódulo hepático se ve mejor a 7,5 MHz que a 5 MHz.' },
+
+  // ---- Abdominal I
+  'abc-couinaud': { curso: 'abd1', libro: 'ABC', fig: '10', pag: 12, pie: 'Segmentación de Couinaud: ocho segmentos funcionalmente independientes.' },
+  'b-couinaud': { curso: 'abd1', libro: 'Bates', fig: '2.17', pag: 29, pie: 'Segmentos quirúrgicos del hígado y su identificación en cortes transversales por las venas hepáticas y la porta.' },
+  'abc-higado-rinon': { curso: 'abd1', libro: 'ABC', fig: '11', pag: 13, pie: 'La ecogenicidad hepática suele ser similar a la de la corteza renal.' },
+  'abc-venas-hepaticas': { curso: 'abd1', libro: 'ABC', fig: '12', pag: 13, pie: 'Venas hepáticas derecha, media e izquierda confluyendo en la VCI; paredes finas.' },
+  'abc-caudado': { curso: 'abd1', libro: 'ABC', fig: '13', pag: 13, pie: 'Hígado normal: el lóbulo caudado (LC) no supera el 35 % del lóbulo izquierdo (LHI).' },
+  'b-vaina-portal': { curso: 'abd1', libro: 'Bates', fig: '2.19', pag: 30, pie: 'La rama portal se acompaña de arteria hepática y conducto biliar dentro de la vaina fibrosa hiperecoica.' },
+  'b-porta-hepatis': { curso: 'abd1', libro: 'Bates', fig: '2.20', pag: 31, pie: 'Porta hepatis: arteria hepática entre la vena porta y el conducto común; variante con la arteria por delante del conducto.' },
+  'b-onda-porta': { curso: 'abd1', libro: 'Bates', fig: '2.24–2.26', pag: 33, pie: 'Vena porta principal con flujo hepatópeto y su onda monofásica con modulación respiratoria.' },
+  'b-venas-hepaticas': { curso: 'abd1', libro: 'Bates', fig: '2.27', pag: 35, pie: 'Confluencia de venas hepáticas: flujo azul con breve inversión roja en la sístole auricular; onda trifásica.' },
+  'b-arteria-hepatica': { curso: 'abd1', libro: 'Bates', fig: '2.28', pag: 36, pie: 'Arteria hepática con Doppler energía y su onda de baja resistencia con buen flujo diastólico.' },
+  'b-ap-lobulo-derecho': { curso: 'abd1', libro: 'Bates', fig: '2A.1', pag: 47, pie: 'Diagrama: corte longitudinal del lóbulo hepático derecho con vesícula y riñón derecho.' },
+  'b-ap-vci': { curso: 'abd1', libro: 'Bates', fig: '2A.2', pag: 47, pie: 'Diagrama: corte longitudinal a través de la VCI (caudado, ligamento venoso, cabeza del páncreas, suprarrenal, pilar).' },
+  'b-ap-linea-media': { curso: 'abd1', libro: 'Bates', fig: '2A.3', pag: 48, pie: 'Diagrama: corte longitudinal en la línea media a la altura de la aorta (tronco celíaco, AMS, páncreas, vena esplénica, VRI).' },
+  'b-ap-cbc': { curso: 'abd1', libro: 'Bates', fig: '2A.4', pag: 48, pie: 'Diagrama: corte longitudinal oblicuo a lo largo del colédoco, delante de la porta, hasta la cabeza del páncreas.' },
+  'b-ap-confluencia': { curso: 'abd1', libro: 'Bates', fig: '2A.5', pag: 49, pie: 'Diagrama: corte transversal oblicuo en la confluencia de las venas hepáticas con la VCI.' },
+  'b-ap-porta': { curso: 'abd1', libro: 'Bates', fig: '2A.6', pag: 49, pie: 'Diagrama: corte transversal a la altura de la porta hepatis (ligamento redondo, ramas portales, VCI, aorta, bazo).' },
+  'b-ap-pancreas': { curso: 'abd1', libro: 'Bates', fig: '2A.7', pag: 50, pie: 'Diagrama: corte transversal a la altura del páncreas (colédoco, gastroduodenal, VMS, AMS, vena esplénica, VRI).' },
+  'abc-hepatomegalia': { curso: 'abd1', libro: 'ABC', fig: '14', pag: 14, pie: 'El lóbulo derecho normal no sobrepasa el polo inferior del riñón (A); hepatomegalia (B).' },
+  'abc-riedel': { curso: 'abd1', libro: 'ABC', fig: '15', pag: 14, pie: 'Lóbulo de Riedel en ecografía y TC: variante normal.' },
+  'abc-hepatitis': { curso: 'abd1', libro: 'ABC', fig: '16', pag: 14, pie: 'Hepatitis viral: hepatomegalia (A), ecogenicidad disminuida con focos ecogénicos (B), pared vesicular engrosada (C).' },
+  'abc-esteatosis': { curso: 'abd1', libro: 'ABC', fig: '17', pag: 15, pie: 'Esteatosis severa: hígado más ecogénico que el riñón; no se ve la región posterior ni el diafragma (línea discontinua).' },
+  'abc-cirrosis': { curso: 'abd1', libro: 'ABC', fig: '18', pag: 15, pie: 'Hígado atrófico, de contorno nodular y ecoestructura grosera, rodeado de ascitis.' },
+  'abc-cirrosis-signos': { curso: 'abd1', libro: 'ABC', fig: '19', pag: 15, pie: 'Signos de cirrosis: contorno nodular, esplenomegalia, porta aumentada y aspecto en TC.' },
+  'b-htp-doppler': { curso: 'abd1', libro: 'Bates', fig: '4.21', pag: 130, pie: 'Hipertensión portal: velocidad portal muy baja, falso positivo de trombosis por FRP alta, flujo equilibrado y trombosis.' },
+  'b-colaterales': { curso: 'abd1', libro: 'Bates', fig: '4.22', pag: 133, pie: 'Colaterales en la hipertensión portal: transformación cavernosa, varices, shunt esplenorrenal, paraumbilical.' },
+  'abc-quiste-hepatico': { curso: 'abd1', libro: 'ABC', fig: '20', pag: 16, pie: 'Quiste hepático simple: anecoico, bordes definidos, refuerzo posterior (amarillo).' },
+  'abc-hemangioma': { curso: 'abd1', libro: 'ABC', fig: '21', pag: 16, pie: 'Hemangioma típico: redondeado, hiperecoico, bien definido, con leve refuerzo posterior.' },
+  'abc-hnf': { curso: 'abd1', libro: 'ABC', fig: '22', pag: 17, pie: 'Hiperplasia nodular focal: cicatriz central hiperecoica y signo de la rueda de radios en Doppler.' },
+  'abc-absceso': { curso: 'abd1', libro: 'ABC', fig: '24', pag: 17, pie: 'Absceso hepático: lesión redondeada anecoica con ecos internos, paredes gruesas irregulares y refuerzo.' },
+  'abc-amebiano': { curso: 'abd1', libro: 'ABC', fig: '25', pag: 18, pie: 'Absceso amebiano: lesión homogéneamente hipoecoica, redondeada y bien definida, con refuerzo.' },
+  'abc-chc': { curso: 'abd1', libro: 'ABC', fig: '28', pag: 18, pie: 'Carcinoma hepatocelular: masa heterogénea con halo hipoecoico y vascularización central y periférica.' },
+  'abc-metastasis': { curso: 'abd1', libro: 'ABC', fig: '30', pag: 19, pie: 'Patrones de metástasis hepáticas: hipoecoicas (A), hiperecoicas (B) y en diana (C).' },
+  'abc-metastasis-calc': { curso: 'abd1', libro: 'ABC', fig: '31', pag: 19, pie: 'Metástasis hiperecoicas calcificadas con halo y sombra (carcinoma de mama).' },
+  'abc-vesicula': { curso: 'abd1', libro: 'ABC', fig: '32', pag: 20, pie: 'Vesícula normal en planos longitudinal y transversal: siempre anecoica.' },
+  'abc-gorro-frigio': { curso: 'abd1', libro: 'ABC', fig: '33', pag: 20, pie: 'Vesícula en «gorro frigio»: pliegue del fondo.' },
+  'abc-barro': { curso: 'abd1', libro: 'ABC', fig: '34', pag: 20, pie: 'Barro biliar ecogénico que forma nivel y se moviliza con el cambio de posición.' },
+  'abc-litiasis': { curso: 'abd1', libro: 'ABC', fig: '35', pag: 21, pie: 'Colelitiasis: el cálculo deja sombra acústica posterior (morado).' },
+  'abc-polipos': { curso: 'abd1', libro: 'ABC', fig: '37', pag: 21, pie: 'Múltiples pólipos en la pared, benignos y menores de 10 mm.' },
+  'abc-polipo-grande': { curso: 'abd1', libro: 'ABC', fig: '38', pag: 21, pie: 'Masa polipoide única pediculada de 22 mm con vascularización: se sugiere colecistectomía.' },
+  'abc-colecistitis': { curso: 'abd1', libro: 'ABC', fig: '39', pag: 22, pie: 'Colecistitis aguda: pared engrosada (rojo), líquido pericolecístico (azul) y cálculo impactado en el cuello.' },
+  'abc-perforacion': { curso: 'abd1', libro: 'ABC', fig: '41', pag: 22, pie: 'Colecistitis aguda con perforación: solución de continuidad de la pared.' },
+  'abc-pared-hepatitis': { curso: 'abd1', libro: 'ABC', fig: '42', pag: 23, pie: 'Pared vesicular engrosada en hepatitis aguda: no es colecistitis.' },
+  'abc-porcelana': { curso: 'abd1', libro: 'ABC', fig: '43', pag: 23, pie: 'Vesícula de porcelana: pared calcificada con sombra acústica.' },
+  'abc-ca-vesicula': { curso: 'abd1', libro: 'ABC', fig: '43 (2.ª)', pag: 23, pie: 'Masa intraluminal heterogénea del fondo con flujo Doppler: adenocarcinoma de vesícula.' },
+  'abc-dilatacion-intra': { curso: 'abd1', libro: 'ABC', fig: '44', pag: 24, pie: 'Dilatación de la vía biliar intrahepática leve (A) y prominente (B).' },
+  'abc-coledoco-calculo': { curso: 'abd1', libro: 'ABC', fig: '45', pag: 24, pie: 'Colédoco dilatado (azul) por un cálculo distal con sombra.' },
+  'abc-doble-canon': { curso: 'abd1', libro: 'ABC', fig: '46', pag: 24, pie: 'Signo del «doble cañón»: colédoco dilatado por delante de la vena porta.' },
+  'b-obstruccion-niveles': { curso: 'abd1', libro: 'Bates', fig: '3.32', pag: 77, pie: 'Localizaciones posibles de la obstrucción biliar (cuello/cístico, colédoco, ampolla y cabeza del páncreas).' },
+  'b-ictericia': { curso: 'abd1', libro: 'Bates', fig: '2.38', pag: 44, pie: 'Causas comunes de ictericia: prehepáticas, hepáticas y posthepáticas.' },
+  'abc-pancreas': { curso: 'abd1', libro: 'ABC', fig: '47', pag: 25, pie: 'Páncreas normal: (1) cabeza, (2) cuerpo, (3) cola, (4) confluencia esplenoportal, (5) vena esplénica, (6) AMS, (7) VCI, (8) aorta.' },
+  'b-pancreas-tecnica': { curso: 'abd1', libro: 'Bates', fig: '5.1', pag: 156, pie: 'Técnica del páncreas: ventana del lóbulo izquierdo, conducto pancreático, cola por el bazo, colédoco en la cabeza, estómago con agua y protrusión abdominal.' },
+  'abc-esteatosis-pancreas': { curso: 'abd1', libro: 'ABC', fig: '48', pag: 25, pie: 'Esteatosis pancreática: páncreas más ecogénico.' },
+  'abc-pancreatitis': { curso: 'abd1', libro: 'ABC', fig: '49', pag: 26, pie: 'Pancreatitis aguda: páncreas aumentado (amarillo) con líquido peripancreático (azul).' },
+  'abc-seudoquiste': { curso: 'abd1', libro: 'ABC', fig: '51', pag: 27, pie: 'Seudoquiste en el cuerpo del páncreas, 4 semanas después de una pancreatitis.' },
+  'abc-pancreatitis-cronica': { curso: 'abd1', libro: 'ABC', fig: '53', pag: 27, pie: 'Pancreatitis crónica: parénquima heterogéneo con calcificaciones y conducto dilatado (azul).' },
+  'abc-ca-pancreas': { curso: 'abd1', libro: 'ABC', fig: '55', pag: 28, pie: 'Carcinoma de cabeza de páncreas (naranja) que dilata el conducto pancreático.' },
+
+  // ---- Abdominal II
+  'b-rinon': { curso: 'abd2', libro: 'Bates', fig: '7.1', pag: 193, pie: 'Riñón normal: pirámides hipoecoicas alrededor del seno, hilio con Doppler, corte coronal del izquierdo y grosor cortical.' },
+  'abc-rinon-higado': { curso: 'abd2', libro: 'ABC', fig: '66', pag: 32, pie: 'Riñón derecho: parénquima (azul) algo menos ecogénico que el hígado y seno (rojo) hiperecogénico.' },
+  'abc-rinon-piramides': { curso: 'abd2', libro: 'ABC', fig: '67', pag: 32, pie: 'Corteza (azul) y pirámides medulares (rojo) forman el parénquima renal.' },
+  'b-doppler-renal': { curso: 'abd2', libro: 'Bates', fig: '7.3', pag: 196, pie: 'Doppler renal normal: perfusión, onda de baja resistencia y origen de la arteria renal izquierda.' },
+  'b-variantes-renales': { curso: 'abd2', libro: 'Bates', fig: '7.4', pag: 198, pie: 'Variantes: riñón doble, riñón en herradura, pelvis extrarrenal y columna de Bertin con Doppler normal.' },
+  'b-parvus-tardus': { curso: 'abd2', libro: 'Bates', fig: '7.22', pag: 228, pie: 'Estenosis de arteria renal: riñón pequeño, onda parvus-tardus (tiempo e índice de aceleración) y arteriografía.' },
+  'abc-quiste-renal': { curso: 'abd2', libro: 'ABC', fig: '68', pag: 33, pie: 'Quistes corticales simples: anecoicos, redondeados, con refuerzo posterior.' },
+  'abc-quiste-complejo': { curso: 'abd2', libro: 'ABC', fig: '69', pag: 33, pie: 'Quistes renales complejos con ecos y tabiques: requieren estudio complementario.' },
+  'abc-aml': { curso: 'abd2', libro: 'ABC', fig: '70', pag: 33, pie: 'Angiomiolipoma: lesión hiperecoica bien definida sin sombra posterior.' },
+  'abc-calculo-renal': { curso: 'abd2', libro: 'ABC', fig: '71', pag: 34, pie: 'Cálculo de 2 cm en cálices inferiores con sombra, sin dilatación (sagital y transverso).' },
+  'abc-calculo-pequeno': { curso: 'abd2', libro: 'ABC', fig: '72', pag: 34, pie: 'Un cálculo pequeño se camufla en el seno; su sombra (morado) ayuda a localizarlo.' },
+  'abc-coraliforme': { curso: 'abd2', libro: 'ABC', fig: '73', pag: 34, pie: 'Cálculos coraliformes en ecografía, TC y reconstrucción 3D.' },
+  'abc-hidronefrosis-grados': { curso: 'abd2', libro: 'ABC', fig: '74', pag: 35, pie: 'Grados de hidronefrosis I a IV.' },
+  'abc-calculo-uvu': { curso: 'abd2', libro: 'ABC', fig: '75', pag: 36, pie: 'Dilatación pielocalicial grado II por cálculo en la unión ureterovesical.' },
+  'abc-calculo-upu': { curso: 'abd2', libro: 'ABC', fig: '76', pag: 36, pie: 'Cálculo en la unión pieloureteral con dilatación de la pelvis (grado I).' },
+  'abc-pielonefritis': { curso: 'abd2', libro: 'ABC', fig: '77', pag: 36, pie: 'Pielonefritis aguda: riñón aumentado con foco hipoecoico en el polo inferior.' },
+  'abc-absceso-renal': { curso: 'abd2', libro: 'ABC', fig: '78', pag: 36, pie: 'Absceso renal en el polo inferior tras pielonefritis no tratada.' },
+  'abc-erc': { curso: 'abd2', libro: 'ABC', fig: '79', pag: 37, pie: 'Enfermedad renal crónica: riñón de 7 cm con adelgazamiento cortical.' },
+  'abc-ccr': { curso: 'abd2', libro: 'ABC', fig: '80', pag: 37, pie: 'Carcinoma de células renales: hiperecoico, isoecoico, con microcalcificaciones o con áreas quísticas.' },
+  'abc-vejiga': { curso: 'abd2', libro: 'ABC', fig: '81', pag: 38, pie: 'Vejiga normal: contenido anecoico y pared no engrosada.' },
+  'abc-volumen-vesical': { curso: 'abd2', libro: 'ABC', fig: '82', pag: 38, pie: 'Cálculo del volumen vesical: A × B × C × 0,52 (transversal y sagital).' },
+  'abc-cistitis': { curso: 'abd2', libro: 'ABC', fig: '83', pag: 39, pie: 'Cistitis: paredes engrosadas (8 mm) y sedimento.' },
+  'abc-diverticulos': { curso: 'abd2', libro: 'ABC', fig: '85', pag: 40, pie: 'Divertículos vesicales: siempre debe verse la conexión con la vejiga.' },
+  'abc-tumor-vesical': { curso: 'abd2', libro: 'ABC', fig: '87', pag: 40, pie: 'Tumor urotelial: masa de bordes irregulares que infiltra la pared vesical.' },
+  'abc-prostata': { curso: 'abd2', libro: 'ABC', fig: '95', pag: 44, pie: 'Próstata normal (P) inferior a la vejiga (V) en planos transversal y longitudinal.' },
+  'abc-volumen-prostata': { curso: 'abd2', libro: 'ABC', fig: '96', pag: 45, pie: 'Volumen prostático = largo × ancho × alto × 0,52.' },
+  'abc-hpb': { curso: 'abd2', libro: 'ABC', fig: '98', pag: 45, pie: 'Hiperplasia prostática benigna con protrusión del lóbulo medio.' },
+  'b-suprarrenales': { curso: 'abd2', libro: 'Bates', fig: '8.7', pag: 253, pie: 'Suprarrenales normales: alas delante del pilar del diafragma; la derecha entre VCI y pilar, la izquierda entre bazo, riñón y pilar.' },
+  'b-bazo': { curso: 'abd2', libro: 'Bates', fig: '6.1', pag: 176, pie: 'Bazo normal: hilio con arteria y vena esplénicas en Doppler; bazo grande medido con campo amplio.' },
+  'abc-bazo': { curso: 'abd2', libro: 'ABC', fig: '57', pag: 29, pie: 'Bazo normal: forma de medialuna y ecogenicidad media.' },
+  'abc-esplenomegalia': { curso: 'abd2', libro: 'ABC', fig: '58', pag: 29, pie: 'Esplenomegalia (15 cm) en un paciente con mononucleosis.' },
+  'abc-bazo-accesorio': { curso: 'abd2', libro: 'ABC', fig: '59', pag: 30, pie: 'Bazo accesorio junto al hilio: redondeado, homogéneo, igual ecogenicidad que el bazo.' },
+  'abc-infarto-esplenico': { curso: 'abd2', libro: 'ABC', fig: '61', pag: 30, pie: 'Infarto esplénico: zona hipoecoica periférica en forma de cuña.' },
+  'abc-hemangioma-esplenico': { curso: 'abd2', libro: 'ABC', fig: '62', pag: 30, pie: 'Hemangioma esplénico: hiperecoico, bien definido, sin vascularización.' },
+  'abc-linfoma-bazo': { curso: 'abd2', libro: 'ABC', fig: '63', pag: 31, pie: 'Linfoma no Hodgkin: bazo aumentado con múltiples lesiones hipoecoicas.' },
+  'abc-trauma-bazo': { curso: 'abd2', libro: 'ABC', fig: '65', pag: 31, pie: 'Trauma esplénico: hematoma subcapsular (A), laceración (B) y ruptura con líquido libre (C).' },
+
+  // ---- Abdominal III
+  'b-aorta': { curso: 'abd3', libro: 'Bates', fig: '8.2', pag: 245, pie: 'Aorta: tronco celíaco y AMS, división en hepática y esplénica, VRI entre AMS y aorta, bifurcación y técnica de medición.' },
+  'b-vci': { curso: 'abd3', libro: 'Bates', fig: '8.4', pag: 249, pie: 'VCI: arteria renal derecha por detrás, cambio de calibre con Valsalva y confluencia de venas hepáticas.' },
+  'abc-pared-intestinal': { curso: 'abd3', libro: 'ABC', fig: '88', pag: 41, pie: 'Capas de la pared intestinal (marca o firma intestinal).' },
+  'abc-eii': { curso: 'abd3', libro: 'ABC', fig: '89', pag: 42, pie: 'Enfermedad inflamatoria intestinal: pared engrosada (9 mm) con aumento de la vascularización.' },
+  'abc-apendicitis': { curso: 'abd3', libro: 'ABC', fig: '90', pag: 42, pie: 'Apendicitis: apéndice no compresible > 6 mm con aumento del flujo.' },
+  'abc-apendicitis-liquido': { curso: 'abd3', libro: 'ABC', fig: '91', pag: 42, pie: 'Apendicitis de 11 mm con hiperemia y líquido periapendicular (asterisco).' },
+  'abc-obstruccion': { curso: 'abd3', libro: 'ABC', fig: '92', pag: 43, pie: 'Obstrucción intestinal: asas delgadas dilatadas > 3 cm sin peristaltismo, confirmada con radiografía.' },
+  'abc-piloro-pi': { curso: 'abd3', libro: 'ABC', fig: '93', pag: 43, pie: 'Mnemotecnia π para las medidas normales del píloro.' },
+  'abc-ehp': { curso: 'abd3', libro: 'ABC', fig: '94', pag: 43, pie: 'Estenosis hipertrófica del píloro: músculo hipoecoico engrosado y mucosa central hiperecoica.' },
+  'b-piloro': { curso: 'abd3', libro: 'Bates', fig: '9.14', pag: 288, pie: 'Píloro normal que se relaja y abre, frente a píloro engrosado y alargado en la estenosis hipertrófica, con sus medidas.' },
+  'b-invaginacion': { curso: 'abd3', libro: 'Bates', fig: '9.15', pag: 290, pie: 'Invaginación: imagen en donut y reducción con enema de aire.' },
+  'b-volvulo': { curso: 'abd3', libro: 'Bates', fig: '9.16', pag: 291, pie: 'Vólvulo del intestino medio: vasos mesentéricos enroscados alrededor de la AMS y duodeno en sacacorchos.' }
+};
+</script>
+<script>
+/* Qué esquemas (dia:) y figuras del libro (libro:) acompañan a cada tema. Clave: 'curso|Título exacto del tema'. */
+window.ECO = window.ECO || { cursos: [] };
+window.ECO.figTemas = {
+  'bases|Planos de corte y referencias anatómicas básicas': ['dia:orientacion', 'libro:abc-profundidad', 'libro:b-ap-linea-media'],
+  'bases|Ecogenicidad: el lenguaje del blanco y negro': ['libro:abc-ecogenicidad'],
+  'bases|Orientación en la imagen': ['dia:orientacion', 'libro:abc-profundidad', 'libro:abc-marca'],
+  'bases|Artefactos: los tres esenciales y otros': ['dia:artefactos', 'libro:abc-sombra', 'libro:abc-refuerzo', 'libro:abc-reverberacion'],
+  'bases|Cómo se forma la imagen': ['libro:abc-sonido'],
+  'bases|Frecuencia, resolución y penetración': ['libro:b-frecuencia'],
+  'bases|Modos de imagen: A, M, B, Doppler y modalidades nuevas': ['dia:doppler-ondas', 'libro:abc-modos'],
+  'bases|Doppler: cuando «no hay flujo» (Cuadro 1.2)': ['libro:b-htp-doppler'],
+  'bases|Tipos de transductor': ['libro:abc-transductores'],
+  'bases|Abdomen agudo y FAST': ['dia:fast', 'libro:abc-trauma-bazo'],
+
+  'abd1|Referencias anatómicas: cortes estándar del abdomen superior': ['dia:couinaud', 'dia:porta-hepatis', 'dia:pancreas', 'libro:b-ap-lobulo-derecho', 'libro:b-ap-vci', 'libro:b-ap-linea-media', 'libro:b-ap-cbc', 'libro:b-ap-confluencia', 'libro:b-ap-porta', 'libro:b-ap-pancreas'],
+  'abd1|Vesícula y colédoco: cómo explorarlos': ['libro:abc-vesicula', 'libro:b-ap-cbc'],
+  'abd1|Páncreas y Doppler hepático: técnica': ['libro:b-pancreas-tecnica', 'libro:b-onda-porta', 'libro:b-arteria-hepatica'],
+  'abd1|Hígado: aspecto, tamaño y segmentos': ['dia:couinaud', 'libro:abc-couinaud', 'libro:b-couinaud', 'libro:abc-higado-rinon', 'libro:abc-caudado', 'libro:abc-hepatomegalia', 'libro:abc-riedel'],
+  'abd1|Vasos hepáticos y Doppler normal': ['dia:porta-hepatis', 'dia:doppler-ondas', 'libro:abc-venas-hepaticas', 'libro:b-vaina-portal', 'libro:b-porta-hepatis', 'libro:b-onda-porta', 'libro:b-venas-hepaticas', 'libro:b-arteria-hepatica'],
+  'abd1|Vesícula y vía biliar normales': ['libro:abc-vesicula', 'libro:abc-gorro-frigio', 'libro:b-ap-cbc'],
+  'abd1|Páncreas normal': ['dia:pancreas', 'libro:abc-pancreas', 'libro:b-ap-pancreas'],
+  'abd1|Hepatopatía difusa: hepatomegalia, hepatitis, esteatosis': ['libro:abc-hepatomegalia', 'libro:abc-hepatitis', 'libro:abc-esteatosis'],
+  'abd1|Cirrosis e hipertensión portal': ['libro:abc-cirrosis', 'libro:abc-cirrosis-signos', 'libro:b-htp-doppler', 'libro:b-colaterales'],
+  'abd1|Lesiones focales benignas': ['libro:abc-quiste-hepatico', 'libro:abc-hemangioma', 'libro:abc-hnf', 'libro:abc-absceso', 'libro:abc-amebiano'],
+  'abd1|Lesiones focales malignas': ['libro:abc-chc', 'libro:abc-metastasis', 'libro:abc-metastasis-calc'],
+  'abd1|Litiasis, barro, pólipos y pared vesicular': ['libro:abc-litiasis', 'libro:abc-barro', 'libro:abc-polipos', 'libro:abc-polipo-grande', 'libro:abc-porcelana', 'libro:abc-pared-hepatitis'],
+  'abd1|Colecistitis y sus complicaciones': ['libro:abc-colecistitis', 'libro:abc-perforacion'],
+  'abd1|Vía biliar: dilatación, obstrucción y otras': ['dia:obstruccion-biliar', 'libro:b-obstruccion-niveles', 'libro:abc-dilatacion-intra', 'libro:abc-doble-canon', 'libro:abc-coledoco-calculo', 'libro:abc-ca-vesicula'],
+  'abd1|Páncreas: pancreatitis y tumores': ['libro:abc-esteatosis-pancreas', 'libro:abc-pancreatitis', 'libro:abc-seudoquiste', 'libro:abc-pancreatitis-cronica', 'libro:abc-ca-pancreas'],
+  'abd1|Ictericia y pruebas hepáticas': ['libro:b-ictericia', 'dia:obstruccion-biliar'],
+
+  'abd2|Referencias anatómicas: riñón, suprarrenales y bazo': ['dia:rinon', 'dia:suprarrenales', 'libro:b-rinon', 'libro:b-suprarrenales', 'libro:b-bazo'],
+  'abd2|Riñones y vejiga: técnica y medición': ['libro:abc-volumen-vesical'],
+  'abd2|Bazo y suprarrenales: técnica': ['dia:suprarrenales', 'libro:b-bazo', 'libro:b-suprarrenales'],
+  'abd2|Riñón normal y Doppler': ['dia:rinon', 'libro:b-rinon', 'libro:abc-rinon-higado', 'libro:abc-rinon-piramides', 'libro:b-doppler-renal'],
+  'abd2|Variantes anatómicas renales': ['libro:b-variantes-renales'],
+  'abd2|Vejiga y próstata normales': ['libro:abc-vejiga', 'libro:abc-prostata', 'libro:abc-volumen-prostata'],
+  'abd2|Suprarrenales y bazo normales': ['libro:b-suprarrenales', 'libro:abc-bazo', 'libro:abc-bazo-accesorio'],
+  'abd2|Quistes y enfermedad quística renal': ['libro:abc-quiste-renal', 'libro:abc-quiste-complejo'],
+  'abd2|Tumores renales': ['libro:abc-aml', 'libro:abc-ccr'],
+  'abd2|Hidronefrosis y obstrucción': ['dia:hidronefrosis', 'libro:abc-hidronefrosis-grados', 'libro:abc-calculo-uvu', 'libro:abc-calculo-upu'],
+  'abd2|Litiasis y calcificaciones renales': ['libro:abc-calculo-renal', 'libro:abc-calculo-pequeno', 'libro:abc-coraliforme'],
+  'abd2|Infecciones y nefropatía médica': ['libro:abc-pielonefritis', 'libro:abc-absceso-renal', 'libro:abc-erc'],
+  'abd2|Patología vascular, trauma y trasplante renal': ['dia:doppler-ondas', 'libro:b-parvus-tardus'],
+  'abd2|Vejiga y próstata: patología': ['libro:abc-cistitis', 'libro:abc-diverticulos', 'libro:abc-tumor-vesical', 'libro:abc-hpb'],
+  'abd2|Bazo y ganglios: patología': ['libro:abc-esplenomegalia', 'libro:abc-infarto-esplenico', 'libro:abc-hemangioma-esplenico', 'libro:abc-linfoma-bazo', 'libro:abc-trauma-bazo'],
+
+  'abd3|Referencias anatómicas: vasos, peritoneo e intestino': ['dia:aorta', 'dia:fast', 'dia:pared-intestinal', 'libro:b-aorta', 'libro:b-vci', 'libro:abc-pared-intestinal'],
+  'abd3|Aorta y vena cava inferior': ['dia:medicion-aaa', 'libro:b-aorta', 'libro:b-vci'],
+  'abd3|Peritoneo y líquido libre: técnica': ['dia:fast'],
+  'abd3|Peritoneo y retroperitoneo': ['dia:fast'],
+  'abd3|Pared intestinal normal': ['dia:pared-intestinal', 'libro:abc-pared-intestinal', 'libro:abc-piloro-pi', 'libro:b-piloro'],
+  'abd3|Vasos abdominales normales': ['dia:aorta', 'dia:doppler-ondas', 'libro:b-aorta', 'libro:b-vci'],
+  'abd3|Aneurisma y disección de aorta': ['dia:medicion-aaa', 'libro:b-aorta'],
+  'abd3|VCI y sistema mesentérico': ['libro:b-vci', 'libro:b-volvulo'],
+  'abd3|Apendicitis y enfermedad inflamatoria': ['libro:abc-apendicitis', 'libro:abc-apendicitis-liquido', 'libro:abc-eii'],
+  'abd3|Obstrucción, tumores y patología pediátrica': ['libro:abc-obstruccion', 'libro:abc-ehp', 'libro:b-piloro', 'libro:b-invaginacion', 'libro:b-volvulo']
+};
+</script>
+<script>
 ECO.curso({
   id: 'bases',
   codigo: '520092C',
@@ -306,6 +704,24 @@ ECO.curso({
       id: 'b1', peso: 25, titulo: 'Términos y conceptos básicos',
       descripcion: 'Describe los términos y conceptos básicos relacionados con la ecografía.',
       temas: [
+        {
+          titulo: 'Planos de corte y referencias anatómicas básicas',
+          fuente: 'ABC, p. 9; Bates, cap. 2, pp. 22–23 y apéndice 2A (pp. 47–50)',
+          html: `
+<p>La ecografía no tiene planos fijos como la TC: el transductor «corta» en cualquier dirección. Por eso nos orientamos con <b>referencias anatómicas</b>, estructuras fáciles de reconocer que siempre ocupan el mismo lugar y nos dicen dónde estamos.</p>
+<div class="tabla"><table><thead><tr><th>Referencia</th><th>Cómo se ve</th><th>Para qué sirve</th></tr></thead><tbody>
+<tr><td><b>Diafragma</b></td><td>Línea curva muy ecogénica sobre el hígado y el bazo</td><td>Límite superior; comparar con él la ecogenicidad del hígado (en esteatosis severa desaparece)</td></tr>
+<tr><td><b>Aorta y VCI</b></td><td>Tubos anecoicos prevertebrales: aorta a la izquierda (pulsátil, pared gruesa), VCI a la derecha (paredes finas, colapsa al inspirar)</td><td>Línea media; punto de partida para tronco celíaco, AMS, páncreas y vena renal izquierda</td></tr>
+<tr><td><b>Columna vertebral</b></td><td>Arco hiperecoico con sombra</td><td>Marca lo profundo de la línea media en cortes transversales</td></tr>
+<tr><td><b>Vena porta</b></td><td>Tubo con paredes brillantes que entra al hilio hepático</td><td>Guía para colédoco (por delante) y segmentos hepáticos (plano horizontal)</td></tr>
+<tr><td><b>Vena esplénica</b></td><td>Tubo horizontal detrás del páncreas</td><td>Encontrar el páncreas</td></tr>
+<tr><td><b>Riñón derecho</b></td><td>Órgano ovalado bajo el hígado, seno brillante</td><td>Comparar ecogenicidad del hígado; espacio de Morison</td></tr>
+<tr><td><b>Vejiga llena</b></td><td>Estructura anecoica suprapúbica</td><td>Ventana hacia útero, ovarios, próstata y fondo de saco</td></tr>
+</tbody></table></div>
+<h4>Las ventanas acústicas</h4>
+<p>El sonido no atraviesa el gas ni el hueso, así que usamos órganos llenos de líquido o macizos como «ventanas»: el <b>hígado</b> (para riñón derecho, vesícula, VCI, suprarrenal derecha), el <b>bazo</b> (riñón y suprarrenal izquierdos, cola del páncreas), el <b>lóbulo hepático izquierdo</b> (páncreas, aorta proximal), la <b>vejiga llena</b> (pelvis) y el <b>estómago con agua</b> (páncreas).</p>
+<p>Bates insiste en explorar cada órgano en <b>dos planos perpendiculares</b> y con el paciente en <b>dos posiciones</b>, y su apéndice 2A dibuja los cortes estándar del abdomen superior (ver Abdominal I).</p>`
+        },
         {
           titulo: 'Ecogenicidad: el lenguaje del blanco y negro',
           fuente: 'ABC, pp. 7–8',
@@ -801,6 +1217,29 @@ ECO.curso({
       id: 'a2', peso: 20, pesoEstimado: true, titulo: 'Anatomía ecográfica normal',
       descripcion: 'Evalúa la anatomía normal del hígado, vías biliares y del páncreas, de acuerdo con patrones ecográficos estándares.',
       temas: [
+        {
+          titulo: 'Referencias anatómicas: cortes estándar del abdomen superior',
+          fuente: 'Bates, cap. 2, pp. 22–34 y apéndice 2A (figs. 2A.1–2A.7, pp. 47–50); ABC, pp. 12–13, 25',
+          html: `
+<p>Bates resume la anatomía del abdomen superior en siete cortes estándar (apéndice 2A). Aprenderlos de memoria permite reconocer cualquier estructura por su relación con las vecinas.</p>
+<div class="tabla"><table><thead><tr><th>Corte</th><th>Qué se ve</th><th>Para qué</th></tr></thead><tbody>
+<tr><td>2A.1 Longitudinal del lóbulo derecho</td><td>Lóbulo derecho, vesícula, riñón derecho, cuadrado lumbar</td><td>Tamaño hepático, comparar ecogenicidad hígado–riñón, espacio de Morison</td></tr>
+<tr><td>2A.2 Longitudinal por la VCI</td><td>VCI, caudado, ligamento venoso, cabeza del páncreas, VMS, proceso uncinado, suprarrenal y pilar derechos</td><td>Caudado (por delante de la VCI), cabeza del páncreas</td></tr>
+<tr><td>2A.3 Longitudinal en la línea media (aorta)</td><td>Lóbulo izquierdo, aorta, tronco celíaco, AMS, cuerpo del páncreas, vena esplénica, vena renal izquierda, esófago</td><td>Ramas de la aorta; páncreas sobre la vena esplénica</td></tr>
+<tr><td>2A.4 Oblicuo por el colédoco</td><td>Colédoco por delante de la porta, arteria hepática entre ambos, cabeza del páncreas, gastroduodenal</td><td>Medir el colédoco y seguirlo hasta la ampolla</td></tr>
+<tr><td>2A.5 Transversal oblicuo subcostal</td><td>Venas hepáticas derecha, media e izquierda entrando en la VCI («conejito»), aorta, pilar</td><td>Segmentos hepáticos superiores (VII, VIII, IV, II)</td></tr>
+<tr><td>2A.6 Transversal en la porta hepatis</td><td>Ligamento redondo, ramas portales derecha e izquierda, VCI, aorta, bazo, suprarrenal</td><td>Plano portal: separa segmentos superiores de inferiores</td></tr>
+<tr><td>2A.7 Transversal a la altura del páncreas</td><td>Cabeza, cuerpo y cola, colédoco, gastroduodenal, VMS, AMS, vena esplénica, VRI, aorta, VCI, riñones</td><td>Páncreas y sus referencias vasculares</td></tr>
+</tbody></table></div>
+<h4>Reglas para no confundirse</h4>
+<ul>
+<li><b>Porta vs vena hepática</b>: la porta tiene <b>paredes brillantes</b> (vaina fibrosa de la tríada portal) y va hacia el hilio en horizontal; las hepáticas tienen paredes casi invisibles y convergen hacia la VCI en vertical. Un corte que muestra una de ellas a lo largo suele mostrar la otra en sección.</li>
+<li><b>Colédoco vs arteria</b>: en el hilio, el colédoco va por delante y a la derecha de la porta; la arteria hepática cruza entre ambos. Si hay duda, <b>Doppler</b>: el conducto no tiene flujo.</li>
+<li><b>Caudado</b>: está entre la VCI (detrás) y el ligamento venoso (delante). Drena directamente a la VCI.</li>
+<li><b>Ligamento redondo y falciforme</b>: estructuras lineales hiperecoicas en el lóbulo izquierdo; el redondo puede simular una lesión en transversal (no tiene efecto de masa).</li>
+<li><b>Páncreas</b>: siempre por delante de la <b>vena esplénica</b>; la <b>AMS</b>, rodeada de grasa brillante, por detrás de ella; la <b>VMS</b> a la derecha de la AMS; la cabeza, a la derecha de la VMS.</li>
+</ul>`
+        },
         {
           titulo: 'Hígado: aspecto, tamaño y segmentos',
           fuente: 'ABC, pp. 12–14; Bates, cap. 2, pp. 22–28',
@@ -1355,6 +1794,32 @@ ECO.curso({
       descripcion: 'Evalúa la anatomía normal del riñón, glándulas suprarrenales y bazo, de acuerdo con patrones ecográficos estándares.',
       temas: [
         {
+          titulo: 'Referencias anatómicas: riñón, suprarrenales y bazo',
+          fuente: 'Bates, cap. 7, pp. 192–195; cap. 8, pp. 249–254; cap. 6, p. 175; ABC, pp. 29, 32',
+          html: `
+<h4>Riñones</h4>
+<ul>
+<li><b>Derecho</b>: posterior e inferior al hígado, que le sirve de ventana; entre ambos queda la <b>bolsa de Morison</b>. Más bajo que el izquierdo.</li>
+<li><b>Izquierdo</b>: detrás del estómago y del ángulo esplénico del colon; se ve por el <b>bazo</b> en corte coronal. Su polo superior se relaciona con el bazo y la suprarrenal izquierda.</li>
+<li><b>Hilio</b> (medial): de delante hacia atrás, <b>vena, arteria y pelvis</b>. Los vasos del hilio pueden simular una dilatación: Doppler.</li>
+<li><b>Vena renal izquierda</b>: cruza por delante de la aorta y por detrás de la AMS para llegar a la VCI. <b>Arteria renal derecha</b>: pasa por detrás de la VCI.</li>
+<li>Dentro del riñón: corteza → pirámides (vértice al seno) → seno central graso. La <b>columna de Bertin</b> es corteza que entra en el seno entre dos pirámides.</li>
+<li>Por detrás: músculos <b>psoas</b> (medial) y <b>cuadrado lumbar</b>; por arriba, el diafragma.</li>
+</ul>
+<h4>Suprarrenales</h4>
+<ul>
+<li><b>Derecha</b>: por encima y medial al polo superior del riñón derecho, <b>detrás de la VCI</b>, entre el hígado y el <b>pilar derecho del diafragma</b>.</li>
+<li><b>Izquierda</b>: anteromedial al polo superior del riñón izquierdo, lateral a la aorta, en el triángulo <b>bazo–riñón–pilar</b>.</li>
+<li>Forma de V, Y o λ: un reborde central y dos alas finas (≤ 2 mm).</li>
+</ul>
+<h4>Bazo</h4>
+<ul>
+<li>Cuadrante superior izquierdo, bajo el diafragma, posterolateral al estómago, sobre el riñón izquierdo. Forma de medialuna: cara diafragmática convexa, cara visceral cóncava con el <b>hilio</b> (arteria y vena esplénicas).</li>
+<li>La <b>cola del páncreas</b> llega al hilio esplénico: puede simular una masa periesplénica.</li>
+<li>Se mide la longitud mayor (polo a polo) en corte coronal intercostal.</li>
+</ul>`
+        },
+        {
           titulo: 'Riñón normal y Doppler',
           fuente: 'ABC, p. 32; Bates, cap. 7, pp. 193–195',
           html: `
@@ -1837,6 +2302,31 @@ ECO.curso({
       descripcion: 'Evalúa la anatomía normal de la cavidad peritoneal, el retroperitoneo, tubo digestivo y vasos abdominales, de acuerdo con patrones ecográficos estándares.',
       temas: [
         {
+          titulo: 'Referencias anatómicas: vasos, peritoneo e intestino',
+          fuente: 'Bates, cap. 8, pp. 243–250, 257; cap. 10, p. 298; ABC, pp. 41–43',
+          html: `
+<h4>Grandes vasos</h4>
+<ul>
+<li><b>Aorta</b>: delante de la columna, algo a la izquierda; pared gruesa y pulsátil. De arriba abajo: <b>tronco celíaco</b> (hepática común y esplénica en «gaviota»), <b>AMS</b> (≈ 1 cm por debajo, paralela a la aorta, rodeada de grasa), <b>arterias renales</b> (laterales), <b>AMI</b> y bifurcación en ilíacas (≈ ombligo, L4).</li>
+<li><b>VCI</b>: a la derecha de la aorta, más anterior al atravesar el diafragma; recibe venas renales (justo bajo el páncreas) y hepáticas. Colapsa con la inspiración.</li>
+<li><b>Pinza aortomesentérica</b>: la vena renal izquierda y el duodeno (3.ª porción) pasan entre AMS y aorta.</li>
+<li><b>Sistema porta</b>: la vena esplénica y la VMS se unen detrás del cuello del páncreas (confluente) para formar la porta.</li>
+</ul>
+<h4>Peritoneo</h4>
+<ul>
+<li>Los espacios más <b>declives</b> acumulan el líquido primero: <b>Morison</b> (abdomen superior en supino) y <b>pelvis</b> (Douglas o rectovesical, el más declive de todos). La <b>gotera parietocólica derecha</b> une ambos.</li>
+<li>El <b>saco menor</b> (detrás del estómago) recoge líquido en pancreatitis y perforaciones de úlcera posterior.</li>
+<li>El <b>mesenterio</b> sujeta el delgado; el <b>epiplón mayor</b> cuelga delante de las asas (se engrosa en la carcinomatosis).</li>
+</ul>
+<h4>Intestino</h4>
+<ul>
+<li><b>Estómago</b>: bajo el lóbulo izquierdo; el antro y el píloro, a la derecha de la línea media, cerca de la vesícula (truco del ABC para encontrar el píloro).</li>
+<li><b>Duodeno</b>: rodea la cabeza del páncreas; su gas tapa el colédoco distal.</li>
+<li><b>Yeyuno</b> (izquierda, válvulas conniventes) e <b>íleon</b> (derecha y pelvis); el <b>íleon terminal</b> entra en el ciego en la fosa ilíaca derecha, junto al <b>apéndice</b>, que suele cruzar por delante del psoas y los vasos ilíacos.</li>
+<li><b>Colon</b>: marco periférico con haustras y gas; el sigma en la fosa ilíaca izquierda (diverticulitis).</li>
+</ul>`
+        },
+        {
           titulo: 'Peritoneo y retroperitoneo',
           fuente: 'Bates, cap. 8, p. 243; cap. 10, p. 298 (espacios: anatomía general)',
           html: `
@@ -2245,14 +2735,17 @@ ECO.curso({
   function render() {
     var r = ruta();
     document.querySelectorAll('[data-nav]').forEach(function (a) {
-      a.classList.toggle('on', a.dataset.nav === r.vista || (r.vista === 'curso' && a.dataset.nav === 'inicio'));
+      a.classList.toggle('on', a.dataset.nav === r.vista);
     });
     actualizarBadge();
     if (r.vista === 'curso') vistaCurso(r.curso, r.tab);
     else if (r.vista === 'repaso') vistaRepaso();
     else if (r.vista === 'glosario') vistaGlosario();
     else if (r.vista === 'biblioteca') vistaBiblioteca();
+    else if (r.vista === 'atlas') vistaAtlas();
     else vistaInicio();
+    pintarNavCursos(r);
+    cerrarMenu();
     window.scrollTo(0, 0);
   }
   function actualizarBadge() {
@@ -2376,7 +2869,7 @@ ECO.curso({
         '<div class="dom">dominio ' + pct(p) + '%<div class="bar' + (p >= 0.8 ? ' ok' : '') + '" style="width:90px;margin-top:6px"><i style="width:' + pct(p) + '%"></i></div></div></header>' +
         (cr.temas || []).map(function (t) {
           return '<details class="tema" data-tema="' + t.id + '"><summary>' + esc(t.titulo) + (S.leidos[t.id] ? '<span class="chk">✓ estudiado</span>' : '') + '</summary>' +
-            '<div class="tema-body">' + t.html +
+            '<div class="tema-body">' + t.html + figurasTema(c, t) +
             (t.fuente ? '<p class="fuente">Fuente: ' + esc(t.fuente) + '</p>' : '') +
             '<div class="notas"><label for="n-' + t.id + '">Mis notas</label><textarea id="n-' + t.id + '" data-nota="' + t.id + '" placeholder="Apuntes de clase, dudas, páginas del libro…">' + esc(S.notas[t.id] || '') + '</textarea></div>' +
             '<div class="row"><button class="btn sm' + (S.leidos[t.id] ? '' : ' pri') + '" data-act="leido" data-id="' + t.id + '">' + (S.leidos[t.id] ? 'Marcar como pendiente' : 'Marcar como estudiado') + '</button>' +
@@ -2617,11 +3110,80 @@ ECO.curso({
       '<div class="row"><button class="btn" data-act="restaurar">Restaurar progreso</button><button class="btn ghost" data-act="borrar">Borrar todo el progreso</button><span id="msg-resp" class="muted" style="font-size:.9rem"></span></div></section>';
   }
 
+  /* ---------- Figuras: esquemas propios y figuras de los libros ---------- */
+  var FIGL = (window.ECO && window.ECO.figLibro) || {};
+  var IMGL = (window.ECO && window.ECO.imgLibro) || {};
+  var DIAS = (window.ECO && window.ECO.diagramas) || {};
+  var FIGT = (window.ECO && window.ECO.figTemas) || {};
+  function citaFig(f) { return f.libro + ', fig. ' + f.fig + ', p. ' + f.pag; }
+  function figuraHTML(ref) {
+    var tipo = ref.split(':')[0], k = ref.slice(tipo.length + 1);
+    if (tipo === 'dia' && DIAS[k]) {
+      return '<figure class="fig dia" data-act="ampliar" data-ref="' + ref + '">' + DIAS[k].svg + '<figcaption><span class="fig-tag">Esquema</span> ' + esc(DIAS[k].pie) + '</figcaption></figure>';
+    }
+    if (tipo === 'libro' && FIGL[k]) {
+      var f = FIGL[k];
+      if (IMGL[k]) return '<figure class="fig foto" data-act="ampliar" data-ref="' + ref + '"><img src="' + IMGL[k] + '" alt="' + esc(f.pie) + '" loading="lazy"><figcaption><span class="fig-tag">' + esc(citaFig(f)) + '</span> ' + esc(f.pie) + '</figcaption></figure>';
+      return '<figure class="fig ref"><div class="ref-ico" aria-hidden="true">' + esc(f.libro) + '</div><figcaption><span class="fig-tag">Ver ' + esc(citaFig(f)) + '</span> ' + esc(f.pie) + '</figcaption></figure>';
+    }
+    return '';
+  }
+  function figurasTema(c, t) {
+    var refs = FIGT[c.id + '|' + t.titulo]; if (!refs || !refs.length) return '';
+    var dias = refs.filter(function (r) { return r.indexOf('dia:') === 0; });
+    var libs = refs.filter(function (r) { return r.indexOf('libro:') === 0; });
+    var out = '';
+    if (dias.length) out += '<div class="figs-dia">' + dias.map(figuraHTML).join('') + '</div>';
+    if (libs.length) out += '<h4>Imágenes de referencia del libro</h4><div class="galeria">' + libs.map(figuraHTML).join('') + '</div>';
+    return out;
+  }
+  function vistaAtlas() {
+    var hayImg = Object.keys(IMGL).length > 0;
+    app.innerHTML = '<section class="chead"><span class="eyebrow">' + Object.keys(FIGL).length + ' figuras de los libros · ' + Object.keys(DIAS).length + ' esquemas</span><h1>Atlas de imágenes</h1>' +
+      '<p class="muted">Todas las imágenes de referencia, agrupadas por curso. Toca una imagen para ampliarla.' + (hayImg ? '' : ' Esta versión no incluye las imágenes de los libros (tienen derechos de autor): cada figura indica dónde encontrarla.') + '</p></section>' +
+      '<section class="stack"><h2>Esquemas anatómicos</h2><div class="figs-dia">' + Object.keys(DIAS).map(function (k) { return figuraHTML('dia:' + k); }).join('') + '</div></section>' +
+      CURSOS.map(function (c) {
+        var ks = Object.keys(FIGL).filter(function (k) { return FIGL[k].curso === c.id; });
+        if (!ks.length) return '';
+        return '<section class="stack"><h2>' + esc(c.titulo) + '</h2><div class="galeria">' + ks.map(function (k) { return figuraHTML('libro:' + k); }).join('') + '</div></section>';
+      }).join('');
+  }
+  var lb = document.getElementById('lightbox');
+  function ampliar(ref) {
+    if (!lb) return;
+    var tipo = ref.split(':')[0], k = ref.slice(tipo.length + 1), cont = '', pie = '';
+    if (tipo === 'dia' && DIAS[k]) { cont = DIAS[k].svg; pie = DIAS[k].pie; }
+    else if (tipo === 'libro' && IMGL[k]) { cont = '<img src="' + IMGL[k] + '" alt="">'; pie = citaFig(FIGL[k]) + ' · ' + FIGL[k].pie; }
+    else return;
+    lb.querySelector('.lb-cont').innerHTML = cont; lb.querySelector('.lb-pie').textContent = pie; lb.hidden = false;
+    lb.querySelector('.lb-cerrar').focus();
+  }
+  if (lb) {
+    lb.addEventListener('click', function (e) { if (e.target === lb || e.target.closest('.lb-cerrar')) lb.hidden = true; });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { lb.hidden = true; cerrarMenu(); } });
+  }
+
+  /* ---------- Barra lateral ---------- */
+  var side = document.getElementById('side'), velo = document.getElementById('velo'), menuBtn = document.getElementById('menu-btn');
+  function abrirMenu() { if (!side) return; side.classList.add('abierto'); velo.hidden = false; menuBtn.setAttribute('aria-expanded', 'true'); }
+  function cerrarMenu() { if (!side) return; side.classList.remove('abierto'); if (velo) velo.hidden = true; if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false'); }
+  if (menuBtn) menuBtn.addEventListener('click', function () { side.classList.contains('abierto') ? cerrarMenu() : abrirMenu(); });
+  if (velo) velo.addEventListener('click', cerrarMenu);
+  function pintarNavCursos(r) {
+    var nav = document.getElementById('nav-cursos'); if (!nav) return;
+    nav.innerHTML = CURSOS.map(function (c) {
+      var activo = r.vista === 'curso' && r.curso === c;
+      return '<a href="#' + c.id + '" class="nav-curso' + (activo ? ' on' : '') + '"><span class="nc-tit">' + esc(c.corto) + '</span><span class="nc-pct mono">' + pct(puntajeCurso(c)) + '%</span><span class="nc-bar"><i style="width:' + pct(puntajeCurso(c)) + '%"></i></span></a>' +
+        (activo ? '<div class="nav-sub">' + TABS.map(function (t) { return '<a href="#' + c.id + '-' + t[0] + '" class="' + (r.tab === t[0] || (t[0] === 'temario' && !TABS.some(function (x) { return x[0] === r.tab; })) ? 'on' : '') + '">' + t[1] + '</a>'; }).join('') + '</div>' : '');
+    }).join('');
+  }
+
   /* ---------- Eventos ---------- */
   var confirmarBorrado = false;
   app.addEventListener('click', function (e) {
     var b = e.target.closest('[data-act]'); if (!b) return;
     var act = b.dataset.act;
+    if (act === 'ampliar') { ampliar(b.dataset.ref); return; }
     if (act === 'voltear') { ses.vuelta = true; pintarTarjeta(); }
     else if (act === 'calif') calificar(+b.dataset.g);
     else if (act === 'leido') {

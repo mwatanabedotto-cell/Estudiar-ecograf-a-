@@ -69,6 +69,29 @@ ECO.curso({
       descripcion: 'Evalúa la anatomía normal del hígado, vías biliares y del páncreas, de acuerdo con patrones ecográficos estándares.',
       temas: [
         {
+          titulo: 'Referencias anatómicas: cortes estándar del abdomen superior',
+          fuente: 'Bates, cap. 2, pp. 22–34 y apéndice 2A (figs. 2A.1–2A.7, pp. 47–50); ABC, pp. 12–13, 25',
+          html: `
+<p>Bates resume la anatomía del abdomen superior en siete cortes estándar (apéndice 2A). Aprenderlos de memoria permite reconocer cualquier estructura por su relación con las vecinas.</p>
+<div class="tabla"><table><thead><tr><th>Corte</th><th>Qué se ve</th><th>Para qué</th></tr></thead><tbody>
+<tr><td>2A.1 Longitudinal del lóbulo derecho</td><td>Lóbulo derecho, vesícula, riñón derecho, cuadrado lumbar</td><td>Tamaño hepático, comparar ecogenicidad hígado–riñón, espacio de Morison</td></tr>
+<tr><td>2A.2 Longitudinal por la VCI</td><td>VCI, caudado, ligamento venoso, cabeza del páncreas, VMS, proceso uncinado, suprarrenal y pilar derechos</td><td>Caudado (por delante de la VCI), cabeza del páncreas</td></tr>
+<tr><td>2A.3 Longitudinal en la línea media (aorta)</td><td>Lóbulo izquierdo, aorta, tronco celíaco, AMS, cuerpo del páncreas, vena esplénica, vena renal izquierda, esófago</td><td>Ramas de la aorta; páncreas sobre la vena esplénica</td></tr>
+<tr><td>2A.4 Oblicuo por el colédoco</td><td>Colédoco por delante de la porta, arteria hepática entre ambos, cabeza del páncreas, gastroduodenal</td><td>Medir el colédoco y seguirlo hasta la ampolla</td></tr>
+<tr><td>2A.5 Transversal oblicuo subcostal</td><td>Venas hepáticas derecha, media e izquierda entrando en la VCI («conejito»), aorta, pilar</td><td>Segmentos hepáticos superiores (VII, VIII, IV, II)</td></tr>
+<tr><td>2A.6 Transversal en la porta hepatis</td><td>Ligamento redondo, ramas portales derecha e izquierda, VCI, aorta, bazo, suprarrenal</td><td>Plano portal: separa segmentos superiores de inferiores</td></tr>
+<tr><td>2A.7 Transversal a la altura del páncreas</td><td>Cabeza, cuerpo y cola, colédoco, gastroduodenal, VMS, AMS, vena esplénica, VRI, aorta, VCI, riñones</td><td>Páncreas y sus referencias vasculares</td></tr>
+</tbody></table></div>
+<h4>Reglas para no confundirse</h4>
+<ul>
+<li><b>Porta vs vena hepática</b>: la porta tiene <b>paredes brillantes</b> (vaina fibrosa de la tríada portal) y va hacia el hilio en horizontal; las hepáticas tienen paredes casi invisibles y convergen hacia la VCI en vertical. Un corte que muestra una de ellas a lo largo suele mostrar la otra en sección.</li>
+<li><b>Colédoco vs arteria</b>: en el hilio, el colédoco va por delante y a la derecha de la porta; la arteria hepática cruza entre ambos. Si hay duda, <b>Doppler</b>: el conducto no tiene flujo.</li>
+<li><b>Caudado</b>: está entre la VCI (detrás) y el ligamento venoso (delante). Drena directamente a la VCI.</li>
+<li><b>Ligamento redondo y falciforme</b>: estructuras lineales hiperecoicas en el lóbulo izquierdo; el redondo puede simular una lesión en transversal (no tiene efecto de masa).</li>
+<li><b>Páncreas</b>: siempre por delante de la <b>vena esplénica</b>; la <b>AMS</b>, rodeada de grasa brillante, por detrás de ella; la <b>VMS</b> a la derecha de la AMS; la cabeza, a la derecha de la VMS.</li>
+</ul>`
+        },
+        {
           titulo: 'Hígado: aspecto, tamaño y segmentos',
           fuente: 'ABC, pp. 12–14; Bates, cap. 2, pp. 22–28',
           html: `

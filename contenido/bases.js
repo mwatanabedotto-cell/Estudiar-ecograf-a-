@@ -10,6 +10,24 @@ ECO.curso({
       descripcion: 'Describe los términos y conceptos básicos relacionados con la ecografía.',
       temas: [
         {
+          titulo: 'Planos de corte y referencias anatómicas básicas',
+          fuente: 'ABC, p. 9; Bates, cap. 2, pp. 22–23 y apéndice 2A (pp. 47–50)',
+          html: `
+<p>La ecografía no tiene planos fijos como la TC: el transductor «corta» en cualquier dirección. Por eso nos orientamos con <b>referencias anatómicas</b>, estructuras fáciles de reconocer que siempre ocupan el mismo lugar y nos dicen dónde estamos.</p>
+<div class="tabla"><table><thead><tr><th>Referencia</th><th>Cómo se ve</th><th>Para qué sirve</th></tr></thead><tbody>
+<tr><td><b>Diafragma</b></td><td>Línea curva muy ecogénica sobre el hígado y el bazo</td><td>Límite superior; comparar con él la ecogenicidad del hígado (en esteatosis severa desaparece)</td></tr>
+<tr><td><b>Aorta y VCI</b></td><td>Tubos anecoicos prevertebrales: aorta a la izquierda (pulsátil, pared gruesa), VCI a la derecha (paredes finas, colapsa al inspirar)</td><td>Línea media; punto de partida para tronco celíaco, AMS, páncreas y vena renal izquierda</td></tr>
+<tr><td><b>Columna vertebral</b></td><td>Arco hiperecoico con sombra</td><td>Marca lo profundo de la línea media en cortes transversales</td></tr>
+<tr><td><b>Vena porta</b></td><td>Tubo con paredes brillantes que entra al hilio hepático</td><td>Guía para colédoco (por delante) y segmentos hepáticos (plano horizontal)</td></tr>
+<tr><td><b>Vena esplénica</b></td><td>Tubo horizontal detrás del páncreas</td><td>Encontrar el páncreas</td></tr>
+<tr><td><b>Riñón derecho</b></td><td>Órgano ovalado bajo el hígado, seno brillante</td><td>Comparar ecogenicidad del hígado; espacio de Morison</td></tr>
+<tr><td><b>Vejiga llena</b></td><td>Estructura anecoica suprapúbica</td><td>Ventana hacia útero, ovarios, próstata y fondo de saco</td></tr>
+</tbody></table></div>
+<h4>Las ventanas acústicas</h4>
+<p>El sonido no atraviesa el gas ni el hueso, así que usamos órganos llenos de líquido o macizos como «ventanas»: el <b>hígado</b> (para riñón derecho, vesícula, VCI, suprarrenal derecha), el <b>bazo</b> (riñón y suprarrenal izquierdos, cola del páncreas), el <b>lóbulo hepático izquierdo</b> (páncreas, aorta proximal), la <b>vejiga llena</b> (pelvis) y el <b>estómago con agua</b> (páncreas).</p>
+<p>Bates insiste en explorar cada órgano en <b>dos planos perpendiculares</b> y con el paciente en <b>dos posiciones</b>, y su apéndice 2A dibuja los cortes estándar del abdomen superior (ver Abdominal I).</p>`
+        },
+        {
           titulo: 'Ecogenicidad: el lenguaje del blanco y negro',
           fuente: 'ABC, pp. 7–8',
           html: `
