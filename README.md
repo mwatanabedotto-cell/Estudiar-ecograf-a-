@@ -39,6 +39,8 @@ vesicular < 2 mm en Bates y < 3 mm en el ABC), se muestran ambas.
 - **Tarjetas** con repetición espaciada (Otra vez / Difícil / Bien / Fácil).
 - **Preguntas** de opción múltiple y casos clínicos con explicación.
 - **Simulacro** con preguntas repartidas según el peso de cada criterio y nota ponderada sobre 100.
+- **Lectura acompañada**: lee cada tema en voz alta (voz del navegador), resalta la frase que se escucha,
+  hace un repaso con tarjetas al final de cada tema y puede seguir sola al siguiente tema.
 - Menú en **barra lateral** (desplegable en el móvil) y tema oscuro.
 - **Repaso del día** de los cuatro cursos, **glosario** con buscador y **biblioteca** de fuentes.
 - El progreso se guarda en el navegador; se puede copiar y restaurar en otro dispositivo.

@@ -19,7 +19,7 @@
   function strip(html) { var d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
 
   /* ---------- Estado persistente ---------- */
-  function base() { return { cards: {}, quiz: {}, notas: {}, leidos: {}, sims: [] }; }
+  function base() { return { cards: {}, quiz: {}, notas: {}, leidos: {}, sims: [], lectura: {}, lecPref: {} }; }
   function cargar() {
     try { var raw = localStorage.getItem(KEY); if (raw) { var o = JSON.parse(raw); var b = base(); for (var k in b) if (o[k]) b[k] = o[k]; return b; } } catch (e) {}
     return base();
@@ -84,6 +84,8 @@
     return { vista: h };
   }
   function render() {
+    if (typeof detenerVoz === 'function') detenerVoz();
+    lec = null;
     var r = ruta();
     document.querySelectorAll('[data-nav]').forEach(function (a) {
       a.classList.toggle('on', a.dataset.nav === r.vista);
@@ -130,7 +132,7 @@
           '<p class="lead">Cuatro cursos organizados según sus criterios de evaluación. Cada criterio tiene su temario, tarjetas de repaso espaciado y preguntas con explicación. El dominio de cada curso se calcula con el mismo peso que usa la evaluación.</p>' +
           '<div class="row">' +
             '<a class="btn pri" href="#repaso">Repasar hoy' + (pend ? ' · ' + pend + ' tarjetas' : '') + '</a>' +
-            '<a class="btn ghost" href="#' + (CURSOS[0] ? CURSOS[0].id : 'inicio') + '">Empezar por Bases</a>' +
+            '<a class="btn ghost" href="#' + (CURSOS[0] ? CURSOS[0].id : 'inicio') + '-lectura">🎧 Lectura acompañada</a>' +
           '</div>' +
         '</div>' +
         '<div class="scan" aria-hidden="true"><canvas id="bmode" width="640" height="480"></canvas>' +
@@ -194,7 +196,7 @@
   }
 
   /* ---------- Vista curso ---------- */
-  var TABS = [['temario', 'Temario'], ['tarjetas', 'Tarjetas'], ['preguntas', 'Preguntas'], ['simulacro', 'Simulacro']];
+  var TABS = [['temario', 'Temario'], ['lectura', 'Lectura acompañada'], ['tarjetas', 'Tarjetas'], ['preguntas', 'Preguntas'], ['simulacro', 'Simulacro']];
   function vistaCurso(c, tab) {
     if (!TABS.some(function (t) { return t[0] === tab; })) tab = 'temario';
     var cab =
@@ -209,6 +211,7 @@
     if (tab === 'tarjetas') iniciarTarjetas(c, 'todos', 'pendientes');
     if (tab === 'preguntas') iniciarPreguntas(c, 'todos', false);
     if (tab === 'simulacro') pantallaSimulacro(c);
+    if (tab === 'lectura') vistaLectura(c);
   }
 
   function temario(c) {
@@ -532,9 +535,12 @@
   /* ---------- Eventos ---------- */
   var confirmarBorrado = false;
   app.addEventListener('click', function (e) {
+    var segEl = e.target.closest('.lec-seg');
+    if (segEl && lec && !e.target.closest('[data-act], a, button')) { var k = +segEl.dataset.seg; if (VOZ) leerDesde(k); else { lec.s = k; marcarSeg(k); progresoLectura(); } return; }
     var b = e.target.closest('[data-act]'); if (!b) return;
     var act = b.dataset.act;
     if (act === 'ampliar') { ampliar(b.dataset.ref); return; }
+    if (act.indexOf('lec-') === 0 && accionLectura(act, b)) return;
     if (act === 'voltear') { ses.vuelta = true; pintarTarjeta(); }
     else if (act === 'calif') calificar(+b.dataset.g);
     else if (act === 'leido') {
@@ -579,6 +585,10 @@
   });
   app.addEventListener('change', function (e) {
     var id = e.target.id;
+    if (id === 'lec-tema') { var sonaba = lec && lec.sonando; cargarTemaLectura(+e.target.value); if (sonaba) leerDesde(0); return; }
+    if (id === 'lec-rate') { prefs().rate = +e.target.value; guardar(); if (lec && lec.sonando) leerDesde(lec.s); return; }
+    if (id === 'lec-voz') { prefs().voz = e.target.value; guardar(); if (lec && lec.sonando) leerDesde(lec.s); return; }
+    if (id === 'lec-auto') { prefs().auto = e.target.checked; guardar(); return; }
     if (id === 'f-crit-t' || id === 'f-modo') iniciarTarjetas(ses.curso, document.getElementById('f-crit-t').value, document.getElementById('f-modo').value);
     else if (id === 'f-crit-p' || id === 'f-falladas') iniciarPreguntas(ses.curso, document.getElementById('f-crit-p').value, document.getElementById('f-falladas').checked);
   });
@@ -588,12 +598,168 @@
     S.notas[id] = e.target.value; clearTimeout(tNota); tNota = setTimeout(guardar, 400);
   });
   document.addEventListener('keydown', function (e) {
+    if (lec && e.key === ' ' && !/^(input|textarea|select|button)$/i.test(e.target.tagName)) { e.preventDefault(); accionLectura('lec-play', {}); return; }
     if (!ses || (ses.tipo !== 'tarjetas' && ses.tipo !== 'repaso')) return;
     var tag = (e.target.tagName || '').toLowerCase(); if (tag === 'textarea' || tag === 'input' || tag === 'select') return;
     if (!document.getElementById('fc')) return;
     if (!ses.vuelta && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); ses.vuelta = true; pintarTarjeta(); }
     else if (ses.vuelta && /^[1-4]$/.test(e.key)) calificar(+e.key - 1);
   });
+
+  /* ---------- Lectura acompañada: lectura guiada con voz, resaltado y repaso ---------- */
+  var VOZ = ('speechSynthesis' in window) ? window.speechSynthesis : null;
+  var lec = null, lecTok = 0, lecTimer = null;
+  function prefs() { S.lecPref = S.lecPref || {}; if (!S.lecPref.rate) S.lecPref.rate = 1; if (S.lecPref.auto === undefined) S.lecPref.auto = true; return S.lecPref; }
+  function temasCurso(c) { var a = []; c.criterios.forEach(function (cr) { (cr.temas || []).forEach(function (t) { a.push({ cr: cr, t: t }); }); }); return a; }
+  var DICCION = [
+    [/\bVCI\b/g, 'vena cava inferior'], [/\bAMS\b/g, 'arteria mesentérica superior'], [/\bVMS\b/g, 'vena mesentérica superior'], [/\bVRI\b/g, 'vena renal izquierda'],
+    [/\bAMI\b/g, 'arteria mesentérica inferior'], [/\bCHC\b/g, 'carcinoma hepatocelular'], [/\bHNF\b/g, 'hiperplasia nodular focal'], [/\bCCR\b/g, 'carcinoma de células renales'],
+    [/\bAAA\b/g, 'aneurisma de aorta abdominal'], [/\bAML\b/g, 'angiomiolipoma'], [/\bFRP\b/g, 'frecuencia de repetición de pulsos'], [/\bIR\b/g, 'índice de resistencia'],
+    [/\bVSM\b/g, 'velocidad sistólica máxima'], [/\bUPU\b/g, 'unión pieloureteral'], [/\bUVU\b/g, 'unión ureterovesical'], [/\bLHD\b/g, 'lóbulo hepático derecho'],
+    [/\bLHI\b/g, 'lóbulo hepático izquierdo'], [/\bVHD\b/g, 'vena hepática derecha'], [/\bVHM\b/g, 'vena hepática media'], [/\bVHI\b/g, 'vena hepática izquierda'],
+    [/\bERC\b/g, 'enfermedad renal crónica'], [/\bHPB\b/g, 'hiperplasia prostática benigna'], [/\bCBC\b/g, 'conducto biliar común'], [/\bTGC\b/g, 'te ge ce'],
+    [/\bCPRE\b/g, 'ce pe erre e'], [/\bTIPS\b/g, 'tips'], [/\bFAST\b/g, 'fast'], [/\bEHP\b/g, 'estenosis hipertrófica del píloro'],
+    [/cm\/s\b/g, 'centímetros por segundo'], [/m\/s²/g, 'metros por segundo al cuadrado'], [/m\/s\b/g, 'metros por segundo'], [/dB\/cm\/MHz/g, 'decibelios por centímetro y megahercio'],
+    [/(\d),(\d)/g, '$1 coma $2'], [/(\d)\s?–\s?(\d)/g, '$1 a $2'], [/≤/g, ' menor o igual a '], [/≥/g, ' mayor o igual a '], [/</g, ' menor de '], [/>/g, ' mayor de '],
+    [/×/g, ' por '], [/→/g, ', '], [/±/g, ' más o menos '], [/(\d)\s?mm\b/g, '$1 milímetros'], [/(\d)\s?cm\b/g, '$1 centímetros'], [/(\d)\s?MHz\b/g, '$1 megahercios'],
+    [/(\d)\s?kHz\b/g, '$1 kilohercios'], [/(\d)\s?Hz\b/g, '$1 hercios'], [/(\d)\s?ml\b/g, '$1 mililitros'], [/µs/g, 'microsegundos'], [/(\d)\s?%/g, '$1 por ciento'],
+    [/(\d)\s?°/g, '$1 grados'], [/·/g, ', '], [/[«»"]/g, '']
+  ];
+  function diccion(s) { DICCION.forEach(function (r) { s = s.replace(r[0], r[1]); }); return s.replace(/\s+/g, ' ').trim(); }
+  function trozos(s) { // frases cortas: más fiable en Android y mejor ritmo
+    var out = [], partes = s.match(/[^.;:!?]+[.;:!?]*/g) || [s];
+    partes.forEach(function (p) { p = p.trim(); if (!p) return; if (out.length && (out[out.length - 1] + ' ' + p).length < 160) out[out.length - 1] += ' ' + p; else out.push(p); });
+    return out;
+  }
+  function voces() { return VOZ ? VOZ.getVoices().filter(function (v) { return /^es/i.test(v.lang); }) : []; }
+  function vozElegida() { var vs = voces(), n = prefs().voz; return vs.filter(function (v) { return v.name === n; })[0] || vs.filter(function (v) { return /es-(419|MX|US|BO|AR|CO|CL|PE)/i.test(v.lang); })[0] || vs[0] || null; }
+
+  function vistaLectura(c) {
+    var lista = temasCurso(c);
+    S.lectura = S.lectura || {};
+    var i = Math.min(S.lectura[c.id] || 0, lista.length - 1);
+    var cont = document.getElementById('cuerpo');
+    cont.innerHTML =
+      '<div class="lec">' +
+        '<div class="lec-intro panel"><div class="row" style="justify-content:space-between;align-items:flex-start"><div class="stack" style="gap:4px"><h3>Lectura acompañada</h3>' +
+        '<p class="muted" style="font-size:.95rem">La plataforma te lee cada tema en voz alta y resalta la frase que escuchas. Al final de cada tema hay un repaso rápido con tarjetas; puedes seguir automáticamente al siguiente tema. Toca cualquier frase para leer desde ahí.</p></div></div>' +
+        (VOZ ? '' : '<p class="perla"><b>Sin voz</b>Este navegador no permite leer en voz alta. Puedes usar igualmente la lectura guiada tema por tema.</p>') +
+        '<label class="lec-sel"><span class="eyebrow">Tema</span><select id="lec-tema" aria-label="Tema">' + c.criterios.map(function (cr) {
+          return '<optgroup label="' + cr.peso + '% · ' + esc(cr.titulo) + '">' + (cr.temas || []).map(function (t) { var k = lista.findIndex(function (x) { return x.t === t; }); return '<option value="' + k + '"' + (k === i ? ' selected' : '') + '>' + (S.leidos[t.id] ? '✓ ' : '') + esc(t.titulo) + '</option>'; }).join('') + '</optgroup>';
+        }).join('') + '</select></label></div>' +
+        '<article class="lec-hoja" id="lec-hoja"></article>' +
+        '<div class="lec-barra" role="toolbar" aria-label="Controles de lectura">' +
+          '<div class="lec-ctrl">' +
+            '<button class="btn sm ghost" data-act="lec-tema" data-d="-1" aria-label="Tema anterior" title="Tema anterior">⏮</button>' +
+            '<button class="btn sm ghost" data-act="lec-frase" data-d="-1" aria-label="Frase anterior" title="Frase anterior">⏪</button>' +
+            '<button class="btn pri lec-play" data-act="lec-play" id="lec-play"' + (VOZ ? '' : ' disabled') + '>▶ Escuchar</button>' +
+            '<button class="btn sm ghost" data-act="lec-frase" data-d="1" aria-label="Frase siguiente" title="Frase siguiente">⏩</button>' +
+            '<button class="btn sm ghost" data-act="lec-tema" data-d="1" aria-label="Tema siguiente" title="Tema siguiente">⏭</button>' +
+          '</div>' +
+          '<div class="lec-opts">' +
+            '<label>Velocidad <select id="lec-rate">' + [0.8, 0.9, 1, 1.15, 1.3, 1.5].map(function (r) { return '<option value="' + r + '"' + (r === prefs().rate ? ' selected' : '') + '>' + String(r).replace('.', ',') + '×</option>'; }).join('') + '</select></label>' +
+            (VOZ ? '<label>Voz <select id="lec-voz"></select></label>' : '') +
+            '<label><input type="checkbox" id="lec-auto"' + (prefs().auto ? ' checked' : '') + '> Seguir al siguiente tema</label>' +
+            '<span class="progreso" id="lec-prog"></span>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    lec = { curso: c, lista: lista, i: i, segs: [], s: 0, sonando: false };
+    llenarVoces();
+    cargarTemaLectura(i);
+  }
+  function llenarVoces() {
+    var sel = document.getElementById('lec-voz'); if (!sel) return;
+    var vs = voces(), elegida = vozElegida();
+    sel.innerHTML = vs.length ? vs.map(function (v) { return '<option' + (elegida && v.name === elegida.name ? ' selected' : '') + '>' + esc(v.name) + '</option>'; }).join('') : '<option>Voz del sistema</option>';
+  }
+  if (VOZ) VOZ.onvoiceschanged = llenarVoces;
+
+  function cargarTemaLectura(i) {
+    detenerVoz();
+    if (!lec) return;
+    i = Math.max(0, Math.min(i, lec.lista.length - 1));
+    lec.i = i; lec.s = 0; S.lectura[lec.curso.id] = i; guardar();
+    var it = lec.lista[i], hoja = document.getElementById('lec-hoja');
+    var sel = document.getElementById('lec-tema'); if (sel) sel.value = String(i);
+    var tarjetas = shuffle(lec.curso.tarjetas.filter(function (x) { return x.c === it.cr.id; })).slice(0, 2);
+    hoja.innerHTML = '<span class="eyebrow">' + it.cr.peso + '% · ' + esc(it.cr.titulo) + ' · tema ' + (i + 1) + ' de ' + lec.lista.length + '</span>' +
+      '<h2 class="lec-h">' + esc(it.t.titulo) + '</h2>' +
+      '<div class="tema-body lec-texto" id="lec-texto">' + it.t.html + figurasTema(lec.curso, it.t) + '</div>' +
+      (it.t.fuente ? '<p class="fuente">Fuente: ' + esc(it.t.fuente) + '</p>' : '') +
+      (tarjetas.length ? '<div class="lec-repaso"><h3>Repaso rápido</h3>' + tarjetas.map(function (x, k) {
+        return '<div class="lec-card"><p class="lec-q" data-rq="' + k + '"><b>Pregunta:</b> ' + x.f + '</p><p class="lec-a" id="lec-a' + k + '" hidden><b>Respuesta:</b> ' + x.r + '</p><button class="btn sm" data-act="lec-ver" data-k="' + k + '">Mostrar respuesta</button></div>';
+      }).join('') + '</div>' : '') +
+      '<div class="row lec-fin"><button class="btn" data-act="lec-tema" data-d="1">Siguiente tema →</button></div>';
+    // Segmentos legibles en orden del documento
+    var sel2 = 'h2.lec-h, .lec-texto > p, .lec-texto > ul > li, .lec-texto > ol > li, .lec-texto h4, .lec-texto .perla, .lec-texto tbody tr, .lec-texto .figs-dia figcaption, .lec-q, .lec-a';
+    lec.segs = [];
+    hoja.querySelectorAll(sel2).forEach(function (el) {
+      var txt;
+      if (el.tagName === 'TR') txt = Array.prototype.map.call(el.cells, function (td) { return td.textContent; }).join('. ');
+      else if (el.tagName === 'FIGCAPTION') txt = 'Esquema. ' + el.textContent.replace(/^Esquema\s*/, '');
+      else if (el.classList.contains('perla')) txt = el.textContent.replace(/^(\S+)/, '$1. ');
+      else txt = el.textContent;
+      var seg = { el: el, frases: trozos(diccion(txt)) };
+      if (el.classList.contains('lec-q')) seg.pausa = 3500; // tiempo para pensar la respuesta
+      if (el.classList.contains('lec-a')) seg.alEmpezar = function () { el.hidden = false; var b = el.parentNode.querySelector('[data-act="lec-ver"]'); if (b) b.hidden = true; };
+      if (seg.frases.length) { el.classList.add('lec-seg'); el.dataset.seg = lec.segs.length; lec.segs.push(seg); }
+    });
+    marcarSeg(-1); progresoLectura();
+    window.scrollTo(0, 0);
+  }
+  function progresoLectura() {
+    var p = document.getElementById('lec-prog'); if (!p || !lec) return;
+    p.textContent = 'Tema ' + (lec.i + 1) + '/' + lec.lista.length + ' · frase ' + Math.min(lec.s + 1, lec.segs.length) + '/' + lec.segs.length;
+    var b = document.getElementById('lec-play'); if (b) b.textContent = lec.sonando ? '⏸ Pausa' : '▶ Escuchar';
+  }
+  function marcarSeg(k) {
+    if (!lec) return;
+    lec.segs.forEach(function (sg, j) { sg.el.classList.toggle('lec-activo', j === k); sg.el.classList.toggle('lec-hecho', k >= 0 && j < k); });
+    var sg = lec.segs[k];
+    if (sg) { var r = sg.el.getBoundingClientRect(); if (r.top < 70 || r.bottom > window.innerHeight - 150) sg.el.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
+  }
+  function detenerVoz() { lecTok++; clearTimeout(lecTimer); if (VOZ) VOZ.cancel(); if (lec) { lec.sonando = false; progresoLectura(); } }
+  function leerDesde(k) {
+    if (!lec || !VOZ) return;
+    detenerVoz();
+    lec.sonando = true; lec.s = k;
+    var tok = lecTok;
+    (function paso() {
+      if (tok !== lecTok || !lec) return;
+      if (lec.s >= lec.segs.length) { finTema(); return; }
+      var sg = lec.segs[lec.s]; marcarSeg(lec.s); progresoLectura();
+      if (sg.alEmpezar) sg.alEmpezar();
+      var f = 0;
+      (function frase() {
+        if (tok !== lecTok) return;
+        if (f >= sg.frases.length) { lecTimer = setTimeout(function () { lec.s++; paso(); }, sg.pausa || 120); return; }
+        var u = new SpeechSynthesisUtterance(sg.frases[f++]);
+        var v = vozElegida(); if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'es-ES';
+        u.rate = prefs().rate;
+        u.onend = function () { frase(); };
+        u.onerror = function (e) { if (e.error === 'interrupted' || e.error === 'canceled') return; frase(); };
+        VOZ.speak(u);
+      })();
+    })();
+  }
+  function finTema() {
+    var it = lec.lista[lec.i];
+    S.leidos[it.t.id] = S.leidos[it.t.id] || Date.now(); guardar();
+    lec.sonando = false; marcarSeg(lec.segs.length); progresoLectura();
+    if (prefs().auto && lec.i < lec.lista.length - 1) {
+      var tok = lecTok;
+      lecTimer = setTimeout(function () { if (tok !== lecTok || !lec) return; cargarTemaLectura(lec.i + 1); leerDesde(0); }, 1500);
+    }
+  }
+  function accionLectura(act, b) {
+    if (!lec) return false;
+    if (act === 'lec-play') { if (lec.sonando) detenerVoz(); else leerDesde(lec.s >= lec.segs.length ? 0 : lec.s); return true; }
+    if (act === 'lec-frase') { var k = Math.max(0, Math.min(lec.segs.length - 1, lec.s + (+b.dataset.d))); if (lec.sonando) leerDesde(k); else { lec.s = k; marcarSeg(k); progresoLectura(); } return true; }
+    if (act === 'lec-tema') { var sonaba = lec.sonando; cargarTemaLectura(lec.i + (+b.dataset.d)); if (sonaba) leerDesde(0); return true; }
+    if (act === 'lec-ver') { var a = document.getElementById('lec-a' + b.dataset.k); if (a) a.hidden = false; b.hidden = true; return true; }
+    return false;
+  }
 
   /* ---------- Pantalla completa ---------- */
   var btnFull = document.getElementById('btn-full');

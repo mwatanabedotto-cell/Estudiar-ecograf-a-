@@ -285,3 +285,38 @@ figure { margin: 0; }
 
 .side-btn { display: flex; align-items: center; gap: 8px; margin: 0 4px; padding: 10px 12px; min-height: 44px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel-2); color: var(--fg); font-weight: 600; cursor: pointer; }
 .side-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Lectura acompañada */
+.lec { display: grid; gap: 16px; }
+.lec-sel { display: grid; gap: 6px; }
+.lec-sel select { width: 100%; }
+.lec-hoja { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px max(18px, 3vw) 26px; display: grid; gap: 14px; min-width: 0; }
+.lec-hoja .lec-h { font-size: clamp(1.6rem, 4vw, 2.2rem); }
+.lec-texto { padding: 0; max-width: 70ch; font-size: 1.12rem; line-height: 1.7; }
+.lec-seg { border-radius: 6px; cursor: pointer; transition: background-color .25s ease, color .25s ease; scroll-margin: 90px; }
+.lec-seg:hover { background: rgba(240, 184, 74, 0.06); }
+.lec-activo { background: var(--accent-soft) !important; box-shadow: 0 0 0 6px var(--accent-soft); color: #fff8e8; }
+li.lec-activo, p.lec-activo, h4.lec-activo, tr.lec-activo, figcaption.lec-activo { outline: none; }
+.lec-hecho { color: #b9c6cc; }
+.lec-repaso { border-top: 1px dashed var(--line); padding-top: 14px; display: grid; gap: 10px; max-width: 70ch; }
+.lec-card { background: var(--panel-2); border-radius: 10px; padding: 12px 14px; display: grid; gap: 8px; justify-items: start; }
+.lec-card p { margin: 0; }
+.lec-a { color: var(--ok); }
+.lec-barra {
+  position: sticky; bottom: env(safe-area-inset-bottom, 0px); z-index: 5;
+  background: rgba(15, 22, 26, 0.96); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px;
+  display: grid; gap: 8px; box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.45); backdrop-filter: blur(6px);
+}
+.lec-ctrl { display: flex; gap: 6px; align-items: center; justify-content: center; flex-wrap: wrap; }
+.lec-ctrl .btn.sm { min-width: 44px; min-height: 44px; font-size: 1.05rem; }
+.lec-play { min-width: 150px; }
+.lec-opts { display: flex; gap: 8px 16px; flex-wrap: wrap; align-items: center; justify-content: center; font-size: 0.88rem; color: var(--muted); }
+.lec-opts label { display: inline-flex; gap: 6px; align-items: center; }
+.lec-opts select { min-height: 36px; padding: 4px 8px; max-width: 180px; }
+@media (prefers-reduced-motion: reduce) { .lec-seg { transition: none; } }
+@media (max-width: 480px) {
+  .lec-ctrl { flex-wrap: nowrap; gap: 4px; }
+  .lec-ctrl .btn.sm { min-width: 40px; padding: 6px; }
+  .lec-play { min-width: 0; flex: 1; padding-inline: 8px; }
+  .lec-opts { gap: 6px 10px; }
+}
